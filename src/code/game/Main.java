@@ -73,11 +73,8 @@ public class Main {
         font.destroy();
         
         musPlayer.destroy();
-        selectedS.buffer.destroy();
         selectedS.destroy();
-        clickedS.buffer.destroy();
         clickedS.destroy();
-        gameStartS.buffer.destroy();
         gameStartS.destroy();
         
         Asset.destroyAll();
