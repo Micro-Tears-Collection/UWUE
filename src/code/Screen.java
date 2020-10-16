@@ -12,6 +12,7 @@ public class Screen {
             MOUSE_MIDDLE = GLFW.GLFW_MOUSE_BUTTON_MIDDLE,
             MOUSE_RIGHT = GLFW.GLFW_MOUSE_BUTTON_RIGHT;
     
+    public void show() {}
     public boolean isRunning() {return true;}
     public void destroy() {}
     public void tick() {}

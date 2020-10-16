@@ -17,7 +17,8 @@ public class Game extends Screen {
     
     public Main main;
     
-    public boolean run;
+    public long time;
+    public boolean run, paused;
     int w, h;
     int prevMX, prevMY;
     
@@ -25,6 +26,8 @@ public class Game extends Screen {
     public DialogScreen dialog;
     public World world;
     public Player player;
+    
+    Fade fade;
     
     public Game(Main main) {
         this.main = main;
@@ -41,14 +44,27 @@ public class Game extends Screen {
     public void loadMap(String world) {
         WorldLoader.loadWorld(this, world);
     }
+    
+    public void setFade(Fade fade) {
+        this.fade = fade;
+        main.musPlayer.setVolume(fade.in?0:1);
+        //paused = true;
+    }
+    
+    private void close() {
+        main.musPlayer.setVolume(1);
+        main.musPlayer.setPitch(1);
+        main.musPlayer.stop();
+    }
 
     public void destroy() {
-        
+        paused = true;
     }
     
     public void start() {
         if(!run) {
             run = true;
+            FPS.reset();
         }
     }
     public void stop() {run = false;}
@@ -67,6 +83,8 @@ public class Game extends Screen {
     }
     
     void update() {
+        if(paused) return;
+        
         if(Engine.hideCursor && isFocused()) {
             player.rotY -= (getMouseX() - (w >> 1)) * 60f / h;
             player.rotX -= (getMouseY() - (h >> 1)) * 60f / h;
@@ -76,6 +94,8 @@ public class Game extends Screen {
         }
         
         world.update(player);
+        
+        time += FPS.frameTime;
     }
     
     void render() {
@@ -90,13 +110,28 @@ public class Game extends Screen {
         e3d.prepare2D(0, 0, w, h);
         
         main.font.drawString("FPS: "+FPS.fps, 10, 10, 1, main.fontColor);
+        
+        if(fade != null) {
+            float intensity = fade.step(e3d, w, h);
+            main.musPlayer.setVolume(1-intensity);
+            if(fade.checkDone()) fade = null;
+        }
     }
     
     public void keyPressed(int key) {
         if(Keys.isThatBinding(key, Keys.ESC)) {
-            Engine.hideCursor(!Engine.hideCursor);
+            if(fade == null) {
+                paused = true;
+                setFade(new Fade(false, 0xffffff, 1000) {
+                    public void onDone() {
+                        close();
+                        main.setScreen(new Menu(main), true);
+                    };
+                });
+            }
             return;
         } else if(Keys.isThatBinding(key, Keys.OK)) {
+            if(paused) return; 
             /*Ray ray = new Ray();
             ray.start.set(player.pos);
             ray.start.add(0, player.eyeHeight, 0);

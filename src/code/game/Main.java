@@ -36,6 +36,7 @@ public class Main {
     public SoundSource musPlayer;
     public Globals lua;
     public LuaTable luagame;
+    public LuaTable luasave;
     
     public BMFont font;
     public int fontColor, fontSelColor;
@@ -67,8 +68,8 @@ public class Main {
         e3d = new E3D();
         
         lua = JsePlatform.standardGlobals();
-        luagame = new LuaTable();
-        lua.set("game", luagame);
+        lua.set("game", (luagame = new LuaTable()));
+        lua.set("save", (luasave = new LuaTable()));
 
         setScreen(new Menu(this));
 
@@ -116,6 +117,7 @@ public class Main {
                 }
 
                 screen = nextScreen;
+                screen.show();
             }
             
             FPS.frameBegin();
@@ -219,7 +221,7 @@ public class Main {
     
     public void printLua(LuaValue val, PrintStream out) {
         if(val.istable()) {
-            out.println("table");
+            out.println("tab");
             
             LuaValue k = LuaValue.NIL;
             while(true) {
@@ -233,7 +235,7 @@ public class Main {
             }
             out.println("NIL");
         } else {
-            out.println("value");
+            out.println("val");
             out.println(val.toString());
         }
     }

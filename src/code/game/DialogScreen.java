@@ -202,7 +202,11 @@ public class DialogScreen extends Screen {
                     
                     if(itemListHasCaption) items[0] = dialog[index+1]; //Caption
                     
-                    itemList = new ItemList(items, textView.getWidth(), textView.getHeight(), font);
+                    itemList = new ItemList(items, textView.getWidth(), textView.getHeight(), font) {
+                        public void itemSelected() {
+                            if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.start();
+                        }
+                    };
                     itemList.setCenter(false);
                     itemList.setIndex(capLen);
                     
@@ -301,6 +305,7 @@ public class DialogScreen extends Screen {
         
         if(Keys.isPressed(Keys.OK)) {
             Keys.reset();
+            game.main.clickedS.start();
             if(!nextText()) {
                 if(reset) {
                     reset();

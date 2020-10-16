@@ -20,6 +20,7 @@ public class Menu extends Screen {
     
     public Menu(Main main) {
         this.main = main;
+        
         background = new Material(Texture.createTexture("/images/menu.png"));
         logo = new Material(Texture.createTexture("/images/lsddejfg.png"));
         logo.alphaTest = true;
@@ -28,6 +29,8 @@ public class Menu extends Screen {
         
         main.musPlayer.loadFile("/music/menu.ogg");
         main.musPlayer.start();
+        
+        Engine.hideCursor(false);
         
         createMenu();
     }
@@ -122,6 +125,8 @@ public class Menu extends Screen {
                     main.setScreen(game, true);
                     game.loadMap(main.conf.get("GAME", "START_MAP"));
                     game.start();
+                    game.setFade(new Fade(true, 0, 1000));
+                    main.musPlayer.setVolume(0);
                 }
             };
             main.setScreen(blank, true);
