@@ -18,7 +18,6 @@ import java.util.Scanner;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 /**
@@ -208,13 +207,15 @@ public class Main {
         }
     }
 
-    public void runScript(String script) {
+    public LuaValue runScript(String script) {
         try {
             LuaValue chunk = lua.load(script);
-            chunk.call();
+            return chunk.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        return LuaValue.NIL;
     }
 
 }

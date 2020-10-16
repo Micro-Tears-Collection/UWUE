@@ -28,6 +28,7 @@ public class Scripting {
             if(!file.exists()) file.createNewFile();
             
             DataOutputStream dos = new DataOutputStream((fos = new FileOutputStream(file)));
+            dos.writeInt(0); //version
             save(save, dos);
             dos.close();
             
@@ -58,7 +59,7 @@ public class Scripting {
             dos.writeInt(vals.size());
             for(int i=0; i<vals.size(); i++) {
                 Varargs el = vals.elementAt(i);
-                dos.writeUTF(el.arg1().toString());
+                save(el.arg1(), dos);
                 save(el.arg(2), dos);
             }
             
@@ -90,6 +91,7 @@ public class Scripting {
             
             DataInputStream dis = new DataInputStream((fis = new FileInputStream(file)));
             
+            dis.skip(4); //version
             LuaValue tmp = load(main.lua, dis);
             if(tmp instanceof LuaTable) save = (LuaTable) tmp;
             else System.out.println("save is not a table! what did you made lol");
@@ -114,8 +116,7 @@ public class Scripting {
             int count = dis.readInt();
             
             for(int i=0; i<count; i++) {
-                String name = dis.readUTF();
-                table.set(name, load(global, dis));
+                table.set(load(global, dis), load(global, dis));
             }
             
             return table;
