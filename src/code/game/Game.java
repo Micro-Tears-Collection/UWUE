@@ -8,7 +8,6 @@ import code.game.world.WorldLoader;
 import code.game.world.entities.Player;
 import code.utils.FPS;
 import code.utils.Keys;
-import code.utils.scriptEngine.GameEnv;
 
 /**
  *
@@ -24,7 +23,6 @@ public class Game extends Screen {
     
     public E3D e3d;
     public DialogScreen dialog;
-    public GameEnv scriptEngine;
     public World world;
     public Player player;
     

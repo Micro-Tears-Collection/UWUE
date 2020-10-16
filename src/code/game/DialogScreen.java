@@ -141,19 +141,19 @@ public class DialogScreen extends Screen {
                 if(script.equals("exec")) {
                     //execute script
                     
-                    game.scriptEngine.runScriptFromFile(option);
+                    game.main.runScriptFromFile(option);
                     
                     return nextText();
                 } else if(script.equals("if")) {
                     //condition check
                     
-                    if(!game.scriptEngine.readBoolean(option)) index++;
+                    if(!game.main.lua.load(option).toboolean()) index++;
                     
                     return nextText();
                 } else if(script.equals("cmd")) {
                     //run one script line
                     
-                    game.scriptEngine.runLine(option);
+                    game.main.runScript(option);
                     
                     return nextText();
                 } else if(script.equals("go")) {
@@ -180,7 +180,7 @@ public class DialogScreen extends Screen {
                             String answer = dialog[index+1+capLen+i];
                             String condition = dialog[index+1+capLen+i+answers];
                             
-                            if(game.scriptEngine.readBoolean(condition)) {
+                            if(game.main.lua.load(condition).toboolean()) {
                                 allItems[newAnswers] = answer;
                                 answersGoIndex[newAnswers] = index+1+capLen+i+answers*2;
                                 newAnswers++;

@@ -10,17 +10,32 @@ import code.utils.IniFile;
 import code.utils.Keys;
 import code.utils.StringTools;
 import code.utils.font.BMFont;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 /**
  *
  * @author Roman Lahin
  */
 public class Main {
+    
+    //bilding
+    public static int TILDE;
 
     public IniFile conf;
     
     public E3D e3d;
     public SoundSource musPlayer;
+    public Globals lua;
+    public LuaTable luagame;
     
     public BMFont font;
     public int fontColor, fontSelColor;
@@ -50,6 +65,10 @@ public class Main {
         fontSelColor = StringTools.getRGB(conf.getDef("HUD", "FONT_SELECTED_COLOR", "221,136,149"), ',');
         
         e3d = new E3D();
+        
+        lua = JsePlatform.standardGlobals();
+        luagame = new LuaTable();
+        lua.set("game", luagame);
 
         setScreen(new Menu(this));
 
@@ -118,6 +137,23 @@ public class Main {
     public void keyReleased(int key) {
         Keys.keyReleased(key);
         if(screen != null) screen.keyReleased(key);
+        
+        if(Keys.isThatBinding(key, TILDE)) {
+            Scanner sn = new Scanner(System.in);
+            
+            while(true) {
+                String line = sn.nextLine();
+                if(line.equals("close lua")) break;
+                else if(line.equals("print game")) {
+                    printLua(luagame, System.out);
+                    break;
+                }
+                
+                runScript(line);
+            }
+            
+            sn.close();
+        }
     }
 
     public void keyPressed(int key) {
@@ -141,6 +177,65 @@ public class Main {
 
     public void mouseScroll(double xoffset, double yoffset) {
         if(screen != null) screen.mouseScroll(xoffset, yoffset);
+    }
+    
+    public void runScriptFromFile(String path) {
+        File file = new File("data", path);
+        if(!file.exists()) {
+            System.out.println("No such file "+file.getAbsolutePath()+"!");
+            return;
+        }
+        
+        DataInputStream dis = null;
+        try {
+            dis = new DataInputStream(new FileInputStream(file));
+            byte[] chars = new byte[dis.available()];
+            dis.readFully(chars);
+            dis.close();
+            dis = null;
+            
+            String script = new String(chars);
+            LuaValue chunk = lua.load(script);
+            chunk.call();
+            
+        } catch(Exception e) {
+            if(dis != null) {
+                try{
+                    dis.close();
+                } catch(Exception ee) {}
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void runScript(String script) {
+        try {
+            LuaValue chunk = lua.load(script);
+            chunk.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void printLua(LuaValue val, PrintStream out) {
+        if(val.istable()) {
+            out.println("table");
+            
+            LuaValue k = LuaValue.NIL;
+            while(true) {
+                Varargs next = val.next(k);
+                k = next.arg1();
+                if(k.isnil()) break;
+                
+                out.println(next.arg1().toString());
+                
+                printLua(next.arg(2), out);
+            }
+            out.println("NIL");
+        } else {
+            out.println("value");
+            out.println(val.toString());
+        }
     }
 
 }

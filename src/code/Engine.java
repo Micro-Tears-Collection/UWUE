@@ -8,7 +8,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
+import java.util.Scanner;
 import javax.imageio.ImageIO;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.jse.JsePlatform;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.glfw.Callbacks;
@@ -42,6 +48,32 @@ public class Engine {
                 + "engine\n\n"
                 + "(UWUE 0.0)");
         
+        Scanner sn = new Scanner(System.in);
+        
+        /*Globals globals = JsePlatform.standardGlobals();
+        LuaTable gameVals = new LuaTable();
+        gameVals.set("hp", LuaValue.valueOf(100));
+        globals.set("game", gameVals);
+        
+        OneArgFunction func = new OneArgFunction() {
+            public LuaValue call(LuaValue arg) {
+                return LuaValue.valueOf(arg.toint() + 10);
+            }
+        };
+        gameVals.set("testFunc", func);
+        
+        while(true) {
+            String code = sn.next();
+            if(code.equals("exit")) break;
+            try {
+                LuaValue chunk = globals.load(code);
+                chunk.call();
+                System.out.println(gameVals.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
+        
         Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
         Keys.DOWN = Keys.addKeyToBinding(Keys.DOWN, GLFW.GLFW_KEY_DOWN);
         Keys.LEFT = Keys.addKeyToBinding(Keys.LEFT, GLFW.GLFW_KEY_LEFT);
@@ -50,6 +82,7 @@ public class Engine {
         Keys.ESC = Keys.addKeyToBinding(Keys.ESC, GLFW.GLFW_KEY_ESCAPE);
         
         Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, GLFW.GLFW_KEY_SPACE);
+        Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
         
         main = new Main();
         
