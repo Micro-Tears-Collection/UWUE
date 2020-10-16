@@ -69,7 +69,7 @@ public class Main {
         
         lua = JsePlatform.standardGlobals();
         lua.set("game", (luagame = new LuaTable()));
-        lua.set("save", (luasave = new LuaTable()));
+        lua.set("save", (luasave = Scripting.load(this)));
 
         setScreen(new Menu(this));
 
@@ -105,6 +105,7 @@ public class Main {
     public void stop() {
         run = false;
         nextScreen = null;
+        Scripting.save(luasave);
     }
 
     private void run() {
@@ -142,14 +143,11 @@ public class Main {
         
         if(Keys.isThatBinding(key, TILDE)) {
             Scanner sn = new Scanner(System.in);
+            sn.useDelimiter("\n");
             
             while(true) {
-                String line = sn.nextLine();
+                String line = sn.next();
                 if(line.equals("close lua")) break;
-                else if(line.equals("print game")) {
-                    printLua(luagame, System.out);
-                    break;
-                }
                 
                 runScript(line);
             }
@@ -216,27 +214,6 @@ public class Main {
             chunk.call();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-    
-    public void printLua(LuaValue val, PrintStream out) {
-        if(val.istable()) {
-            out.println("tab");
-            
-            LuaValue k = LuaValue.NIL;
-            while(true) {
-                Varargs next = val.next(k);
-                k = next.arg1();
-                if(k.isnil()) break;
-                
-                out.println(next.arg1().toString());
-                
-                printLua(next.arg(2), out);
-            }
-            out.println("NIL");
-        } else {
-            out.println("val");
-            out.println(val.toString());
         }
     }
 

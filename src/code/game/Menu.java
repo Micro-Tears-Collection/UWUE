@@ -112,6 +112,7 @@ public class Menu extends Screen {
         int index = menu.getIndex();
 
         if(index == 0) {
+            main.musPlayer.setVolume(0);
             main.musPlayer.stop();
             main.musPlayer.buffer.free();
             main.gameStartS.start();
@@ -126,7 +127,6 @@ public class Menu extends Screen {
                     game.loadMap(main.conf.get("GAME", "START_MAP"));
                     game.start();
                     game.setFade(new Fade(true, 0, 1000));
-                    main.musPlayer.setVolume(0);
                 }
             };
             main.setScreen(blank, true);

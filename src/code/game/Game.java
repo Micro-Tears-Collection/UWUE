@@ -55,6 +55,7 @@ public class Game extends Screen {
         main.musPlayer.setVolume(1);
         main.musPlayer.setPitch(1);
         main.musPlayer.stop();
+        main.musPlayer.buffer.free();
     }
 
     public void destroy() {
