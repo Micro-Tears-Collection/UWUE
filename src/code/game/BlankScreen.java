@@ -22,7 +22,6 @@ public class BlankScreen extends Screen {
     
     public void tick() {
         main.e3d.clearColor(color);
-        main.e3d.flush();
         
         if(FPS.currentTime > waitEndTime) action();
     }

@@ -5,6 +5,7 @@ import code.Screen;
 import code.engine3d.Material;
 import code.engine3d.Texture;
 import code.ui.ItemList;
+import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
 
@@ -28,10 +29,10 @@ public class Menu extends Screen {
         if(initialized) return;
         initialized = true;
         
-        background = new Material(Texture.createTexture("/images/menu.png"));
-        logo = new Material(Texture.createTexture("/images/lsddejfg.png"));
+        background = new Material(Asset.getTexture("/images/menu.png"));
+        logo = new Material(Asset.getTexture("/images/lsddejfg.png"));
         logo.alphaTest = true;
-        shadow = new Material(Texture.createTexture("/images/menushadow.png"));
+        shadow = new Material(Asset.getTexture("/images/menushadow.png"));
         shadow.blendMode = Material.BLEND;
         
         main.musPlayer.loadFile("/music/menu.ogg");
@@ -43,9 +44,9 @@ public class Menu extends Screen {
     }
     
     public void destroy() {
-        background.tex.destroy();
-        logo.tex.destroy();
-        shadow.tex.destroy();
+        main.musPlayer.stop();
+        main.musPlayer.free();
+        Asset.destroyThings(true);
     }
 
     private void createMenu() {
@@ -63,7 +64,6 @@ public class Menu extends Screen {
     
     public void drawBackground() {
         main.e3d.prepare2D(0, 0, getWidth(), getHeight());
-        main.e3d.ortho(getWidth(), getHeight());
         
         int sizeb = Math.min(getWidth(), getHeight());
         
@@ -111,8 +111,6 @@ public class Menu extends Screen {
         menu.mouseUpdate(getWidth() / 2, 0, getMouseX(), getMouseY());
         
         menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor, false);
-        
-        main.e3d.flush();
     }
     
     public void menuClicked() {
@@ -121,7 +119,6 @@ public class Menu extends Screen {
         if(index == 0) {
             main.musPlayer.setVolume(0);
             main.musPlayer.stop();
-            main.musPlayer.free();
             main.gameStartS.start();
         
             Engine.hideCursor(true);

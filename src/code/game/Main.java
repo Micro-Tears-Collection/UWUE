@@ -13,7 +13,6 @@ import code.utils.font.BMFont;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.PrintStream;
 import java.util.Scanner;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
@@ -69,6 +68,7 @@ public class Main {
         lua = JsePlatform.standardGlobals();
         lua.set("game", (luagame = new LuaTable()));
         lua.set("save", (luasave = Scripting.load(this)));
+        Scripting.initFunctions(this);
 
         setScreen(new Menu(this));
 
@@ -125,6 +125,7 @@ public class Main {
             if(screen != null/* && screen.isRunning()*/) {
                 screen.tick();
             }
+            e3d.flush();
 
             try {
                 Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
@@ -154,8 +155,6 @@ public class Main {
                 System.out.println("num "+val.todouble());
                 System.out.println("str "+val.tojstring());
             }
-            
-            sn.close();
         }
     }
 
@@ -180,6 +179,10 @@ public class Main {
 
     public void mouseScroll(double xoffset, double yoffset) {
         if(screen != null) screen.mouseScroll(xoffset, yoffset);
+    }
+    
+    public float scrollSpeed() {
+        return font.getHeight()/2f;
     }
     
     public void runScriptFromFile(String path) {
@@ -220,6 +223,12 @@ public class Main {
         }
         
         return LuaValue.NIL;
+    }
+
+    void loadMap(String map) {
+        if(screen instanceof Game) {
+            ((Game)screen).loadMap(map);
+        }
     }
 
 }

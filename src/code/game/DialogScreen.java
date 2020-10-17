@@ -282,7 +282,6 @@ public class DialogScreen extends Screen {
         }
 
         step();
-        game.e3d.flush();
     }
 
     private void step() {
@@ -345,7 +344,7 @@ public class DialogScreen extends Screen {
     }
     
     public void mouseScroll(double xx, double yy) {
-        int scroll = (int) (yy/2f*font.getHeight());
+        int scroll = (int) (yy*game.main.scrollSpeed());
         
         if(itemList == null) textView.scroll(scroll);
         else itemList.scrollY(scroll);

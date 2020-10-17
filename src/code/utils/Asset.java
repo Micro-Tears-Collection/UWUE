@@ -28,6 +28,12 @@ public class Asset {
         }
     }
     
+    public static void destroyVBOs() {
+        for(Integer vbo : vbos) {
+            GL15.glDeleteBuffers(vbo.intValue());
+        }
+    }
+    
     public static void destroyThings() {
         destroyThings(false);
     }
@@ -45,6 +51,8 @@ public class Asset {
                 cached.remove(key);
             }
         }
+        
+        System.gc();
     }
     
     public static void destroyAll() {
@@ -59,12 +67,8 @@ public class Asset {
         }
         
         destroyVBOs();
-    }
-    
-    public static void destroyVBOs() {
-        for(Integer vbo : vbos) {
-            GL15.glDeleteBuffers(vbo.intValue());
-        }
+        
+        System.gc();
     }
     
     public static Material getMaterial(String name) {

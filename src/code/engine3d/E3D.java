@@ -24,6 +24,8 @@ public class E3D {
     
     int rectCoordVBO, rectuvVBO, windowColVBO, arrowVBO;
     
+    public boolean mode2D;
+    
     public E3D() {
         toRender = new Vector();
         preDraw = new Vector();
@@ -132,7 +134,7 @@ public class E3D {
         GL11.glLoadMatrixf(proj.get(tmp));
     }
     
-    public void ortho(int w, int h) {
+    private void ortho(int w, int h) {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadMatrixf(m.identity().ortho(0, w, h, 0, 0, 40000).get(tmp));
     }
@@ -145,6 +147,10 @@ public class E3D {
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glDisable(GL11.GL_FOG);
         GL11.glDisable(GL11.GL_LIGHTING);
+        
+        ortho(ww, hh);
+        
+        mode2D = true;
     }
     
     public void prepareRender(int xx, int yy, int ww, int hh) {

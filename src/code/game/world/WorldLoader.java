@@ -92,6 +92,10 @@ public class WorldLoader {
                 game.main.musPlayer.start();
                 rewinded = true;
             }
+            if(lvl.getInt("MUSIC", "STOP", 0) == 1) {
+                game.main.musPlayer.stop();
+                game.main.musPlayer.free();
+            }
             
             if(!rewinded && lvl.getInt("MUSIC", "REWIND", 0) == 1) {
                 game.main.musPlayer.rewind();

@@ -68,6 +68,7 @@ public class Game extends Screen {
         main.musPlayer.setVolume(1);
         main.musPlayer.setPitch(1);
         
+        Asset.destroyVBOs();
         Asset.destroyThings(true);
     }
     
@@ -77,7 +78,6 @@ public class Game extends Screen {
         render();
         update();
         
-        e3d.flush();
         
         if(userTryingToCloseApp()) {
             main.stop();
@@ -108,7 +108,6 @@ public class Game extends Screen {
         
         world.render(e3d, w, h);
         
-        e3d.ortho(w, h);
         e3d.prepare2D(0, 0, w, h);
         
         main.font.drawString("FPS: "+FPS.fps, 10, 10, 1, main.fontColor);

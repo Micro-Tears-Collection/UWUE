@@ -40,7 +40,6 @@ public class About extends Screen {
         text.paint(main.e3d, 0, 0, main.fontColor);
         
         step();
-        main.e3d.flush();
     }
 
     private void step() {
@@ -65,8 +64,7 @@ public class About extends Screen {
     }
     
     public void mouseScroll(double xx, double yy) {
-        int scroll = (int) (yy*main.font.getHeight()/2f);
-        text.scroll(scroll);
+        text.scroll((int) (yy*main.scrollSpeed()));
     }
 
 }

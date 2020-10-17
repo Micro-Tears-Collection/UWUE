@@ -3,8 +3,6 @@ package code.utils;
 import code.engine3d.Material;
 import code.engine3d.Mesh;
 import code.math.Vector3D;
-import code.utils.IniFile;
-import code.utils.StringTools;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -110,7 +108,6 @@ public class MeshLoader {
     
     public static Mesh[] loadObj(String name, boolean createPhysics) {
         File file = new File("data", name);
-        System.out.println(file.getAbsolutePath());
         String line = null;
         
         try {

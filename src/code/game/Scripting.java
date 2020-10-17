@@ -12,12 +12,60 @@ import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.ZeroArgFunction;
+import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.TwoArgFunction;
+import org.luaj.vm2.lib.ThreeArgFunction;
 
 /**
  *
  * @author Roman Lahin
  */
 public class Scripting {
+    
+    public static void initFunctions(final Main main) {
+        LuaTable luagame = main.luagame;
+        
+        luagame.set("loadMap", new OneArgFunction() {
+            public LuaValue call(LuaValue arg)  {
+                main.loadMap(arg.toString());
+                return LuaValue.NIL;
+            }
+        });
+        
+        luagame.set("playMusic", new TwoArgFunction() {
+            public LuaValue call(LuaValue file, LuaValue restart)  {
+                String name = file.toString();
+                
+                if(!name.equals(main.musPlayer.soundName) || restart.toboolean()) {
+                    
+                    main.musPlayer.stop();
+                    if(!name.equals(main.musPlayer.soundName)) {
+                        main.musPlayer.free();
+                        main.musPlayer.loadFile(name);
+                    }
+                    main.musPlayer.start();
+                    
+                }
+                return LuaValue.NIL;
+            }
+        });
+        
+        luagame.set("stopMusic", new ZeroArgFunction() {
+            public LuaValue call()  {
+                main.musPlayer.stop();
+                return LuaValue.NIL;
+            }
+        });
+        
+        luagame.set("setMusicPitch", new OneArgFunction() {
+            public LuaValue call(LuaValue arg)  {
+                main.musPlayer.setPitch(arg.tofloat());
+                return LuaValue.NIL;
+            }
+        });
+        
+    }
     
     public static void save(LuaValue save) {
         File file = new File("saves/");

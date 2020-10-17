@@ -50,7 +50,7 @@ public class SoundSource {
         if(buffer != null) {
             AL10.alSourcei(soundSource, AL10.AL_BUFFER, buffer.id);
             soundName = file;
-        }
+        } else AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
     }
 
     public void setLoop(boolean loop) {
