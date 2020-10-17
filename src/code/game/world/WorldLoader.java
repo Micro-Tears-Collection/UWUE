@@ -16,7 +16,7 @@ public class WorldLoader {
     public static void loadWorld(Game game, String folder) {
         Asset.freeThings();
         
-        IniFile lvl = Asset.loadIni(folder+"level.ini", true);
+        IniFile lvl = Asset.loadIni(folder+"map.ini", true);
         
         game.player.pos.set(0,0,0);
         if(lvl.groupExists("PLAYER")) {

@@ -122,7 +122,7 @@ public class Main {
             
             FPS.frameBegin();
 
-            if(screen != null && screen.isRunning()) {
+            if(screen != null/* && screen.isRunning()*/) {
                 screen.tick();
             }
 

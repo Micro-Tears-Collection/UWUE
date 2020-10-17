@@ -19,7 +19,7 @@ public class Game extends Screen {
     public Main main;
     
     public long time;
-    public boolean run, paused;
+    public boolean paused;
     int w, h;
     int prevMX, prevMY;
     
@@ -29,6 +29,7 @@ public class Game extends Screen {
     public Player player;
     
     Fade fade;
+    String nextMap;
     
     public Game(Main main) {
         this.main = main;
@@ -42,8 +43,15 @@ public class Game extends Screen {
         player = new Player();
     }
     
-    public void loadMap(String world) {
-        WorldLoader.loadWorld(this, world);
+    public void loadMap(String nextMap) {
+        this.nextMap = nextMap;
+    }
+    
+    private void loadMapImpl() {
+        long loadtime = System.currentTimeMillis();
+        WorldLoader.loadWorld(this, nextMap);
+        nextMap = null;
+        FPS.previousFrame += System.currentTimeMillis() - loadtime;
     }
     
     public void setFade(Fade fade) {
@@ -63,23 +71,15 @@ public class Game extends Screen {
         Asset.destroyThings(true);
     }
     
-    public void start() {
-        if(!run) {
-            run = true;
-            FPS.reset();
-        }
-    }
-    public void stop() {run = false;}
-    public boolean isRunning() {return run;}
-    
     public void tick() {
+        if(nextMap != null) loadMapImpl();
+        
         render();
         update();
         
         e3d.flush();
         
         if(userTryingToCloseApp()) {
-            stop();
             main.stop();
         }
     }

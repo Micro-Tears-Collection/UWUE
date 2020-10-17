@@ -93,7 +93,6 @@ public class DialogScreen extends Screen {
     }
     
     public void show() {
-        game.stop();
         game.main.setScreen(this);
         Engine.hideCursor(false);
     }
@@ -323,7 +322,6 @@ public class DialogScreen extends Screen {
                 game.updateItems(true);*/
                 Engine.hideCursor(true);
                 game.main.setScreen(game);
-                game.start();
                 return;
             }
         }

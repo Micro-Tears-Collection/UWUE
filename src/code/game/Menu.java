@@ -132,7 +132,6 @@ public class Menu extends Screen {
                     Game game = new Game(main);
                     main.setScreen(game, true);
                     game.loadMap(main.conf.get("GAME", "START_MAP"));
-                    game.start();
                     game.setFade(new Fade(true, 0, 1000));
                 }
             };

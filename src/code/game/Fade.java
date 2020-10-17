@@ -33,7 +33,7 @@ public class Fade {
     }
     
     public boolean checkDone() {
-        if(len < 0) onDone();
+        if(len <= 0) onDone();
         return len <= 0;
     }
     
