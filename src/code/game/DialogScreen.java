@@ -30,6 +30,10 @@ public class DialogScreen extends Screen {
 
     public DialogScreen() {}
     
+    public void destroy() {
+        game.destroy();
+    }
+    
     public void sizeChanged(int x, int y, Screen from) {
         this.w = x; this.h = y;
         

@@ -32,6 +32,7 @@ public class Engine {
     public static int w, h;
 
     public static KeyInput keyInputCallback;
+    public static TextCallback textCallback;
     public static MouseCallback mouseCallback;
     public static ScrollCallback scrollCallback;
     public static ResizeCallback resizeCallback;
@@ -51,10 +52,12 @@ public class Engine {
         
         Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, GLFW.GLFW_KEY_SPACE);
         Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
+        Main.ERASE = Keys.addKeyToBinding(Main.ERASE, GLFW.GLFW_KEY_BACKSPACE);
         
         main = new Main();
         
         keyInputCallback = new KeyInput(main);
+        textCallback = new TextCallback(main);
         mouseCallback = new MouseCallback(main);
         scrollCallback = new ScrollCallback(main);
         resizeCallback = new ResizeCallback(main);
@@ -102,6 +105,7 @@ public class Engine {
         GL.createCapabilities();
         
         GLFW.glfwSetKeyCallback(window, keyInputCallback);
+        GLFW.glfwSetCharCallback(window, textCallback);
         GLFW.glfwSetWindowSizeCallback(window, resizeCallback);
         GLFW.glfwSetMouseButtonCallback(window, mouseCallback);
         GLFW.glfwSetScrollCallback(window, scrollCallback);

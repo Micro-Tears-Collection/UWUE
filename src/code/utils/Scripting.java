@@ -1,5 +1,6 @@
-package code.game;
+package code.utils;
 
+import code.game.Main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;

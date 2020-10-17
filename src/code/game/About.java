@@ -22,6 +22,10 @@ public class About extends Screen {
         setText();
     }
     
+    public void destroy() {
+        menu.destroy();
+    }
+    
     void setText() {
         text = new TextView(null, getWidth(), getHeight(), main.font);
         text.setCenter(true);

@@ -1,5 +1,6 @@
 package code.game;
 
+import code.utils.Scripting;
 import code.Engine;
 import code.Screen;
 import code.audio.SoundSource;
@@ -26,7 +27,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 public class Main {
     
     //bilding
-    public static int TILDE;
+    public static int TILDE, ERASE;
 
     public IniFile conf;
     
@@ -43,6 +44,9 @@ public class Main {
     public Screen screen, nextScreen;
     boolean needToDestroyScreen;
     SoundSource selectedS, clickedS, gameStartS;
+    
+    boolean consoleOpen;
+    String consoleText;
 
     public void init() {
         conf = Asset.loadIni("game.ini", true);
@@ -96,7 +100,8 @@ public class Main {
         clickedS.destroy();
         gameStartS.destroy();
         
-        Asset.destroyAll();
+        Asset.destroyVBOs();
+        Asset.destroyThings(true, false);
         
         Engine.destroy();
     }
@@ -125,6 +130,14 @@ public class Main {
             if(screen != null/* && screen.isRunning()*/) {
                 screen.tick();
             }
+            
+            if(consoleOpen) {
+                if(!e3d.mode2D) e3d.prepare2D(0, 0, Engine.w, Engine.h);
+                
+                e3d.drawRect(null, 0, 0, Engine.w, font.getHeight(), 0, 0.5f);
+                font.drawString(consoleText, 0, 0, 1, 0xffffff);
+            }
+            
             e3d.flush();
 
             try {
@@ -136,29 +149,43 @@ public class Main {
 
         destroy();
     }
-
-    public void keyReleased(int key) {
-        Keys.keyReleased(key);
-        if(screen != null) screen.keyReleased(key);
-        
-        if(Keys.isThatBinding(key, TILDE)) {
-            Scanner sn = new Scanner(System.in);
-            sn.useDelimiter("\n");
-            
-            while(true) {
-                String line = sn.next();
-                if(line.equals("close lua")) break;
-                
-                LuaValue val = runScript(line);
-                System.out.println("bool "+val.toboolean());
-                System.out.println("int "+val.toint());
-                System.out.println("num "+val.todouble());
-                System.out.println("str "+val.tojstring());
-            }
+    
+    public void charInput(int codepoint) {
+        if(consoleOpen) {
+            char[] chrs = Character.toChars(codepoint);
+            consoleText += String.valueOf(chrs, 0, chrs.length);
         }
     }
 
+    public void keyReleased(int key) {
+        if(!consoleOpen) Keys.keyReleased(key);
+        
+        if(Keys.isThatBinding(key, TILDE)) {
+            consoleOpen ^= true;
+            consoleText = consoleOpen?"":null;
+            return;
+        } else if(consoleOpen && Keys.isThatBinding(key, ERASE)) {
+            if(consoleText.length() > 0) 
+                consoleText = consoleText.substring(0, consoleText.length()-1);
+            
+        } else if(consoleOpen && Keys.isThatBinding(key, Keys.OK)) {
+            consoleOpen ^= true;
+            
+            LuaValue val = runScript(consoleText);
+            System.out.println("bool " + val.toboolean());
+            System.out.println("int " + val.toint());
+            System.out.println("num " + val.todouble());
+            System.out.println("str " + val.tojstring());
+        }
+        
+        if(consoleOpen) return;
+        
+        if(screen != null) screen.keyReleased(key);
+    }
+
     public void keyPressed(int key) {
+        if(consoleOpen) return;
+        
         Keys.keyPressed(key);
         if(screen != null) screen.keyPressed(key);
     }
@@ -225,9 +252,13 @@ public class Main {
         return LuaValue.NIL;
     }
 
-    void loadMap(String map) {
+    public void loadMap(String map) {
         if(screen instanceof Game) {
             ((Game)screen).loadMap(map);
+        } else {
+            Game game = new Game(this);
+            setScreen(game, true);
+            game.loadMap(map);
         }
     }
 

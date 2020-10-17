@@ -69,7 +69,7 @@ public class Game extends Screen {
         main.musPlayer.setPitch(1);
         
         Asset.destroyVBOs();
-        Asset.destroyThings(true);
+        Asset.destroyThings(true, false);
     }
     
     public void tick() {

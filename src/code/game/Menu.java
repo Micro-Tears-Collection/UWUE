@@ -3,7 +3,6 @@ package code.game;
 import code.Engine;
 import code.Screen;
 import code.engine3d.Material;
-import code.engine3d.Texture;
 import code.ui.ItemList;
 import code.utils.Asset;
 import code.utils.FPS;
@@ -46,7 +45,7 @@ public class Menu extends Screen {
     public void destroy() {
         main.musPlayer.stop();
         main.musPlayer.free();
-        Asset.destroyThings(true);
+        Asset.destroyThings(true, false);
     }
 
     private void createMenu() {

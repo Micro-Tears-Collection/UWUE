@@ -35,10 +35,10 @@ public class Asset {
     }
     
     public static void destroyThings() {
-        destroyThings(false);
+        destroyThings(false, false);
     }
     
-    public static void destroyThings(boolean destroyNonFree) {
+    public static void destroyThings(boolean destroyNonFree, boolean destroyEverything) {
         Enumeration<String> keys = cached.keys();
         Enumeration<CachedContent> els = cached.elements();
         
@@ -46,27 +46,11 @@ public class Asset {
             String key = keys.nextElement();
             CachedContent el = els.nextElement();
             
-            if((!el.using || destroyNonFree) && !el.neverUnload) {
+            if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyEverything) {
                 el.destroy();
                 cached.remove(key);
             }
         }
-        
-        System.gc();
-    }
-    
-    public static void destroyAll() {
-        Enumeration<String> keys = cached.keys();
-        Enumeration<CachedContent> els = cached.elements();
-        
-        while(keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            CachedContent el = els.nextElement();
-            
-            el.destroy();
-        }
-        
-        destroyVBOs();
         
         System.gc();
     }
