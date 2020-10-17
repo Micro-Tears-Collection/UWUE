@@ -9,13 +9,13 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -135,7 +135,7 @@ public class Engine {
     public static void takeScreenshot() {
         GL11.glReadBuffer(GL11.GL_FRONT);
         int bpp = 4; // rgba
-        ByteBuffer buffer = BufferUtils.createByteBuffer(w * h * bpp);
+        ByteBuffer buffer = MemoryUtil.memAlloc(w * h * bpp);
         GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
         
         try {
@@ -159,6 +159,7 @@ public class Engine {
                     image.setRGB(x, h - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
                 }
             }
+            MemoryUtil.memFree(buffer);
 
             ImageIO.write(image, "PNG", file);
         } catch (Exception e) {
