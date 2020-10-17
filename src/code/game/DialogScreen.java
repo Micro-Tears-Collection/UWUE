@@ -107,7 +107,7 @@ public class DialogScreen extends Screen {
         if(reset) return false;
         
         if(itemList != null) {
-            if(itemList.getIndex() <= (itemListHasCaption?0:-1)) return true;
+            if(itemList.getIndex() == -1) return true;
             
             if(answersGoIndex == null) 
                 index += itemList.getItems().length+itemList.getIndex()-(itemListHasCaption?1:0); // Additional move
@@ -303,8 +303,11 @@ public class DialogScreen extends Screen {
             }
         }
         
+        ok:
         if(Keys.isPressed(Keys.OK)) {
             Keys.reset();
+            if(itemList != null && itemList.getIndex() == -1) break ok;
+            
             game.main.clickedS.start();
             if(!nextText()) {
                 if(reset) {

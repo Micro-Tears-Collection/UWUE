@@ -8,13 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
-import java.util.Scanner;
 import javax.imageio.ImageIO;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.jse.JsePlatform;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.glfw.Callbacks;
@@ -47,32 +41,6 @@ public class Engine {
                 + "UHHHHHHHHHHHHHHHHHHHHHHH.....\n"
                 + "engine\n\n"
                 + "(UWUE 0.0)");
-        
-        Scanner sn = new Scanner(System.in);
-        
-        /*Globals globals = JsePlatform.standardGlobals();
-        LuaTable gameVals = new LuaTable();
-        gameVals.set("hp", LuaValue.valueOf(100));
-        globals.set("game", gameVals);
-        
-        OneArgFunction func = new OneArgFunction() {
-            public LuaValue call(LuaValue arg) {
-                return LuaValue.valueOf(arg.toint() + 10);
-            }
-        };
-        gameVals.set("testFunc", func);
-        
-        while(true) {
-            String code = sn.next();
-            if(code.equals("exit")) break;
-            try {
-                LuaValue chunk = globals.load(code);
-                chunk.call();
-                System.out.println(gameVals.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
         
         Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
         Keys.DOWN = Keys.addKeyToBinding(Keys.DOWN, GLFW.GLFW_KEY_DOWN);
@@ -166,7 +134,7 @@ public class Engine {
     
     public static void takeScreenshot() {
         GL11.glReadBuffer(GL11.GL_FRONT);
-        int bpp = 4; // Assuming a 32-bit display with a byte each for red, green, blue, and alpha.
+        int bpp = 4; // rgba
         ByteBuffer buffer = BufferUtils.createByteBuffer(w * h * bpp);
         GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
         

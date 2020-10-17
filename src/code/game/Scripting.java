@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -123,7 +124,7 @@ public class Scripting {
         } else if(type == BOL) {
             return LuaValue.valueOf(dis.readBoolean());
         } else if(type == INT) {
-            return LuaValue.valueOf(dis.readInt());
+            return LuaInteger.valueOf(dis.readInt());
         } else if(type == NUM) {
             return LuaValue.valueOf(dis.readDouble());
         } else if(type == STR) {

@@ -51,6 +51,7 @@ public class About extends Screen {
     public void keyPressed(int key) {
         if(Keys.isThatBinding(key, Keys.ESC)) {
             Keys.reset();
+            main.clickedS.start();
             main.setScreen(menu);
         }
     }
@@ -58,6 +59,7 @@ public class About extends Screen {
     public void mouseAction(int key, boolean pressed) {
         if(key == Screen.MOUSE_LEFT && !pressed) {
             Keys.reset();
+            main.clickedS.start();
             main.setScreen(menu);
         }
     }
