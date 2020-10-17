@@ -6,6 +6,7 @@ import code.engine3d.E3D;
 import code.game.world.World;
 import code.game.world.WorldLoader;
 import code.game.world.entities.Player;
+import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
 
@@ -50,16 +51,16 @@ public class Game extends Screen {
         main.musPlayer.setVolume(fade.in?0:1);
         //paused = true;
     }
-    
-    private void close() {
-        main.musPlayer.setVolume(1);
-        main.musPlayer.setPitch(1);
-        main.musPlayer.stop();
-        main.musPlayer.buffer.free();
-    }
 
     public void destroy() {
         paused = true;
+        
+        main.musPlayer.stop();
+        main.musPlayer.free();
+        main.musPlayer.setVolume(1);
+        main.musPlayer.setPitch(1);
+        
+        Asset.destroyThings(true);
     }
     
     public void start() {
@@ -125,7 +126,6 @@ public class Game extends Screen {
                 paused = true;
                 setFade(new Fade(false, 0xffffff, 1000) {
                     public void onDone() {
-                        close();
                         main.setScreen(new Menu(main), true);
                     };
                 });

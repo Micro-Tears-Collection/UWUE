@@ -148,7 +148,11 @@ public class Main {
                 String line = sn.next();
                 if(line.equals("close lua")) break;
                 
-                runScript(line);
+                LuaValue val = runScript(line);
+                System.out.println("bool "+val.toboolean());
+                System.out.println("int "+val.toint());
+                System.out.println("num "+val.todouble());
+                System.out.println("str "+val.tojstring());
             }
             
             sn.close();

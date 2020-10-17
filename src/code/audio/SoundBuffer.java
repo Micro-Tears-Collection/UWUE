@@ -27,7 +27,11 @@ public class SoundBuffer extends CachedContent {
         // Load wav data into a buffer.
         int soundBuffer = AL10.alGenBuffers();
 
-        if(AL10.alGetError() != AL10.AL_NO_ERROR) return null;
+        int err;
+        if((err = AL10.alGetError()) != AL10.AL_NO_ERROR) {
+            System.out.println("alGenBuffers error " + err);
+            return null;
+        }
 
         ByteBuffer bruh;
         try {
@@ -59,5 +63,10 @@ public class SoundBuffer extends CachedContent {
 
     public void destroy() {
         AL10.alDeleteBuffers(id);
+        
+        int err;
+        if((err = AL10.alGetError()) != AL10.AL_NO_ERROR) {
+            System.out.println("alDeleteBuffers error " + err);
+        }
     }
 }

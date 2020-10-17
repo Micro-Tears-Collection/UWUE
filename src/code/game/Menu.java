@@ -14,12 +14,19 @@ import code.utils.Keys;
  */
 public class Menu extends Screen {
     
+    boolean initialized;
+    
     Main main;
     ItemList menu;
     Material background, logo, shadow;
     
     public Menu(Main main) {
         this.main = main;
+    }
+    
+    public void show() {
+        if(initialized) return;
+        initialized = true;
         
         background = new Material(Texture.createTexture("/images/menu.png"));
         logo = new Material(Texture.createTexture("/images/lsddejfg.png"));
@@ -114,7 +121,7 @@ public class Menu extends Screen {
         if(index == 0) {
             main.musPlayer.setVolume(0);
             main.musPlayer.stop();
-            main.musPlayer.buffer.free();
+            main.musPlayer.free();
             main.gameStartS.start();
         
             Engine.hideCursor(true);

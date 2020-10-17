@@ -97,4 +97,10 @@ public class SoundSource {
     public void destroy() {
         AL10.alDeleteSources(soundSource);
     }
+    
+    public void free() {
+        if(buffer != null) buffer.free();
+        AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
+        buffer = null;
+    }
 }

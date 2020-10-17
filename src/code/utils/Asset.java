@@ -19,7 +19,7 @@ public class Asset {
     static Vector<Integer> vbos = new Vector();
     static Hashtable<String, CachedContent> cached = new Hashtable();
     
-    public static void prepareLevelLoad() {
+    public static void freeThings() {
         destroyVBOs();
         
         Enumeration<CachedContent> els = cached.elements();
@@ -28,7 +28,11 @@ public class Asset {
         }
     }
     
-    public static void endLevelLoad() {
+    public static void destroyThings() {
+        destroyThings(false);
+    }
+    
+    public static void destroyThings(boolean destroyNonFree) {
         Enumeration<String> keys = cached.keys();
         Enumeration<CachedContent> els = cached.elements();
         
@@ -36,7 +40,7 @@ public class Asset {
             String key = keys.nextElement();
             CachedContent el = els.nextElement();
             
-            if(!el.using && !el.neverUnload) {
+            if((!el.using || destroyNonFree) && !el.neverUnload) {
                 el.destroy();
                 cached.remove(key);
             }
@@ -85,14 +89,14 @@ public class Asset {
         if(name.equals("null")) {
             tex = new Texture(0);
             tex.neverUnload = true;
-            cached.put(name, tex);
+            cached.put("TEX_" + name, tex);
             return tex;
         }
         
         tex = Texture.createTexture(name);
         
         if(tex != null) {
-            cached.put(name, tex);
+            cached.put("TEX_" + name, tex);
             return tex;
         }
         
