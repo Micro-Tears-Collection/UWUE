@@ -14,7 +14,7 @@ public class Mesh {
     public static final int PREDRAW = 1, POSTDRAW = 2;
     
     public String name;
-    public int drawOrder = 0;
+    public int drawOrder, orderOffset;
     public float[] drawMatrix = new float[16];
 
     public Vector3D min, max;
@@ -48,8 +48,13 @@ public class Mesh {
         String tmp = ini.get("order");
         
         if(tmp != null) {
-            if(tmp.equals("pre")) drawOrder = PREDRAW;
-            else if(tmp.equals("post")) drawOrder = POSTDRAW;
+            if(tmp.startsWith("pre")) {
+                drawOrder = PREDRAW;
+                if(tmp.length() > 3) orderOffset = Integer.valueOf(tmp.substring(3));
+            } else if(tmp.startsWith("post")) {
+                drawOrder = POSTDRAW;
+                if(tmp.length() > 4) orderOffset = Integer.valueOf(tmp.substring(4));
+            } else orderOffset = Integer.valueOf(tmp);
         }
     }
     

@@ -314,7 +314,8 @@ public class E3D {
                 Mesh m1 = list.elementAt(x);
                 Mesh m2 = list.elementAt(x+1);
                 
-                if(m1.middle.z > m2.middle.z) {
+                //m1 ближе чем m2
+                if(-m1.middle.z < -m2.middle.z && m1.orderOffset >= m2.orderOffset) {
                     list.setElementAt(m2, x);
                     list.setElementAt(m1, x+1);
                 }
