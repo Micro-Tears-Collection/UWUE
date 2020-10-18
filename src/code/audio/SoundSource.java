@@ -2,9 +2,10 @@ package code.audio;
 
 import code.math.Vector3D;
 import code.utils.Asset;
+import code.utils.DisposableContent;
 import org.lwjgl.openal.AL10;
 
-public class SoundSource {
+public class SoundSource extends DisposableContent {
 
     public String soundName;
     public SoundBuffer buffer;
@@ -34,13 +35,12 @@ public class SoundSource {
         AL10.alSourcef(soundSource, AL10.AL_MAX_DISTANCE, 600);
     }
     
-    public static SoundSource createMusicPlayer() {
-        SoundSource player = new SoundSource();
+    public SoundSource beMusicPlayer() {
         //player.setVolume(musicGain); //todo
-        player.setLoop(true);
-        AL10.alSourcei(player.soundSource, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
+        setLoop(true);
+        AL10.alSourcei(soundSource, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
         
-        return player;
+        return this;
     }
 
     public void loadFile(String file) {

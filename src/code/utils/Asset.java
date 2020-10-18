@@ -1,6 +1,7 @@
 package code.utils;
 
 import code.audio.SoundBuffer;
+import code.audio.SoundSource;
 import code.engine3d.Material;
 import code.engine3d.Texture;
 import java.io.File;
@@ -17,38 +18,52 @@ import org.lwjgl.opengl.GL15;
 public class Asset {
     
     static Vector<Integer> vbos = new Vector();
-    static Hashtable<String, CachedContent> cached = new Hashtable();
+    static Vector<DisposableContent> disposable = new Vector();
+    static Hashtable<String, ReusableContent> reusable = new Hashtable();
     
-    public static void freeThings() {
-        destroyVBOs();
-        
-        Enumeration<CachedContent> els = cached.elements();
+    public static void free() {
+        Enumeration<ReusableContent> els = reusable.elements();
         while(els.hasMoreElements()) {
             els.nextElement().using = false;
         }
     }
     
-    public static void destroyVBOs() {
+    public static void destroyDisposable(boolean destroyEverything) {
         for(Integer vbo : vbos) {
             GL15.glDeleteBuffers(vbo.intValue());
         }
+        
+        for(int i=0; i<disposable.size(); i++) {
+            DisposableContent content = disposable.elementAt(i);
+            
+            if(!content.neverUnload || destroyEverything) {
+                content.destroy();
+                disposable.removeElementAt(i);
+                i--;
+            }
+        }
     }
     
-    public static void destroyThings() {
-        destroyThings(false, false);
-    }
+    public static final int NONFREE = 1, DISPOSABLE = 2, LOCKED = 4,
+            ALL = NONFREE | DISPOSABLE | LOCKED,
+            ALL_EXCEPT_LOCKED = ALL & (~LOCKED);
     
-    public static void destroyThings(boolean destroyNonFree, boolean destroyEverything) {
-        Enumeration<String> keys = cached.keys();
-        Enumeration<CachedContent> els = cached.elements();
+    public static void destroyThings(int mask) {
+        boolean destroyNonFree = (mask&NONFREE) == NONFREE;
+        boolean destroyLocked = (mask&LOCKED) == LOCKED;
+        
+        if((mask&DISPOSABLE) == DISPOSABLE) destroyDisposable(destroyLocked);
+        
+        Enumeration<String> keys = reusable.keys();
+        Enumeration<ReusableContent> els = reusable.elements();
         
         while(keys.hasMoreElements()) {
             String key = keys.nextElement();
-            CachedContent el = els.nextElement();
+            ReusableContent el = els.nextElement();
             
-            if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyEverything) {
+            if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyLocked) {
                 el.destroy();
-                cached.remove(key);
+                reusable.remove(key);
             }
         }
         
@@ -68,7 +83,7 @@ public class Asset {
     }
     
     public static Texture getTexture(String name) {
-        Texture tex = (Texture)cached.get("TEX_" + name);
+        Texture tex = (Texture)reusable.get("TEX_" + name);
         if(tex != null) {
             tex.using = true;
             return tex;
@@ -77,14 +92,14 @@ public class Asset {
         if(name.equals("null")) {
             tex = new Texture(0);
             tex.neverUnload = true;
-            cached.put("TEX_" + name, tex);
+            reusable.put("TEX_" + name, tex);
             return tex;
         }
         
         tex = Texture.createTexture(name);
         
         if(tex != null) {
-            cached.put("TEX_" + name, tex);
+            reusable.put("TEX_" + name, tex);
             return tex;
         }
         
@@ -92,7 +107,7 @@ public class Asset {
     }
     
     public static SoundBuffer getSoundBuffer(String file) {
-        SoundBuffer sound = (SoundBuffer)cached.get("SOUNDBUFF_" + file);
+        SoundBuffer sound = (SoundBuffer)reusable.get("SOUNDBUFF_" + file);
         if(sound != null) {
             sound.using = true;
             return sound;
@@ -100,11 +115,22 @@ public class Asset {
         
         sound = SoundBuffer.createBuffer(file);
         if(sound != null) {
-            cached.put("SOUNDBUFF_" + file, sound);
+            reusable.put("SOUNDBUFF_" + file, sound);
             return sound;
         }
         
         return null;
+    }
+    
+    public static SoundSource getSoundSource() {
+        return getSoundSource(null);
+    }
+    
+    public static SoundSource getSoundSource(String file) {
+        SoundSource source = file==null?new SoundSource():new SoundSource(file);
+        
+        disposable.add(source);
+        return source;
     }
 
     public static IniFile loadIni(String path, boolean sections) {

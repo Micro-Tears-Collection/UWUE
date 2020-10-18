@@ -52,12 +52,12 @@ public class Main {
         conf = Asset.loadIni("game.ini", true);
         Engine.setTitle(conf.get("GAME", "NAME"));
         
-        musPlayer = SoundSource.createMusicPlayer();
-        selectedS = new SoundSource("/sounds/select.ogg");
+        musPlayer = ((SoundSource) Asset.getSoundSource().lock()).beMusicPlayer();
+        selectedS = (SoundSource) Asset.getSoundSource("/sounds/select.ogg").lock();
         selectedS.buffer.neverUnload = true;
-        clickedS = new SoundSource("/sounds/click.ogg");
+        clickedS = (SoundSource) Asset.getSoundSource("/sounds/click.ogg").lock();
         clickedS.buffer.neverUnload = true;
-        gameStartS = new SoundSource("/sounds/game start.ogg");
+        gameStartS = (SoundSource) Asset.getSoundSource("/sounds/game start.ogg").lock();
         gameStartS.buffer.neverUnload = true;
         
         font = BMFont.loadFont(conf.get("HUD", "FONT"));
@@ -91,17 +91,12 @@ public class Main {
     private void destroy() {
         if(screen != null) screen.destroy();
         
-        e3d.destroy();
+        Scripting.save(luasave);
         
+        e3d.destroy();
         font.destroy();
         
-        musPlayer.destroy();
-        selectedS.destroy();
-        clickedS.destroy();
-        gameStartS.destroy();
-        
-        Asset.destroyVBOs();
-        Asset.destroyThings(true, false);
+        Asset.destroyThings(Asset.ALL);
         
         Engine.destroy();
     }
@@ -109,7 +104,6 @@ public class Main {
     public void stop() {
         run = false;
         nextScreen = null;
-        Scripting.save(luasave);
     }
 
     private void run() {

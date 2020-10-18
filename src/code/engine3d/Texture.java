@@ -1,6 +1,6 @@
 package code.engine3d;
 
-import code.utils.CachedContent;
+import code.utils.ReusableContent;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import org.lwjgl.system.MemoryUtil;
  *
  * @author Roman Lahin
  */
-public class Texture extends CachedContent {
+public class Texture extends ReusableContent {
     
     public int id;
     

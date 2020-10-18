@@ -1,6 +1,6 @@
 package code.audio;
 
-import code.utils.CachedContent;
+import code.utils.ReusableContent;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ import org.lwjgl.system.MemoryUtil;
  *
  * @author Roman Lahin
  */
-public class SoundBuffer extends CachedContent {
+public class SoundBuffer extends ReusableContent {
     
     public int id;
     

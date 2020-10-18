@@ -45,7 +45,7 @@ public class Menu extends Screen {
     public void destroy() {
         main.musPlayer.stop();
         main.musPlayer.free();
-        Asset.destroyThings(true, false);
+        Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
     }
 
     private void createMenu() {

@@ -14,7 +14,8 @@ import code.utils.StringTools;
 public class WorldLoader {
 
     public static void loadWorld(Game game, String folder) {
-        Asset.freeThings();
+        Asset.destroyDisposable(false);
+        Asset.free();
         
         IniFile lvl = Asset.loadIni(folder+"map.ini", true);
         
@@ -103,7 +104,7 @@ public class WorldLoader {
         }
         if(game.main.musPlayer.buffer != null) game.main.musPlayer.buffer.using = true;
         
-        Asset.destroyThings();
+        Asset.destroyThings(0);
     }
     
     public static void loadObjects(Game game, IniFile lvl, World world) {

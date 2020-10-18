@@ -68,8 +68,7 @@ public class Game extends Screen {
         main.musPlayer.setVolume(1);
         main.musPlayer.setPitch(1);
         
-        Asset.destroyVBOs();
-        Asset.destroyThings(true, false);
+        Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
     }
     
     public void tick() {
