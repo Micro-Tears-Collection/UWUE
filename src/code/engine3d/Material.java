@@ -38,7 +38,7 @@ public class Material {
         
         mipMapping = ini.getInt("mipmap", 1) == 1;
         
-        tmp = ini.getDef("blend", defBlend ? "blend" : "off");
+        tmp = ini.getDef("blend", defBlend ? "blend" : "0");
         
         if(tmp.equals("blend")) blendMode = BLEND;
         else if(tmp.equals("add")) blendMode = ADD;
@@ -62,7 +62,7 @@ public class Material {
         
         if(alphaTest) {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
-            GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
+            GL11.glAlphaFunc(GL11.GL_GREATER, blendMode == OFF?0.5f:0);
         } else {
             GL11.glDisable(GL11.GL_ALPHA_TEST);
             GL11.glAlphaFunc(GL11.GL_ALWAYS, 0);
