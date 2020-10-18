@@ -14,7 +14,7 @@ import code.utils.StringTools;
 public class WorldLoader {
 
     public static void loadWorld(Game game, String folder) {
-        Asset.destroyDisposable(false);
+        Asset.destroyThings(Asset.DISPOSABLE);
         Asset.free();
         
         IniFile lvl = Asset.loadIni(folder+"map.ini", true);

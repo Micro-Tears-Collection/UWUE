@@ -28,7 +28,7 @@ public class Asset {
         }
     }
     
-    public static void destroyDisposable(boolean destroyEverything) {
+    private static void destroyDisposable(boolean destroyEverything) {
         for(Integer vbo : vbos) {
             GL15.glDeleteBuffers(vbo.intValue());
         }
@@ -44,8 +44,8 @@ public class Asset {
         }
     }
     
-    public static final int NONFREE = 1, DISPOSABLE = 2, LOCKED = 4,
-            ALL = NONFREE | DISPOSABLE | LOCKED,
+    public static final int REUSABLE = 1, DISPOSABLE = 2, NONFREE = 4, LOCKED = 8,
+            ALL = REUSABLE | DISPOSABLE | NONFREE | LOCKED,
             ALL_EXCEPT_LOCKED = ALL & (~LOCKED);
     
     public static void destroyThings(int mask) {
@@ -54,16 +54,18 @@ public class Asset {
         
         if((mask&DISPOSABLE) == DISPOSABLE) destroyDisposable(destroyLocked);
         
-        Enumeration<String> keys = reusable.keys();
-        Enumeration<ReusableContent> els = reusable.elements();
-        
-        while(keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            ReusableContent el = els.nextElement();
-            
-            if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyLocked) {
-                el.destroy();
-                reusable.remove(key);
+        if((mask&REUSABLE) == REUSABLE) {
+            Enumeration<String> keys = reusable.keys();
+            Enumeration<ReusableContent> els = reusable.elements();
+
+            while(keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                ReusableContent el = els.nextElement();
+
+                if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyLocked) {
+                    el.destroy();
+                    reusable.remove(key);
+                }
             }
         }
         
