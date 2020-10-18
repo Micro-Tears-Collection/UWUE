@@ -1,5 +1,6 @@
 package code.utils;
 
+import code.Engine;
 import code.game.Main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -86,7 +87,7 @@ public class Scripting {
             if(fos != null) try {
                 fos.close();
             } catch(Exception ee) {}
-            e.printStackTrace();
+            Engine.printError(e);
         }
     }
     
@@ -152,7 +153,7 @@ public class Scripting {
             if(fis != null) try {
                 fis.close();
             } catch(Exception ee) {}
-            e.printStackTrace();
+            Engine.printError(e);
         }
         
         return save;

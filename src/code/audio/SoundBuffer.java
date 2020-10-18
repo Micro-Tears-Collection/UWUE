@@ -1,5 +1,6 @@
 package code.audio;
 
+import code.Engine;
 import code.utils.ReusableContent;
 import java.io.DataInputStream;
 import java.io.File;
@@ -44,7 +45,7 @@ public class SoundBuffer extends ReusableContent {
             bruh.put(data);
             bruh.rewind();
         } catch (Exception e) {
-            e.printStackTrace();
+            Engine.printError(e);
             AL10.alDeleteBuffers(soundBuffer);
             if(bruh != null) MemoryUtil.memFree(bruh);
             return null;

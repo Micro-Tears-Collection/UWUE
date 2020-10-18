@@ -1,5 +1,6 @@
 package code.utils;
 
+import code.Engine;
 import code.audio.SoundBuffer;
 import code.audio.SoundSource;
 import code.engine3d.Material;
@@ -150,7 +151,7 @@ public class Asset {
             sn.close();
         } catch(Exception e) {
             System.out.println("Can't load "+f.getAbsolutePath());
-            e.printStackTrace();
+            Engine.printError(e);
         }
         
         IniFile ini = new IniFile(new Hashtable());

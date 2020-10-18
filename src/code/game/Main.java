@@ -231,7 +231,7 @@ public class Main {
                     dis.close();
                 } catch(Exception ee) {}
             }
-            e.printStackTrace();
+            Engine.printError(e);
         }
     }
 
@@ -240,7 +240,7 @@ public class Main {
             LuaValue chunk = lua.load(script);
             return chunk.call();
         } catch (Exception e) {
-            e.printStackTrace();
+            Engine.printError(e);
         }
         
         return LuaValue.NIL;

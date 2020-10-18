@@ -6,6 +6,9 @@ import code.game.world.entities.Player;
 import code.utils.Keys;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
@@ -38,6 +41,7 @@ public class Engine {
     public static ResizeCallback resizeCallback;
     
     public static void main(String[] args) {
+        System.setOut(new Log(System.out));
         System.out.println("ultra wacky\n"
                 + "UHHHHHHHHHHHHHHHHHHHHHHH.....\n"
                 + "engine\n\n"
@@ -167,8 +171,51 @@ public class Engine {
 
             ImageIO.write(image, "PNG", file);
         } catch (Exception e) {
-            e.printStackTrace();
+            printError(e);
         }
     }
+    
+    public static void printError(Throwable t) {
+        t.printStackTrace(System.out);
+    }
 
+}
+
+class Log extends PrintStream {
+    
+    FileOutputStream fos;
+
+    public Log(PrintStream ps) {
+        super(ps);
+        
+        try {
+            File log = new File("log.txt");
+            if(!log.exists()) log.createNewFile();
+            fos = new FileOutputStream(log);
+        } catch(Exception e) {
+            e.printStackTrace(ps);
+        }
+    }
+    
+    public void write(byte[] data, int off, int len) {
+        super.write(data, off, len);
+        try{
+            fos.write(data, off, len);
+        } catch(Exception e) {}
+    }
+    
+    public void write(byte[] data) {
+        try{
+            super.write(data);
+            fos.write(data);
+        } catch(Exception e) {}
+    }
+    
+    public void close() {
+        super.close();
+        try{
+            fos.close();
+        } catch(Exception e) {}
+    }
+    
 }

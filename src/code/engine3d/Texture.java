@@ -1,5 +1,6 @@
 package code.engine3d;
 
+import code.Engine;
 import code.utils.ReusableContent;
 import java.io.DataInputStream;
 import java.io.File;
@@ -58,7 +59,7 @@ public class Texture extends ReusableContent {
             
             return tex;
         } catch (Exception e) {
-            e.printStackTrace();
+            Engine.printError(e);
         }
         
         return null;

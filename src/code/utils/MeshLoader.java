@@ -1,5 +1,6 @@
 package code.utils;
 
+import code.Engine;
 import code.engine3d.Material;
 import code.engine3d.Mesh;
 import code.math.Vector3D;
@@ -261,9 +262,9 @@ public class MeshLoader {
             sn.close();
             
             return meshes.toArray(new Mesh[meshes.size()]);
-        } catch (Exception ex) {
+        } catch (Exception e) {
             System.out.println(line);
-            ex.printStackTrace();
+            Engine.printError(e);
         }
         
         return null;

@@ -1,5 +1,6 @@
 package code.utils.font;
 
+import code.Engine;
 import code.engine3d.Material;
 import code.engine3d.Texture;
 import java.io.DataInputStream;
@@ -151,7 +152,7 @@ public class BMFont {
             
             return font;
         } catch(Exception e) {
-            e.printStackTrace();
+            Engine.printError(e);
         }
         
         return null;
