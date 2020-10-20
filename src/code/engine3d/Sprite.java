@@ -31,7 +31,7 @@ public class Sprite extends Renderable {
     
     private void set(Vector3D pos, Matrix4f tmp, Matrix4f invCam) {
         if(tmp != null) tmp.setTranslation(pos.x, pos.y, pos.z);
-        tmp.translate(0, beginy, 0f);
+        if(billboard) tmp.translate(0, beginy, 0);
         
         invCam.mul(tmp);
         invCam.set(0, 0, 1); invCam.set(2, 0, 0);
@@ -47,8 +47,9 @@ public class Sprite extends Renderable {
         invCam.scale(size, sizey, size);
         invCam.get(drawMatrix);
         drawMatrix[12] -= size/2;
+        if(!billboard) drawMatrix[13] += beginy;
         
-        z = 0.5f * drawMatrix[1] + 0.5f * drawMatrix[5] + drawMatrix[13];
+        z = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
     }
     
     public float getZ() {
