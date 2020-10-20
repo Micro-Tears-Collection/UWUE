@@ -1,11 +1,13 @@
 package code.game.world;
 
+import code.audio.SoundSource;
 import code.utils.Asset;
 import code.engine3d.Mesh;
 import code.utils.MeshLoader;
 import code.game.Game;
 import code.utils.IniFile;
 import code.utils.StringTools;
+import java.util.Hashtable;
 
 /**
  *
@@ -17,7 +19,12 @@ public class WorldLoader {
         Asset.destroyThings(Asset.DISPOSABLE);
         Asset.free();
         
-        IniFile lvl = Asset.loadIni(folder+"map.ini", true);
+        String path = folder;
+        if(!folder.toLowerCase().endsWith(".ini")) path += "map.ini";
+        
+        String[] lines = Asset.loadLines(path);
+        IniFile lvl = new IniFile(new Hashtable());
+        lvl.set(lines, true);
         
         game.player.pos.set(0,0,0);
         if(lvl.groupExists("PLAYER")) {
@@ -73,7 +80,8 @@ public class WorldLoader {
             }
         }
         
-        loadObjects(game, lvl, world);
+        Object[] objGroups = IniFile.createGroups(lines);
+        loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world);
         
         game.player.rotX = game.player.rotY = 0;
         
@@ -81,114 +89,51 @@ public class WorldLoader {
         world.objects.add(game.player);
         
         if(lvl.groupExists("MUSIC")) {
-            String tmp = lvl.get("MUSIC","PITCH");
-            if(tmp != null) game.main.musPlayer.setPitch(StringTools.parseFloat(tmp));
+            SoundSource player = game.main.musPlayer;
             
-            boolean rewinded = false;
-            tmp = lvl.get("MUSIC","PATH");
-            if(tmp != null && 
-                    (lvl.getInt("MUSIC", "DONT_CHANGE_MUSIC", 0) == 0 || !game.main.musPlayer.isPlaying())) {
-                game.main.musPlayer.stop();
-                game.main.musPlayer.loadFile(tmp);
-                game.main.musPlayer.start();
-                rewinded = true;
+            String tmp = lvl.get("MUSIC", "PITCH");
+            if(tmp != null) player.setPitch(StringTools.parseFloat(tmp));
+            
+            boolean playing = player.isPlaying();
+            boolean dontChange = lvl.getInt("MUSIC", "DONT_CHANGE", 0) == 1;
+            
+            tmp = lvl.get("MUSIC", "PATH");
+            if(tmp != null && !(playing && (dontChange || tmp.equals(player.soundName)))) {
+                player.stop();
+                if(player.buffer != null) player.free();
+                player.loadFile(tmp);
+                player.start();
             }
             if(lvl.getInt("MUSIC", "STOP", 0) == 1) {
-                game.main.musPlayer.stop();
-                game.main.musPlayer.free();
+                player.stop();
+                player.free();
             }
             
-            if(!rewinded && lvl.getInt("MUSIC", "REWIND", 0) == 1) {
-                game.main.musPlayer.rewind();
-            }
+            if(lvl.getInt("MUSIC", "REWIND", 0) == 1) player.rewind();
         }
         if(game.main.musPlayer.buffer != null) game.main.musPlayer.buffer.using = true;
         
-        Asset.destroyThings(0);
+        Asset.destroyThings(Asset.REUSABLE);
     }
     
-    public static void loadObjects(Game game, IniFile lvl, World world) {
-        //todo
+    public static void loadObjects(String[] names, IniFile[] objs, Game game, World world) {
         
-        /*String[] objs = lvl.keys();
-        Hashtable[] tables = lvl.hashtables();
-        
-        Group sprites = new Group();
-        
-        Fog blackFog = null;
-        Fog grayFog = null;
-        Fog whiteFog = null;
-        if(game.fog!=null) {
-            blackFog = (Fog)game.fog.duplicate();
-            blackFog.setColor(0);
-            grayFog = (Fog)game.fog.duplicate();
-            grayFog.setColor(0x808080);
-            whiteFog = (Fog)game.fog.duplicate();
-            whiteFog.setColor(0xffffff);
+        for(int i=0; i<names.length; i++) {
+            String name = names[i];
+            if(!name.startsWith("OBJECT ")) continue;
+            
+            String objType = name.substring(7);
+            IniFile obj = objs[i];
+            
+            loadObject(game, world, objType, obj);
         }
-        Material m = new Material();
-        m.setColor(Material.AMBIENT, 0xff000000);
-        m.setColor(Material.DIFFUSE, 0xff000000);
-        m.setColor(Material.EMISSIVE, 0xffffffff);
         
-        for(int i=0;i<objs.length;i++) {
-            String objectType = objs[i];
-            if(!objectType.startsWith("OBJECT_")) continue;
-            
-            Hashtable table = tables[i];
-            Vector3D pos = new Vector3D((String)table.get("POS"),',');
-            
-            if(objectType.startsWith("OBJECT_SPRITE")) {
-                int blendMode = CompositingMode.REPLACE;
-                CompositingMode cm = new CompositingMode();
-                Appearance ap = new Appearance();
-                ap.setFog(game.fog);
-                ap.setCompositingMode(cm);
-                
-                String tmp = (String)table.get("BLEND_MODE");
-                if(tmp!=null) {
-                    if(tmp.equals("ALPHA")) blendMode = CompositingMode.ALPHA;
-                    else if(tmp.equals("ALPHA_ADD")) {
-                        blendMode = CompositingMode.ALPHA_ADD;
-                        ap.setFog(blackFog);
-                    }
-                    else if(tmp.equals("MODULATE")) {
-                        blendMode = CompositingMode.MODULATE;
-                        ap.setFog(whiteFog);
-                    }
-                    else if(tmp.equals("MODULATE_X2")) {
-                        blendMode = CompositingMode.MODULATE_X2;
-                        ap.setFog(grayFog);
-                    }
-                }
-                    
-                cm.setBlending(blendMode);
-                
-                Image2D img = Asset.loadImage2D((String)table.get("TEX"),blendMode==CompositingMode.ALPHA);
-                
-                Sprite3D spr = new Sprite3D(true,img,ap);
-                
-                tmp = (String)table.get("SIZE");
-                if(tmp!=null) {
-                    float[] sizes = StringTools.cutOnFloats(tmp, ',');
-                    float scalex = 1; float scaley = 1;
-                    
-                    if(sizes.length==2) {
-                        scalex = sizes[0]; scaley = sizes[1];
-                    } else {
-                        scalex = scaley = sizes[0];
-                    }
-                    
-                    spr.setScale(scalex, scaley, 1);
-                }
-                
-                spr.setTranslation(pos.x, pos.y, pos.z);
-                        
-                sprites.addChild(spr);
-            }
-            
-        }
-        if(sprites.getChildCount()>0) world.addChild(sprites);*/
+    }
+
+    private static void loadObject(Game game, World world, String objType, IniFile obj) {
+        //yeah...
+        
+        
     }
 
 }

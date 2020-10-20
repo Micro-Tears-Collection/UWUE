@@ -135,8 +135,8 @@ public class Asset {
         disposable.add(source);
         return source;
     }
-
-    public static IniFile loadIni(String path, boolean sections) {
+    
+    public static String[] loadLines(String path) {
         File f = new File("data", path);
         
         Vector<String> lines = new Vector();
@@ -154,8 +154,14 @@ public class Asset {
             Engine.printError(e);
         }
         
+        return lines.toArray(new String[lines.size()]);
+    }
+
+    public static IniFile loadIni(String path, boolean sections) {
+        String[] lines = loadLines(path);
+        
         IniFile ini = new IniFile(new Hashtable());
-        ini.set(lines.toArray(new String[lines.size()]), sections);
+        ini.set(lines, sections);
         
         return ini;
     }

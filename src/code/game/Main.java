@@ -163,13 +163,14 @@ public class Main {
                 consoleText = consoleText.substring(0, consoleText.length()-1);
             
         } else if(consoleOpen && Keys.isThatBinding(key, Keys.OK)) {
-            consoleOpen ^= true;
+            consoleOpen = false;
             
             LuaValue val = runScript(consoleText);
             System.out.println("bool " + val.toboolean());
             System.out.println("int " + val.toint());
             System.out.println("num " + val.todouble());
             System.out.println("str " + val.tojstring());
+            consoleText = null;
         }
         
         if(consoleOpen) return;

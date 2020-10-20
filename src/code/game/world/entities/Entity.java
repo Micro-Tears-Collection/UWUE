@@ -11,6 +11,8 @@ public class Entity {
     
     public Vector3D pos = new Vector3D();
     
+    public String name, unicalID;
+    
     public void update(World world) {}
     public void physicsUpdate(World world) {}
     public void collisionTest(Entity entity) {}

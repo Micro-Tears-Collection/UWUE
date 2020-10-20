@@ -39,16 +39,13 @@ public class Scripting {
             public LuaValue call(LuaValue file, LuaValue restart)  {
                 String name = file.toString();
                 
-                if(!name.equals(main.musPlayer.soundName) || restart.toboolean()) {
-                    
+                if(!name.equals(main.musPlayer.soundName)) {
                     main.musPlayer.stop();
-                    if(!name.equals(main.musPlayer.soundName)) {
-                        main.musPlayer.free();
-                        main.musPlayer.loadFile(name);
-                    }
+                    main.musPlayer.free();
+                    main.musPlayer.loadFile(name);
                     main.musPlayer.start();
-                    
-                }
+                } else if(restart.toboolean()) main.musPlayer.rewind();
+                
                 return LuaValue.NIL;
             }
         });

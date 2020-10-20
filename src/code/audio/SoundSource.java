@@ -87,7 +87,9 @@ public class SoundSource extends DisposableContent {
     }
     
     public boolean isPlaying() {
-        return AL10.alGetInteger(AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+        int[] out = new int[1];
+        AL10.alGetSourcei(soundSource, AL10.AL_SOURCE_STATE, out);
+        return out[0] == AL10.AL_PLAYING;
     }
     
     public void rewind() {
