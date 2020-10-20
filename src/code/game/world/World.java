@@ -136,7 +136,7 @@ public class World {
 
             for(Mesh mesh : skybox) {
                 mesh.setMatrix(tmp);
-                mesh.render();
+                mesh.render(e3d);
             }
             
             e3d.clearZbuffer();

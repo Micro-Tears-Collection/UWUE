@@ -20,9 +20,9 @@ public class E3D {
     public float fovX, fovY;
     public int w, h;
     
-    public Vector<Mesh> toRender, preDraw, postDraw;
+    public Vector<Renderable> toRender, preDraw, postDraw;
     
-    int rectCoordVBO, rectuvVBO, windowColVBO, arrowVBO;
+    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO;
     
     public boolean mode2D;
     
@@ -55,6 +55,14 @@ public class E3D {
                     1, 1, 0, 1
                 }, GL15.GL_STATIC_DRAW);
         
+        rectuvMVBO = GL15.glGenBuffers(); //Creates a VBO ID
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvMVBO); //Loads the current VBO to store the data
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+                new short[]{
+                    0, 1, 1, 1,
+                    1, 0, 0, 0
+                }, GL15.GL_STATIC_DRAW);
+        
         windowColVBO = GL15.glGenBuffers(); //Creates a VBO ID
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, windowColVBO); //Loads the current VBO to store the data
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
@@ -69,6 +77,7 @@ public class E3D {
     public void destroy() {
         GL15.glDeleteBuffers(rectCoordVBO);
         GL15.glDeleteBuffers(rectuvVBO);
+        GL15.glDeleteBuffers(rectuvMVBO);
         GL15.glDeleteBuffers(windowColVBO);
         GL15.glDeleteBuffers(arrowVBO);
     }
@@ -166,13 +175,13 @@ public class E3D {
     public void renderVectors() {
         //Finally draw 3d
         sort(preDraw);
-        for(Mesh object : preDraw) object.render();
+        for(Renderable object : preDraw) object.render(this);
         
         sort(toRender);
-        for(Mesh object : toRender) object.render();
+        for(Renderable object : toRender) object.render(this);
         
         sort(postDraw);
-        for(Mesh object : postDraw) object.render();
+        for(Renderable object : postDraw) object.render(this);
         
         preDraw.removeAllElements();
         toRender.removeAllElements();
@@ -314,14 +323,14 @@ public class E3D {
         GL11.glPopMatrix();
     }
     
-    private static void sort(Vector<Mesh> list) {
+    private static void sort(Vector<Renderable> list) {
         for(int i=list.size()-2; i>=0; i--) {
             for(int x=0; x<=i; x++) {
-                Mesh m1 = list.elementAt(x);
-                Mesh m2 = list.elementAt(x+1);
+                Renderable m1 = list.elementAt(x);
+                Renderable m2 = list.elementAt(x+1);
                 
                 //m1 ближе чем m2
-                if(-m1.middle.z < -m2.middle.z && m1.orderOffset >= m2.orderOffset) {
+                if(-m1.getZ() < -m2.getZ() && m1.orderOffset >= m2.orderOffset) {
                     list.setElementAt(m2, x);
                     list.setElementAt(m1, x+1);
                 }

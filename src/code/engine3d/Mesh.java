@@ -10,11 +10,9 @@ import org.lwjgl.opengl.GL15;
  *
  * @author Roman Lahin
  */
-public class Mesh {
-    public static final int PREDRAW = 1, POSTDRAW = 2;
+public class Mesh extends Renderable {
     
     public String name;
-    public int drawOrder, orderOffset;
     public float[] drawMatrix = new float[16];
 
     public Vector3D min, max;
@@ -87,30 +85,32 @@ public class Mesh {
     
     public void setMatrix(float[] put) {
         System.arraycopy(put, 0, drawMatrix, 0, 16);
+        updateZ();
     }
     
-    public void setMatrix(float[] put, Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
+    public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
         tmp.identity();
         tmp.rotateY((float) Math.toRadians(rot.x));
         tmp.rotateX((float) Math.toRadians(rot.y));
         tmp.rotateX((float) Math.toRadians(rot.z));
         tmp.setTranslation(pos.x, pos.y, pos.z);
         
-        System.arraycopy(tmp.get(put), 0, drawMatrix, 0, 16);
+        tmp.get(drawMatrix);
+        updateZ();
     }
     
-    public void prepareRender(E3D e3d) {
+    private void updateZ() {
         middle.set(min);
         middle.add(max.x, max.y, max.z);
         middle.mul(0.5f, 0.5f, 0.5f);
         middle.transform(drawMatrix);
-        
-        if(drawOrder == PREDRAW) e3d.preDraw.add(this);
-        else if(drawOrder == POSTDRAW) e3d.postDraw.add(this);
-        else e3d.toRender.add(this);
     }
     
-    public void render() {
+    public float getZ() {
+        return middle.z;
+    }
+    
+    public void render(E3D e3d) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadMatrixf(drawMatrix);
             
