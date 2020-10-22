@@ -173,7 +173,9 @@ public class MeshLoader {
                     }
                 } else {
                     
-                    if(currentMesh != null) {
+                    boolean newMesh = line.startsWith("o ") || line.startsWith("g ");
+                    
+                    if((newMesh || line.equals("end")) && currentMesh != null) {
                         if(materials.get("null").isEmpty()) materials.remove("null");
                         
                         Set keys = materials.keySet();
@@ -194,7 +196,6 @@ public class MeshLoader {
                             uvm[i] = new float[meshFaces.size() * 3 * 2];
                             normals[i] = new float[meshFaces.size() * 3 * 3];
                             int pp = 0, uvp = 0, np = 0;
-                            
                             for(int x=0; x<meshFaces.size(); x++) {
                                 Face face = meshFaces.elementAt(x);
                                 
@@ -233,13 +234,7 @@ public class MeshLoader {
                         currentMesh = null;
                     }
                     
-                    if(line.startsWith("v ")) {
-                        verts.add(StringTools.cutOnFloats(line.substring(2), ' '));
-                    } else if(line.startsWith("vn ")) {
-                        normalsV.add(StringTools.cutOnFloats(line.substring(3), ' '));
-                    } else if(line.startsWith("vt ")) {
-                        uvs.add(StringTools.cutOnFloats(line.substring(3), ' '));
-                    } else if(line.startsWith("o ") || line.startsWith("g ")) {
+                    if(newMesh) {
                         currentMesh = new Mesh();
                         
                         String[] lines = StringTools.cutOnStrings(line.substring(2),';');
@@ -255,6 +250,12 @@ public class MeshLoader {
                         
                         min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
                         max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+                    } else if(line.startsWith("v ")) {
+                        verts.add(StringTools.cutOnFloats(line.substring(2), ' '));
+                    } else if(line.startsWith("vn ")) {
+                        normalsV.add(StringTools.cutOnFloats(line.substring(3), ' '));
+                    } else if(line.startsWith("vt ")) {
+                        uvs.add(StringTools.cutOnFloats(line.substring(3), ' '));
                     }
                 }
             }

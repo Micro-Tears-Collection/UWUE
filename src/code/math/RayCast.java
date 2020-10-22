@@ -68,7 +68,7 @@ public class RayCast {
                 if(dis != Float.MAX_VALUE) {
                     float distance = dirLen * dis;
                     if(distance < ray.distance) {
-                        ray.set(true, distance, colPoint);
+                        ray.set(mesh, t, i, distance, colPoint);
                     }
                 }
             }

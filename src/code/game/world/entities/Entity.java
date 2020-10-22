@@ -7,7 +7,7 @@ import code.math.Vector3D;
  *
  * @author Roman Lahin
  */
-public class Entity {
+public class Entity extends ActivableObject {
     
     public Vector3D pos = new Vector3D();
     
