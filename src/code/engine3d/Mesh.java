@@ -15,8 +15,10 @@ public class Mesh extends Renderable {
     public String name;
     public float[] drawMatrix = new float[16];
 
+    private Vector3D omin, omax;
     public Vector3D min, max;
     public Vector3D middle = new Vector3D();
+    
     public int[] vertsID, uvsID, normals, vertsCount;
     public Material[] mats;
     
@@ -38,22 +40,10 @@ public class Mesh extends Renderable {
         this.vertsCount = vertex;
         this.mats = mats;
         
+        this.omin = new Vector3D(min);
+        this.omax = new Vector3D(max);
         this.min = min;
         this.max = max;
-    }
-    
-    public void load(IniFile ini) {
-        String tmp = ini.get("order");
-        
-        if(tmp != null) {
-            if(tmp.startsWith("pre")) {
-                drawOrder = PREDRAW;
-                if(tmp.length() > 3) orderOffset = Integer.valueOf(tmp.substring(3));
-            } else if(tmp.startsWith("post")) {
-                drawOrder = POSTDRAW;
-                if(tmp.length() > 4) orderOffset = Integer.valueOf(tmp.substring(4));
-            } else orderOffset = Integer.valueOf(tmp);
-        }
     }
     
     public void setPhysics(float[][] xyz) {
@@ -83,20 +73,67 @@ public class Mesh extends Renderable {
         }
     }
     
-    public void setMatrix(float[] put) {
-        System.arraycopy(put, 0, drawMatrix, 0, 16);
+    public void setMatrix(float[] invcam) {
+        System.arraycopy(invcam, 0, drawMatrix, 0, 16);
+        
+        min.set(omin); max.set(omax);
+        
         updateZ();
     }
     
     public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
         tmp.identity();
-        tmp.rotateY((float) Math.toRadians(rot.x));
-        tmp.rotateX((float) Math.toRadians(rot.y));
-        tmp.rotateX((float) Math.toRadians(rot.z));
+        if(rot != null) {
+            tmp.rotateX((float) Math.toRadians(rot.x));
+            tmp.rotateY((float) Math.toRadians(rot.y));
+            tmp.rotateZ((float) Math.toRadians(rot.z));
+        }
         tmp.setTranslation(pos.x, pos.y, pos.z);
         
-        tmp.get(drawMatrix);
+        updateBB(tmp.get(drawMatrix));
+        
+        Matrix4f tmp2 = new Matrix4f(invCam);
+        tmp2.mul(tmp);
+        tmp2.get(drawMatrix);
+        
         updateZ();
+    }
+    
+    private void updateBB(float[] mat) {
+        Vector3D v000 = new Vector3D(omin.x, omin.y, omin.z);
+        Vector3D v001 = new Vector3D(omin.x, omin.y, omax.z);
+        Vector3D v010 = new Vector3D(omin.x, omax.y, omin.z);
+        Vector3D v011 = new Vector3D(omin.x, omax.y, omax.z);
+        
+        Vector3D v100 = new Vector3D(omax.x, omin.y, omin.z);
+        Vector3D v101 = new Vector3D(omax.x, omin.y, omax.z);
+        Vector3D v110 = new Vector3D(omax.x, omax.y, omin.z);
+        Vector3D v111 = new Vector3D(omax.x, omax.y, omax.z);
+        
+        v000.transform(mat); v001.transform(mat); v010.transform(mat); v011.transform(mat);
+        v100.transform(mat); v101.transform(mat); v110.transform(mat); v111.transform(mat);
+        
+        float mx = Math.min(v000.x, v001.x);
+        mx = Math.min(mx, Math.min(v010.x, v011.x));
+        
+        float my = Math.min(v000.y, v001.y);
+        my = Math.min(my, Math.min(v010.y, v011.y));
+        
+        float mz = Math.min(v000.z, v001.z);
+        mz = Math.min(mz, Math.min(v010.z, v011.z));
+        
+        min.set(mx, my, mz);
+        
+        mx = Math.max(v000.x, v001.x);
+        mx = Math.max(mx, Math.min(v010.x, v011.x));
+        
+        my = Math.max(v000.y, v001.y);
+        my = Math.max(my, Math.min(v010.y, v011.y));
+        
+        mz = Math.max(v000.z, v001.z);
+        mz = Math.max(mz, Math.min(v010.z, v011.z));
+        
+        max.set(mx, my, mz);
     }
     
     private void updateZ() {

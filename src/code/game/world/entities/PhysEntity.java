@@ -1,6 +1,7 @@
 package code.game.world.entities;
 
 import code.game.world.World;
+import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Vector3D;
 import code.utils.FPS;
@@ -82,7 +83,7 @@ public class PhysEntity extends Entity {
             tmpRay.start.add(0, height, 0);
             tmpRay.dir.set(0, -height, 0);
 
-            world.rayCast(tmpRay);
+            world.rayCast(tmpRay, true);
             onGround = tmpRay.collision;
             if(tmpRay.collision) {
                 pos.y = tmpRay.collisionPoint.y;
@@ -143,6 +144,26 @@ public class PhysEntity extends Entity {
         float oy = speed.y; speed.y = 0;
         if(speed.lengthSquared() > maxSpeed * maxSpeed) speed.setLength(maxSpeed);
         speed.y = oy;
+    }
+    
+    public boolean rayCast(Ray ray, boolean onlyMeshes) {
+        if(onlyMeshes) return false;
+        
+        Vector3D tmp = new Vector3D(pos);
+        tmp.add(0, height-radius, 0);
+        
+        float dist = MathUtils.distanceToRay(tmp, ray.start, ray.dir);
+        if(dist > radius*radius) return false;
+        
+        dist = Math.max(0, ray.start.distanceSqr(tmp) - radius*radius);
+        
+        if(dist < ray.dir.lengthSquared() && dist < ray.distance*ray.distance) {
+            ray.distance = (float) Math.sqrt(dist);
+            ray.mesh = null;
+            return true;
+        }
+        
+        return false;
     }
 
 }

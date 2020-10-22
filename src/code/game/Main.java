@@ -207,11 +207,21 @@ public class Main {
         return font.getHeight()/2f;
     }
     
-    public void runScriptFromFile(String path) {
+    public LuaValue loadScript(String script) {
+        try {
+            return lua.load(script);
+        } catch (Exception e) {
+            Engine.printError(e);
+        }
+        
+        return null;
+    }
+    
+    public LuaValue loadScriptFromFile(String path) {
         File file = new File("data", path);
         if(!file.exists()) {
             System.out.println("No such file "+file.getAbsolutePath()+"!");
-            return;
+            return null;
         }
         
         DataInputStream dis = null;
@@ -224,7 +234,7 @@ public class Main {
             
             String script = new String(chars);
             LuaValue chunk = lua.load(script);
-            chunk.call();
+            return chunk;
             
         } catch(Exception e) {
             if(dis != null) {
@@ -234,11 +244,28 @@ public class Main {
             }
             Engine.printError(e);
         }
+        
+        return null;
+    }
+    
+    public void runScriptFromFile(String path) {
+        LuaValue chunk = loadScriptFromFile(path);
+        if(chunk != null) chunk.call();
     }
 
     public LuaValue runScript(String script) {
         try {
             LuaValue chunk = lua.load(script);
+            return chunk.call();
+        } catch (Exception e) {
+            Engine.printError(e);
+        }
+        
+        return LuaValue.NIL;
+    }
+
+    public LuaValue runScript(LuaValue chunk) {
+        try {
             return chunk.call();
         } catch (Exception e) {
             Engine.printError(e);

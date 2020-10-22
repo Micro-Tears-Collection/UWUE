@@ -56,6 +56,15 @@ public class Vector3D {
         y = xx * matrix[1] + yy * matrix[5] + zz * matrix[9] + matrix[13];
         z = xx * matrix[2] + yy * matrix[6] + zz * matrix[10] + matrix[14];
     }
+    
+    public void transformNoOffset(float[] matrix) {
+        float xx = x, yy = y, zz = z;
+        
+        //column-major order sucks
+        x = xx * matrix[0] + yy * matrix[4] + zz * matrix[8];
+        y = xx * matrix[1] + yy * matrix[5] + zz * matrix[9];
+        z = xx * matrix[2] + yy * matrix[6] + zz * matrix[10];
+    }
 
     public void interpolate(Vector3D v1, Vector3D v2, int i, int max) {
         x = (v1.x * (max - i) + v2.x * i) / max;
@@ -84,6 +93,25 @@ public class Vector3D {
         x *= i;
         y *= i;
         z *= i;
+    }
+    
+    public float distance(Vector3D v) {
+        return (float) Math.sqrt(distanceSqr(v));
+    }
+    
+    public float distanceSqr(Vector3D v) {
+        return (x-v.x)*(x-v.x) + (y-v.y)*(y-v.y) + (z-v.z)*(z-v.z);
+    }
+    
+    public void setDirection(float rotX, float rotY) {
+        final float xa = 1f;
+        float ya = xa * (float) Math.cos(Math.toRadians(rotX));
+        float yaYDSin = ya * (float) -Math.sin(Math.toRadians(rotY));
+        float yaYDCos = ya * (float) -Math.cos(Math.toRadians(rotY));
+
+        x = yaYDSin;
+        y = xa * (float) Math.sin(Math.toRadians(rotX));
+        z = yaYDCos;
     }
 
 }

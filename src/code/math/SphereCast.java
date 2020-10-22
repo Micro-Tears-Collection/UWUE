@@ -20,6 +20,10 @@ public class SphereCast {
     }
     
     public static boolean sphereCast(Mesh mesh, Vector3D pos, float rad) {
+        return SphereCast.sphereCast(mesh, null, pos, rad);
+    }
+    
+    public static boolean sphereCast(Mesh mesh, float[] mat, Vector3D pos, float rad) {
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         
@@ -34,18 +38,24 @@ public class SphereCast {
                 float bx = verts[i + 3], by = verts[i + 4], bz = verts[i + 5];
                 float ax = verts[i + 6], ay = verts[i + 7], az = verts[i + 8];
 
-                if(max(ax, bx, cx) < pos.x - rad) continue;
-                if(min(ax, bx, cx) > pos.x + rad) continue;
-                if(max(az, bz, cz) < pos.z - rad) continue;
-                if(min(az, bz, cz) > pos.z + rad) continue;
-                if(max(ay, by, cy) < pos.y - rad) continue;
-                if(min(ay, by, cy) > pos.y + rad) continue;
-
                 v1.set(ax, ay, az);
                 v2.set(bx, by, bz);
                 v3.set(cx, cy, cz);
+                if(mat != null) {
+                    v1.transform(mat);
+                    v2.transform(mat);
+                    v3.transform(mat);
+                }
+
+                if(max(v1.x, v2.x, v3.x) < pos.x - rad) continue;
+                if(min(v1.x, v2.x, v3.x) > pos.x + rad) continue;
+                if(max(v1.y, v2.y, v3.y) < pos.y - rad) continue;
+                if(min(v1.y, v2.y, v3.y) > pos.y + rad) continue;
+                if(max(v1.z, v2.z, v3.z) < pos.z - rad) continue;
+                if(min(v1.z, v2.z, v3.z) > pos.z + rad) continue;
                 
                 nor.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
+                if(mat != null) nor.transformNoOffset(mat);
                 float dis = distanceSphereToPolygon(v1, v2, v3, nor, pos, rad);
 
                 if(dis != Float.MAX_VALUE && dis > 0) {

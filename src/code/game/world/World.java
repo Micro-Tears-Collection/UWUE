@@ -3,6 +3,7 @@ package code.game.world;
 import code.audio.AudioEngine;
 import code.engine3d.E3D;
 import code.engine3d.Mesh;
+import code.game.Main;
 import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 import code.math.Culling;
@@ -98,26 +99,49 @@ public class World {
     }
 
     public boolean sphereCast(Vector3D sphere, float radius) {
-        if(renderNodes.isEmpty()) return false;
-        
+        return sphereCast(sphere, radius, null);
+    }
+
+    public boolean sphereCast(Vector3D sphere, float radius, Entity skip) {
         boolean col = false;
         
         for(Node node : renderNodes) {
             col |= node.sphereCast(sphere, radius);
         }
         
+        for(Entity obj : objects) {
+            if(obj == skip) continue;
+            col |= obj.meshSphereCast(sphere, radius);
+        }
+        
         return col;
     }
+    
+    public Entity rayCast(Ray ray, boolean onlyMeshes) {
+        return rayCast(ray, onlyMeshes, null);
+    }
 
-    public void rayCast(Ray ray) {
-        if(renderNodes.isEmpty()) return;
-        
+    public Entity rayCast(Ray ray, boolean onlyMeshes, Entity skip) {
         for(Node node : renderNodes) {
             node.rayCast(ray);
         }
+        
+        float minDist = ray.distance;
+        Entity got = null;
+        
+        for(Entity obj : objects) {
+            if(obj == skip) continue;
+            
+            if(obj.rayCast(ray, onlyMeshes) && ray.distance < minDist) {
+                minDist = ray.distance;
+                got = obj;
+            }
+        }
+        
+        return got;
     }
     
-    Matrix4f m = new Matrix4f(); 
+    public Matrix4f m = new Matrix4f(); 
     public float[] tmp = new float[16];
     
     public void render(E3D e3d, int w, int h) {
@@ -153,9 +177,26 @@ public class World {
         for(Node node : renderNodes) node.render(e3d, tmp, this);
         
         //Check objects
-        for(Entity object : objects) object.render(this);
+        for(Entity object : objects) object.render(e3d, this);
         
         e3d.renderVectors();
+    }
+    
+    static final Ray ray = new Ray();
+
+    public void activateSomething(Main main, Player player, boolean click) {
+        ray.start.set(player.pos);
+        ray.start.add(0, player.eyeHeight, 0);
+        ray.dir.setDirection(player.rotX, player.rotY);
+        ray.dir.mul(1000, 1000, 1000); //hand distance lmao
+        
+        Entity got = rayCast(ray, false, player);
+        
+        for(Entity obj : objects) {
+            if(obj.activate(main, got, ray, click)) break;
+        }
+        
+        ray.reset();
     }
 
 }

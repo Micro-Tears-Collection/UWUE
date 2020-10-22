@@ -15,9 +15,15 @@ public class Sprite extends Renderable {
     private float z;
     
     public Material mat;
-    public float size = 200, sizey = 200;
-    public float beginy = -sizey/2;
+    public float w = 200, h = 200;
+    public float offsety = 0;
     public boolean billboard = true;
+    
+    public Sprite(Material mat, float w, float h) {
+        this.mat = mat;
+        this.w = w;
+        this.h = h;
+    }
 
     public void setMatrix(float[] put) {
         set(null, new Matrix4f(), (new Matrix4f()).set(put));
@@ -31,7 +37,7 @@ public class Sprite extends Renderable {
     
     private void set(Vector3D pos, Matrix4f tmp, Matrix4f invCam) {
         if(tmp != null) tmp.setTranslation(pos.x, pos.y, pos.z);
-        if(billboard) tmp.translate(0, beginy, 0);
+        if(billboard) tmp.translate(0, offsety, 0);
         
         invCam.mul(tmp);
         invCam.set(0, 0, 1); invCam.set(2, 0, 0);
@@ -44,10 +50,10 @@ public class Sprite extends Renderable {
             invCam.set(1, 2, 0);
         }
         
-        invCam.scale(size, sizey, size);
+        invCam.scale(w, h, w);
         invCam.get(drawMatrix);
-        drawMatrix[12] -= size/2;
-        if(!billboard) drawMatrix[13] += beginy;
+        drawMatrix[12] -= w/2;
+        if(!billboard) drawMatrix[13] += offsety;
         
         z = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
     }

@@ -28,6 +28,10 @@ public class RayCast {
     }
 
     public static void rayCast(Mesh mesh, Ray ray) {
+        RayCast.rayCast(mesh, null, ray);
+    }
+
+    public static void rayCast(Mesh mesh, float[] mat, Ray ray) {
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         
@@ -51,18 +55,24 @@ public class RayCast {
                 float bx = verts[i + 3], by = verts[i + 4], bz = verts[i + 5];
                 float ax = verts[i + 6], ay = verts[i + 7], az = verts[i + 8];
 
-                if(SphereCast.max(ax, bx, cx) < x1) continue;
-                if(SphereCast.min(ax, bx, cx) > x2) continue;
-                if(SphereCast.max(az, bz, cz) < z1) continue;
-                if(SphereCast.min(az, bz, cz) > z2) continue;
-                if(SphereCast.max(ay, by, cy) < y1) continue;
-                if(SphereCast.min(ay, by, cy) > y2) continue;
-
                 v1.set(ax, ay, az);
                 v2.set(bx, by, bz);
                 v3.set(cx, cy, cz);
+                if(mat != null) {
+                    v1.transform(mat);
+                    v2.transform(mat);
+                    v3.transform(mat);
+                }
+
+                if(SphereCast.max(v1.x, v2.x, v3.x) < x1) continue;
+                if(SphereCast.min(v1.x, v2.x, v3.x) > x2) continue;
+                if(SphereCast.max(v1.y, v2.y, v3.y) < y1) continue;
+                if(SphereCast.min(v1.y, v2.y, v3.y) > y2) continue;
+                if(SphereCast.max(v1.z, v2.z, v3.z) < z1) continue;
+                if(SphereCast.min(v1.z, v2.z, v3.z) > z2) continue;
 
                 normal.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
+                if(mat != null) normal.transformNoOffset(mat);
                 float dis = rayCast(v1, v2, v3, normal, start, dir, colPoint);
 
                 if(dis != Float.MAX_VALUE) {

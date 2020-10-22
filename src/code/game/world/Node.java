@@ -26,10 +26,10 @@ public class Node {
     static final Culling cul = new Culling();
     
     public void render(E3D e3d, float[] invCam, World world) {
+        mesh.setMatrix(invCam);
         cul.setBox(mesh.min, mesh.max);
         
         if(cul.visible()) {
-            mesh.setMatrix(invCam);
             mesh.prepareRender(e3d);
             
             for(int i=0; i<childs.size(); i++) {

@@ -95,6 +95,7 @@ public class Game extends Screen {
         }
         
         world.update(player);
+        world.activateSomething(main, player, false);
         
         time += FPS.frameTime;
     }
@@ -131,25 +132,6 @@ public class Game extends Screen {
             return;
         } else if(Keys.isThatBinding(key, Keys.OK)) {
             if(paused) return; 
-            /*Ray ray = new Ray();
-            ray.start.set(player.pos);
-            ray.start.add(0, player.eyeHeight, 0);
-
-            final float xa = 1f;
-            float ya = xa * (float) Math.cos(Math.toRadians(player.rotX));
-            float yaYDSin = ya * (float) -Math.sin(Math.toRadians(player.rotY));
-            float yaYDCos = ya * (float) -Math.cos(Math.toRadians(player.rotY));
-
-            float xOffset = yaYDSin;
-            float yOffset = xa * (float) Math.sin(Math.toRadians(player.rotX));
-            float zOffset = yaYDCos;
-            ray.dir.set(xOffset * 4000, yOffset * 4000, zOffset * 4000);
-
-            world.rayCast(ray);
-
-            if(ray.collision) {
-                System.out.println(ray.collisionPoint.x + " " + ray.collisionPoint.y + " " + ray.collisionPoint.z);
-            }*/
             dialog.set(new String[]{
                 "Тесттесттесттетсттстстесттесттесттесттетсттстстесттесттесттесттетсттстстесттест*тесттесттесттетсттстстесттесттесттесттетсттстстесттест*тест*тесттесттетсттстстесттест*тест*еее*Привет привет!!!", 
                 "Второй экран!", "$question 4", "Сделай выбор!", "111", "222", "333", "444", "$end", "$end", "$end", "чотыре"
@@ -163,7 +145,9 @@ public class Game extends Screen {
     }
     
     public void mouseAction(int button, boolean pressed) {
-        
+        if(pressed && button == MOUSE_LEFT) {
+            world.activateSomething(main, player, true);
+        }
     }
     
     public void mouseScroll(double x, double y) {
