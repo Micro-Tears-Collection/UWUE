@@ -5,13 +5,14 @@ import code.Screen;
 import code.engine3d.E3D;
 import code.ui.ItemList;
 import code.ui.TextView;
+import code.utils.Asset;
 import code.utils.Keys;
 import code.utils.StringTools;
 import code.utils.font.BMFont;
 
 public class DialogScreen extends Screen {
 
-    private Game game;
+    public Game game;
     private int w,h;
     
     private BMFont font;
@@ -22,7 +23,7 @@ public class DialogScreen extends Screen {
     private boolean itemListHasCaption;
     private int[] answersGoIndex;
 
-    boolean reset;
+    private boolean reset;
     private int index = -1;
     private String[] dialog;
     
@@ -48,23 +49,17 @@ public class DialogScreen extends Screen {
     }
     
     public void set(String text, Game game, BMFont font) {
-        String newText = null;
-        String[] dial;
-        
-        if(text.charAt(0)=='/' && text.toLowerCase().endsWith(".txt")) {
-            newText = StringTools.getStringFromResource(text); //Load text from file
-        }
-        
-        if(newText==null) dial = StringTools.cutOnStrings(text, '@'); 
-        else dial = StringTools.cutOnStrings(newText, '\n'); 
-        
-        set(dial,game,font);
-        
-        dialogPath = text;
+        set(StringTools.cutOnStrings(text, '@'), game, font);
+    }
+    
+    public void load(String path, Game game, BMFont font) {
+        set(Asset.loadLines(path), game, font);
+        dialogPath = path;
     }
     
     public void set(String[] text, Game game, BMFont font) {
         Keys.reset();
+        reset = true;
         w = getWidth(); h = getHeight();
         this.font = font;
         dialogPath = null;
@@ -84,7 +79,6 @@ public class DialogScreen extends Screen {
         }
         
         initView();
-        nextText();
     }
     
     private void initView() {
@@ -96,14 +90,16 @@ public class DialogScreen extends Screen {
         textView = new TextView(null, w - 20, h2, font);
     }
     
-    public void show() {
+    public void open() {
         game.main.setScreen(this);
         Engine.hideCursor(false);
     }
     
-    public void reset() {
-        reset = false;
-        nextText();
+    public void show() {
+        while(reset) {
+            reset = false;
+            nextText();
+        }
     }
 
     private boolean nextText() {
@@ -313,16 +309,13 @@ public class DialogScreen extends Screen {
             game.main.clickedS.start();
             if(!nextText()) {
                 if(reset) {
-                    reset();
+                    show();
                     return;
                 }
                 
                 itemList = null;
                 dialog = null;
 
-                /*game.paused = false;
-                game.inDialog = false;
-                game.updateItems(true);*/
                 Engine.hideCursor(true);
                 game.main.setScreen(game);
                 return;
@@ -361,14 +354,5 @@ public class DialogScreen extends Screen {
             Keys.keyPressed(Keys.getBindingKeyCode(Keys.OK, 0));
         else if(itemList.isInBox(getDialogX(), getDialogY(), getMouseX(), getMouseY())) 
             Keys.keyPressed(Keys.getBindingKeyCode(Keys.OK, 0));
-    }
-
-    public static String loadTextFromFile(String text) {
-        if(text==null) return null;
-        
-        if(text.charAt(0)!='/' || !text.toLowerCase().endsWith(".txt")) return text;
-        
-        text = StringTools.getStringFromResource(text);
-        return text.replace('\n', '@');
     }
 }

@@ -9,6 +9,7 @@ import code.game.world.entities.Player;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
+import org.luaj.vm2.LuaTable;
 
 /**
  *
@@ -25,19 +26,22 @@ public class Game extends Screen {
     
     public E3D e3d;
     public DialogScreen dialog;
+    LuaTable luasession;
     public World world;
     public Player player;
     
     Fade fade;
     String nextMap;
+    String nextDialog;
+    boolean loadDialogFromFile;
     
     public Game(Main main) {
         this.main = main;
         w = getWidth(); h = getHeight();
         
         e3d = main.e3d;
-        
         dialog = new DialogScreen();
+        main.lua.set("session", (luasession = new LuaTable()));
         
         Engine.hideCursor(true);
         player = new Player();
@@ -45,12 +49,39 @@ public class Game extends Screen {
     
     public void loadMap(String nextMap) {
         this.nextMap = nextMap;
+        this.nextDialog = null;
     }
     
     private void loadMapImpl() {
         long loadtime = System.currentTimeMillis();
         WorldLoader.loadWorld(this, nextMap);
         nextMap = null;
+        FPS.previousFrame += System.currentTimeMillis() - loadtime;
+    }
+    
+    public void openDialog(String nextDialog, boolean load) {
+        this.nextMap = null;
+        this.nextDialog = nextDialog;
+        this.loadDialogFromFile = load;
+        
+        if(main.getScreen() == dialog) {
+            main.setScreen(dialog);
+            openDialogImpl();
+        }
+    }
+    
+    private void openDialogImpl() {
+        long loadtime = System.currentTimeMillis();
+        
+        if(loadDialogFromFile) dialog.load(nextDialog, this, main.font);
+        else dialog.set(nextDialog, this, main.font);
+        
+        nextDialog = null;
+        
+        if(main.getScreen() != dialog) {
+            dialog.open();
+        }
+        
         FPS.previousFrame += System.currentTimeMillis() - loadtime;
     }
     
@@ -69,14 +100,19 @@ public class Game extends Screen {
         main.musPlayer.setPitch(1);
         
         Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
+        
+        main.lua.set("session", LuaTable.NIL);
     }
     
     public void tick() {
         if(nextMap != null) loadMapImpl();
+        if(nextDialog != null) {
+            openDialogImpl();
+            return;
+        } 
         
-        render();
         update();
-        
+        render();
         
         if(userTryingToCloseApp()) {
             main.stop();
@@ -132,11 +168,8 @@ public class Game extends Screen {
             return;
         } else if(Keys.isThatBinding(key, Keys.OK)) {
             if(paused) return; 
-            dialog.set(new String[]{
-                "Тесттесттесттетсттстстесттесттесттесттетсттстстесттесттесттесттетсттстстесттест*тесттесттесттетсттстстесттесттесттесттетсттстстесттест*тест*тесттесттетсттстстесттест*тест*еее*Привет привет!!!", 
-                "Второй экран!", "$question 4", "Сделай выбор!", "111", "222", "333", "444", "$end", "$end", "$end", "чотыре"
-            }, this, main.font);
-            dialog.show();
+            openDialog("Тестстстестт*еее*Привет привет!!!@Второй экран!@$question 4@Сделай выбор!@111@222@333@444@$end@$end@$end@чотыре"
+            , false);
         }
     }
     
@@ -145,7 +178,7 @@ public class Game extends Screen {
     }
     
     public void mouseAction(int button, boolean pressed) {
-        if(pressed && button == MOUSE_LEFT) {
+        if(!pressed && button == MOUSE_LEFT) {
             world.activateSomething(main, player, true);
         }
     }

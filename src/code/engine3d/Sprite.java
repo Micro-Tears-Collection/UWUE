@@ -26,13 +26,12 @@ public class Sprite extends Renderable {
     }
 
     public void setMatrix(float[] put) {
-        set(null, new Matrix4f(), (new Matrix4f()).set(put));
+        set(null, new Matrix4f(), tmpMat.set(put));
     }
     
     public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
-        Matrix4f invout = new Matrix4f(invCam);
         tmp.identity();
-        set(pos, tmp, invout);
+        set(pos, tmp, tmpMat.set(invCam));
     }
     
     private void set(Vector3D pos, Matrix4f tmp, Matrix4f invCam) {

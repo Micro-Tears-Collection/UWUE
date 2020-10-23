@@ -7,6 +7,7 @@ import code.engine3d.Sprite;
 import code.utils.MeshLoader;
 import code.game.Game;
 import code.game.world.entities.Entity;
+import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
 import code.game.world.entities.SpriteObject;
 import code.utils.IniFile;
@@ -31,33 +32,33 @@ public class WorldLoader {
         lvl.set(lines, true);
         
         game.player.pos.set(0,0,0);
-        if(lvl.groupExists("PLAYER")) {
-            float[] pPos = StringTools.cutOnFloats(lvl.get("PLAYER", "POS"), ',');
+        if(lvl.groupExists("player")) {
+            float[] pPos = StringTools.cutOnFloats(lvl.get("player", "pos"), ',');
             game.player.pos.add(pPos[0], pPos[1], pPos[2]);
         }
         
         Mesh[] skybox = null;
         int skyColor = 0;
-        if(lvl.groupExists("SKY")) {
+        if(lvl.groupExists("sky")) {
             
-            String tmp = lvl.get("SKY","MODEL");
+            String tmp = lvl.get("sky", "model");
             if(tmp!=null) skybox = MeshLoader.loadObj(tmp);
             
-            tmp = lvl.get("SKY","COLOR");
+            tmp = lvl.get("sky", "color");
             if(tmp!=null) skyColor = StringTools.getRGB(tmp,',');
             
         }
         
         Mesh[] worldMeshes = null;
-        if(lvl.groupExists("WORLD")) {
-            worldMeshes = MeshLoader.loadObj(lvl.get("WORLD", "MODEL"), true);
+        if(lvl.groupExists("world")) {
+            worldMeshes = MeshLoader.loadObj(lvl.get("world", "model"), true);
         }
         
         World world = new World(worldMeshes, skyColor, skybox);
         
-        if(lvl.groupExists("FOG")) {
+        if(lvl.groupExists("fog")) {
             
-            String tmp = lvl.get("FOG", "COLOR");
+            String tmp = lvl.get("fog", "color");
             if(tmp != null) {
                 int c = StringTools.getRGB(tmp,',');
                 world.fogColor = new float[] {((c>>16)&255) / 255f, 
@@ -65,14 +66,14 @@ public class WorldLoader {
                     (c&255) / 255f, 1};
             }
             
-            tmp = lvl.get("FOG", "DENSITY");
+            tmp = lvl.get("fog", "density");
             if(tmp != null) {
                 world.fogDensity = StringTools.parseFloat(tmp);
                 world.fogMode = World.EXP;
             }
             
-            String near = lvl.get("FOG", "NEAR");
-            String far = lvl.get("FOG", "FAR");
+            String near = lvl.get("fog", "near");
+            String far = lvl.get("fog", "far");
             if(near != null || far != null) {
                 float nearV = 0; float farV = 2000;
                 if(near!=null) nearV = StringTools.parseFloat(near);
@@ -92,28 +93,28 @@ public class WorldLoader {
         game.world = world;
         world.objects.add(game.player);
         
-        if(lvl.groupExists("MUSIC")) {
+        if(lvl.groupExists("music")) {
             SoundSource player = game.main.musPlayer;
             
-            String tmp = lvl.get("MUSIC", "PITCH");
+            String tmp = lvl.get("music", "pitch");
             if(tmp != null) player.setPitch(StringTools.parseFloat(tmp));
             
             boolean playing = player.isPlaying();
-            boolean dontChange = lvl.getInt("MUSIC", "DONT_CHANGE", 0) == 1;
+            boolean dontChange = lvl.getInt("music", "dont_change", 0) == 1;
             
-            tmp = lvl.get("MUSIC", "PATH");
+            tmp = lvl.get("music", "path");
             if(tmp != null && !(playing && (dontChange || tmp.equals(player.soundName)))) {
                 player.stop();
                 if(player.buffer != null) player.free();
                 player.loadFile(tmp);
                 player.start();
             }
-            if(lvl.getInt("MUSIC", "STOP", 0) == 1) {
+            if(lvl.getInt("music", "stop", 0) == 1) {
                 player.stop();
                 player.free();
             }
             
-            if(lvl.getInt("MUSIC", "REWIND", 0) == 1) player.rewind();
+            if(lvl.getInt("music", "rewind", 0) == 1) player.rewind();
         }
         if(game.main.musPlayer.buffer != null) game.main.musPlayer.buffer.using = true;
         
@@ -124,9 +125,9 @@ public class WorldLoader {
         
         for(int i=0; i<names.length; i++) {
             String name = names[i];
-            if(!name.startsWith("OBJECT ")) continue;
+            if(!name.startsWith("obj ")) continue;
             
-            String objType = name.substring(7);
+            String objType = name.substring(4);
             IniFile obj = objs[i];
             
             loadObject(game, world, objType, obj);
@@ -138,29 +139,39 @@ public class WorldLoader {
         //yeah...
         
         Entity obj = null;
-        if(objType.equals("SPR")) {
+        if(objType.equals("spr")) {
             obj = loadSprite(game, world, ini, false);
-        } else if(objType.equals("BILLBOARD")) {
+        } else if(objType.equals("billboard")) {
             obj = loadSprite(game, world, ini, true);
+        } else if(objType.equals("mesh")) {
+            obj = loadMesh(game, world, ini);
         }
         
         if(obj != null) world.objects.add(obj);
         
     }
 
+    private static MeshObject loadMesh(Game game, World world, IniFile ini) {
+        MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true));
+        
+        loadPhysEntity(mesh, game, world, ini);
+        
+        return mesh;
+    }
+
     private static SpriteObject loadSprite(Game game, World world, IniFile ini, boolean billboard) {
         SpriteObject spr = new SpriteObject();
         
-        float size = ini.getFloat("SIZE", 100);
-        float height = ini.getFloat("HEIGHT", size);
+        float size = ini.getFloat("size", 100);
+        float height = ini.getFloat("height", size);
         
-        spr.spr = new Sprite(Asset.getMaterial(ini.get("TEX")), size, height);
+        spr.spr = new Sprite(Asset.getMaterial(ini.get("tex")), size, height);
         spr.spr.billboard = billboard;
-        spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("OPTIONS", ""), ';'), false));
+        spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
         
-        String align = ini.getDef("ALIGN", billboard?"BOTTOM":"CENTER");
-        if(align.equals("CENTER")) spr.spr.offsety = -height/2;
-        else if(align.equals("TOP")) spr.spr.offsety = -height;
+        String align = ini.getDef("align", billboard?"bottom":"center");
+        if(align.equals("center")) spr.spr.offsety = -height/2;
+        else if(align.equals("top")) spr.spr.offsety = -height;
         
         loadDefEntity(spr, game, world, ini);
         
@@ -168,41 +179,41 @@ public class WorldLoader {
     }
     
     private static void loadPhysEntity(PhysEntity obj, Game game, World world, IniFile ini) {
-        obj.radius = ini.getFloat("PHYS_RADIUS", obj.radius);
-        obj.height = ini.getFloat("PHYS_HEIGHT", obj.height);
+        obj.radius = ini.getFloat("phys_radius", obj.radius);
+        obj.height = ini.getFloat("phys_height", obj.height);
         
-        obj.rotY = ini.getFloat("ROT_Y", obj.height);
-        obj.hp = ini.getInt("HP", obj.hp);
+        obj.rotY = ini.getFloat("rot_y", obj.height);
+        obj.hp = ini.getInt("hp", obj.hp);
         
         loadDefEntity(obj, game, world, ini);
     }
     
     private static void loadDefEntity(Entity obj, Game game, World world, IniFile ini) {
-        float[] pos = StringTools.cutOnFloats(ini.get("POS"), ',');
+        float[] pos = StringTools.cutOnFloats(ini.get("pos"), ',');
         obj.pos.set(pos[0], pos[1], pos[2]);
         
-        obj.name = ini.getDef("NAME", obj.name);
+        obj.name = ini.getDef("name", obj.name);
         
         //Scripting stuff
         
-        obj.activable = ini.getInt("ACTIVABLE", obj.activable?1:0) == 1;
-        obj.activateDistance = ini.getFloat("ACTIVATE_RADIUS", obj.activateDistance);
-        obj.clickable = ini.getFloat("CLICKABLE", obj.clickable?1:0) == 1;
-        obj.pointable = ini.getFloat("POINTABLE", obj.pointable?1:0) == 1;
+        obj.activable = ini.getInt("activable", obj.activable?1:0) == 1;
+        obj.activateDistance = ini.getFloat("activate_radius", obj.activateDistance);
+        obj.clickable = ini.getFloat("clickable", obj.clickable?1:0) == 1;
+        obj.pointable = ini.getFloat("pointable", obj.pointable?1:0) == 1;
         
-        String tmp = ini.get("ACTIVATE_WHEN");
+        String tmp = ini.get("activate_if");
         if(tmp != null) obj.activateWhen = game.main.loadScript("return "+tmp);
         
-        tmp = ini.get("ON_ACTIVATE");
+        tmp = ini.get("on_activate");
         if(tmp != null) obj.onActivate = game.main.loadScript(tmp);
         
-        tmp = ini.get("SCRIPT_ON_ACTIVATE");
+        tmp = ini.get("script_on_activate");
         if(tmp != null) obj.onActivate = game.main.loadScriptFromFile(tmp);
         
-        tmp = ini.get("ON_FAIL");
+        tmp = ini.get("on_fail");
         if(tmp != null) obj.onFail = game.main.loadScript(tmp);
         
-        tmp = ini.get("SCRIPT_ON_FAIL");
+        tmp = ini.get("script_on_fail");
         if(tmp != null) obj.onFail = game.main.loadScriptFromFile(tmp);
     }
 

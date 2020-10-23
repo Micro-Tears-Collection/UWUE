@@ -1,6 +1,9 @@
 package code.utils;
 
 import code.Engine;
+import code.Screen;
+import code.game.DialogScreen;
+import code.game.Game;
 import code.game.Main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,16 +29,47 @@ import org.luaj.vm2.lib.ThreeArgFunction;
 public class Scripting {
     
     public static void initFunctions(final Main main) {
-        LuaTable luagame = main.luagame;
+        LuaTable lua = main.lua;
         
-        luagame.set("loadMap", new OneArgFunction() {
+        lua.set("loadMap", new OneArgFunction() {
             public LuaValue call(LuaValue arg)  {
-                main.loadMap(arg.toString());
+                String map = arg.toString();
+                Screen screen = main.getScreen();
+                
+                if(screen instanceof Game) {
+                    ((Game) screen).loadMap(map);
+                } else {
+                    Game game = new Game(main);
+                    main.setScreen(game, true);
+                    game.loadMap(map);
+                }
                 return LuaValue.NIL;
             }
         });
         
-        luagame.set("playMusic", new TwoArgFunction() {
+        lua.set("showDialog", new OneArgFunction() {
+            public LuaValue call(LuaValue arg)  {
+                String dialog = arg.toString();
+                Screen screen = main.getScreen();
+                
+                if(screen instanceof Game) ((Game)screen).openDialog(dialog, false);
+                else if(screen instanceof DialogScreen) ((DialogScreen)screen).game.openDialog(dialog, false);
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("loadDialog", new OneArgFunction() {
+            public LuaValue call(LuaValue arg)  {
+                String dialog = arg.toString();
+                Screen screen = main.getScreen();
+                
+                if(screen instanceof Game) ((Game)screen).openDialog(dialog, true);
+                else if(screen instanceof DialogScreen) ((DialogScreen)screen).game.openDialog(dialog, true);
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("playMusic", new TwoArgFunction() {
             public LuaValue call(LuaValue file, LuaValue restart)  {
                 String name = file.toString();
                 
@@ -50,14 +84,14 @@ public class Scripting {
             }
         });
         
-        luagame.set("stopMusic", new ZeroArgFunction() {
+        lua.set("stopMusic", new ZeroArgFunction() {
             public LuaValue call()  {
                 main.musPlayer.stop();
                 return LuaValue.NIL;
             }
         });
         
-        luagame.set("setMusicPitch", new OneArgFunction() {
+        lua.set("setMusicPitch", new OneArgFunction() {
             public LuaValue call(LuaValue arg)  {
                 main.musPlayer.setPitch(arg.tofloat());
                 return LuaValue.NIL;

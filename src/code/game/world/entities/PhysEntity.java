@@ -73,7 +73,7 @@ public class PhysEntity extends Entity {
             Vector3D sphere = tmpRay.start;
             sphere.set(pos.x, pos.y + height, pos.z);
 
-            boolean col = world.sphereCast(sphere, radius);
+            boolean col = world.sphereCast(sphere, radius, this);
             if(col) {
                 pos.set(sphere.x, sphere.y - height, sphere.z);
             }
@@ -83,7 +83,7 @@ public class PhysEntity extends Entity {
             tmpRay.start.add(0, height, 0);
             tmpRay.dir.set(0, -height, 0);
 
-            world.rayCast(tmpRay, true);
+            world.rayCast(tmpRay, true, this);
             onGround = tmpRay.collision;
             if(tmpRay.collision) {
                 pos.y = tmpRay.collisionPoint.y;

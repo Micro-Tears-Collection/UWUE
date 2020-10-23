@@ -34,7 +34,7 @@ public class Entity {
     public LuaValue onActivate, onFail;
     
     public boolean activable;
-    public float activateDistance = 200;
+    public float activateDistance = 400;
     public boolean clickable = true;
     public boolean pointable = true;
     

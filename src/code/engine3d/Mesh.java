@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL15;
 public class Mesh extends Renderable {
     
     public String name;
-    public float[] drawMatrix = new float[16];
+    public float[] modelMatrix = new float[16], drawMatrix = new float[16];
 
     private Vector3D omin, omax;
     public Vector3D min, max;
@@ -76,6 +76,11 @@ public class Mesh extends Renderable {
     public void setMatrix(float[] invcam) {
         System.arraycopy(invcam, 0, drawMatrix, 0, 16);
         
+        for(int i=0; i<16; i++) {
+            modelMatrix[i] = 0;
+        }
+        modelMatrix[0] = modelMatrix[5] = modelMatrix[10] = modelMatrix[14] = 1;
+        
         min.set(omin); max.set(omax);
         
         updateZ();
@@ -83,18 +88,18 @@ public class Mesh extends Renderable {
     
     public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
         tmp.identity();
-        if(rot != null) {
-            tmp.rotateX((float) Math.toRadians(rot.x));
-            tmp.rotateY((float) Math.toRadians(rot.y));
-            tmp.rotateZ((float) Math.toRadians(rot.z));
-        }
-        tmp.setTranslation(pos.x, pos.y, pos.z);
+        buildMatrix(pos, rot, tmp);
+        setMatrix(tmp.get(modelMatrix), tmp, invCam);
+    }
+    
+    public void setMatrix(float[] modelView, Matrix4f tmp, Matrix4f invCam) {
+        modelMatrix = modelView;
+        updateBB(modelMatrix);
         
-        updateBB(tmp.get(drawMatrix));
-        
-        Matrix4f tmp2 = new Matrix4f(invCam);
-        tmp2.mul(tmp);
-        tmp2.get(drawMatrix);
+        tmpMat.set(invCam);
+        tmp.set(modelView);
+        tmpMat.mul(tmp);
+        tmpMat.get(drawMatrix);
         
         updateZ();
     }

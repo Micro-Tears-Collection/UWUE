@@ -14,7 +14,6 @@ import code.utils.font.BMFont;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Scanner;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -34,7 +33,6 @@ public class Main {
     public E3D e3d;
     public SoundSource musPlayer;
     public Globals lua;
-    public LuaTable luagame;
     public LuaTable luasave;
     
     public BMFont font;
@@ -50,7 +48,7 @@ public class Main {
 
     public void init() {
         conf = Asset.loadIni("game.ini", true);
-        Engine.setTitle(conf.get("GAME", "NAME"));
+        Engine.setTitle(conf.get("game", "name"));
         
         musPlayer = ((SoundSource) Asset.getSoundSource().lock()).beMusicPlayer();
         selectedS = (SoundSource) Asset.getSoundSource("/sounds/select.ogg").lock();
@@ -60,23 +58,31 @@ public class Main {
         gameStartS = (SoundSource) Asset.getSoundSource("/sounds/game start.ogg").lock();
         gameStartS.buffer.neverUnload = true;
         
-        font = BMFont.loadFont(conf.get("HUD", "FONT"));
+        font = BMFont.loadFont(conf.get("hud", "font"));
         font.setInterpolation(false);
         setFontScale(Engine.h);
         
-        fontColor = StringTools.getRGB(conf.getDef("HUD", "FONT_COLOR", "255,255,255"), ',');
-        fontSelColor = StringTools.getRGB(conf.getDef("HUD", "FONT_SELECTED_COLOR", "221,136,149"), ',');
+        fontColor = StringTools.getRGB(conf.getDef("hud", "font_color", "255,255,255"), ',');
+        fontSelColor = StringTools.getRGB(conf.getDef("hud", "font_selected_color", "221,136,149"), ',');
         
         e3d = new E3D();
         
         lua = JsePlatform.standardGlobals();
-        lua.set("game", (luagame = new LuaTable()));
         lua.set("save", (luasave = Scripting.load(this)));
         Scripting.initFunctions(this);
 
         setScreen(new Menu(this));
 
         run();
+    }
+
+    public Game getGame() {
+        if(screen instanceof Game) return (Game)screen;
+        else return null;
+    }
+
+    public Screen getScreen() {
+        return screen;
     }
 
     public void setScreen(Screen screen) {
@@ -272,16 +278,6 @@ public class Main {
         }
         
         return LuaValue.NIL;
-    }
-
-    public void loadMap(String map) {
-        if(screen instanceof Game) {
-            ((Game)screen).loadMap(map);
-        } else {
-            Game game = new Game(this);
-            setScreen(game, true);
-            game.loadMap(map);
-        }
     }
 
 }
