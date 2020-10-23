@@ -145,7 +145,8 @@ public class Asset {
             sn.useDelimiter("\n");
             
             while(sn.hasNext()) {
-                lines.add(sn.next().trim());
+                String str = sn.next().trim();
+                if(str.length() > 0) lines.add(str);
             }
             
             sn.close();
