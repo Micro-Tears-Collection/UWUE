@@ -207,7 +207,7 @@ public class DialogScreen extends Screen {
                         }
                     };
                     itemList.setCenter(false);
-                    itemList.setIndex(capLen);
+                    itemList.setIndexLimited(capLen);
                     
                     return true;
                 } else if(script.equals("end")) {

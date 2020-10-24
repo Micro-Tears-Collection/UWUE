@@ -19,7 +19,7 @@ public class SpriteObject extends Entity {
         if(onlyMeshes) return false;
         
         Vector3D tmp = new Vector3D(pos);
-        tmp.add(0, spr.h/2+spr.offsety, 0);
+        tmp.add(0, spr.h*(spr.align+1)/2, 0);
         
         float dist = MathUtils.distanceToRay(tmp, ray.start, ray.dir);
         if(dist > spr.w*spr.w/4) return false;

@@ -3,7 +3,6 @@ package code.game.world.entities;
 import code.engine3d.E3D;
 import code.game.Main;
 import code.game.world.World;
-import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Vector3D;
 import org.luaj.vm2.LuaValue;
@@ -34,7 +33,7 @@ public class Entity {
     public LuaValue onActivate, onFail;
     
     public boolean activable;
-    public float activateDistance = 400;
+    public float activateDistance = 250;
     public boolean clickable = true;
     public boolean pointable = true;
     

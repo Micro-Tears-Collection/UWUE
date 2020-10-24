@@ -105,6 +105,7 @@ public class Mesh extends Renderable {
     }
     
     private void updateBB(float[] mat) {
+        //todo rewrite
         Vector3D v000 = new Vector3D(omin.x, omin.y, omin.z);
         Vector3D v001 = new Vector3D(omin.x, omin.y, omax.z);
         Vector3D v010 = new Vector3D(omin.x, omax.y, omin.z);
@@ -120,23 +121,35 @@ public class Mesh extends Renderable {
         
         float mx = Math.min(v000.x, v001.x);
         mx = Math.min(mx, Math.min(v010.x, v011.x));
+        mx = Math.min(mx, Math.min(v100.x, v101.x));
+        mx = Math.min(mx, Math.min(v110.x, v111.x));
         
         float my = Math.min(v000.y, v001.y);
         my = Math.min(my, Math.min(v010.y, v011.y));
+        my = Math.min(my, Math.min(v100.y, v101.y));
+        my = Math.min(my, Math.min(v110.y, v111.y));
         
         float mz = Math.min(v000.z, v001.z);
         mz = Math.min(mz, Math.min(v010.z, v011.z));
+        mz = Math.min(mz, Math.min(v100.z, v101.z));
+        mz = Math.min(mz, Math.min(v110.z, v111.z));
         
         min.set(mx, my, mz);
         
         mx = Math.max(v000.x, v001.x);
-        mx = Math.max(mx, Math.min(v010.x, v011.x));
+        mx = Math.max(mx, Math.max(v010.x, v011.x));
+        mx = Math.max(mx, Math.max(v100.x, v101.x));
+        mx = Math.max(mx, Math.max(v110.x, v111.x));
         
         my = Math.max(v000.y, v001.y);
-        my = Math.max(my, Math.min(v010.y, v011.y));
+        my = Math.max(my, Math.max(v010.y, v011.y));
+        my = Math.max(my, Math.max(v100.y, v101.y));
+        my = Math.max(my, Math.max(v110.y, v111.y));
         
         mz = Math.max(v000.z, v001.z);
-        mz = Math.max(mz, Math.min(v010.z, v011.z));
+        mz = Math.max(mz, Math.max(v010.z, v011.z));
+        mz = Math.max(mz, Math.max(v100.z, v101.z));
+        mz = Math.max(mz, Math.max(v110.z, v111.z));
         
         max.set(mx, my, mz);
     }

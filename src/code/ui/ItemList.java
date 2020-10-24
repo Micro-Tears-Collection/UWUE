@@ -139,6 +139,14 @@ public class ItemList {
         itemSelected();
     }
 
+    public void setIndexLimited(int i) {
+        int stepY = font.getHeight();
+        index = i;
+        yOffset = h / 2 - index * stepY - stepY / 2;
+        limitY();
+        itemSelected();
+    }
+
     public boolean getCenter() {
         return center;
     }

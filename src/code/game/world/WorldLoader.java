@@ -165,13 +165,13 @@ public class WorldLoader {
         float size = ini.getFloat("size", 100);
         float height = ini.getFloat("height", size);
         
-        spr.spr = new Sprite(Asset.getMaterial(ini.get("tex")), size, height);
-        spr.spr.billboard = billboard;
-        spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
+        String tmp = ini.getDef("align", billboard?"bottom":"center");
+        int align = Sprite.BOTTOM;
+        if(tmp.equals("center")) align = Sprite.CENTER;
+        else if(tmp.equals("top")) align = Sprite.TOP;
         
-        String align = ini.getDef("align", billboard?"bottom":"center");
-        if(align.equals("center")) spr.spr.offsety = -height/2;
-        else if(align.equals("top")) spr.spr.offsety = -height;
+        spr.spr = new Sprite(Asset.getMaterial(ini.get("tex")), billboard, size, height, align);
+        spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
         
         loadDefEntity(spr, game, world, ini);
         
