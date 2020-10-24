@@ -5,6 +5,7 @@ import code.Screen;
 import code.game.DialogScreen;
 import code.game.Game;
 import code.game.Main;
+import code.math.Vector3D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -31,17 +32,23 @@ public class Scripting {
     public static void initFunctions(final Main main) {
         LuaTable lua = main.lua;
         
-        lua.set("loadMap", new OneArgFunction() {
-            public LuaValue call(LuaValue arg)  {
+        lua.set("loadMap", new TwoArgFunction() {
+            public LuaValue call(LuaValue arg, LuaValue pos)  {
                 String map = arg.toString();
                 Screen screen = main.getScreen();
                 
+                Vector3D newPlayerPos = null;
+                if(pos != null && pos instanceof LuaTable) {
+                    LuaTable table = (LuaTable)pos;
+                    newPlayerPos = new Vector3D(table.get(1).tofloat(), table.get(2).tofloat(), table.get(3).tofloat());
+                } 
+                
                 if(screen instanceof Game) {
-                    ((Game) screen).loadMap(map);
+                    ((Game) screen).loadMap(map, newPlayerPos);
                 } else {
                     Game game = new Game(main);
                     main.setScreen(game, true);
-                    game.loadMap(map);
+                    game.loadMap(map, newPlayerPos);
                 }
                 return LuaValue.NIL;
             }

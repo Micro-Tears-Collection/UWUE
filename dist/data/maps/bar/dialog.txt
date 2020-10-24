@@ -4,10 +4,10 @@ $main part:
 
 $question gen 3
 Что ты хочешь?
-Я хочу session.uwu = true
+Я хочу uwu = true
 Я хочу пример диалога
 Ничего не хочу
-not session.uwu
+not uwu
 true
 true
 $go uwu part
@@ -16,7 +16,7 @@ $end
 в это окно мы никогда не попадём, потому-что как минимум два условия всегда соблюдаются
 
 $uwu part:
-$cmd session.uwu=true
+$cmd uwu=true
 Школьник:*Готово.*Ты хотел ещё что-то?
 $go main part
 

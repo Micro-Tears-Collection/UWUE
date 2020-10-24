@@ -6,6 +6,7 @@ import code.engine3d.E3D;
 import code.game.world.World;
 import code.game.world.WorldLoader;
 import code.game.world.entities.Player;
+import code.math.Vector3D;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
@@ -32,6 +33,7 @@ public class Game extends Screen {
     
     Fade fade;
     String nextMap;
+    Vector3D newPlayerPos;
     String nextDialog;
     boolean loadDialogFromFile;
     
@@ -41,21 +43,27 @@ public class Game extends Screen {
         
         e3d = main.e3d;
         dialog = new DialogScreen();
-        main.lua.set("session", (luasession = new LuaTable()));
         
         Engine.hideCursor(true);
         player = new Player();
     }
     
     public void loadMap(String nextMap) {
+        loadMap(nextMap, null);
+    }
+    
+    public void loadMap(String nextMap, Vector3D newPlayerPos) {
         this.nextMap = nextMap;
+        this.newPlayerPos = newPlayerPos;
         this.nextDialog = null;
     }
     
     private void loadMapImpl() {
         long loadtime = System.currentTimeMillis();
         WorldLoader.loadWorld(this, nextMap);
+        if(newPlayerPos != null) player.pos.set(newPlayerPos);
         nextMap = null;
+        newPlayerPos = null;
         FPS.previousFrame += System.currentTimeMillis() - loadtime;
     }
     
@@ -101,7 +109,7 @@ public class Game extends Screen {
         
         Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
         
-        main.lua.set("session", LuaTable.NIL);
+        main.clearLua();
     }
     
     public void tick() {

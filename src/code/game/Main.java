@@ -67,13 +67,17 @@ public class Main {
         
         e3d = new E3D();
         
-        lua = JsePlatform.standardGlobals();
-        lua.set("save", (luasave = Scripting.load(this)));
-        Scripting.initFunctions(this);
+        clearLua();
 
         setScreen(new Menu(this));
 
         run();
+    }
+    
+    public void clearLua() {
+        lua = JsePlatform.standardGlobals();
+        lua.set("save", luasave==null?(luasave = Scripting.load(this)):luasave);
+        Scripting.initFunctions(this);
     }
 
     public Game getGame() {
