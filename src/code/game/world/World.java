@@ -3,12 +3,15 @@ package code.game.world;
 import code.audio.AudioEngine;
 import code.engine3d.E3D;
 import code.engine3d.Mesh;
+import code.engine3d.Sprite;
 import code.game.Main;
 import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
+import code.game.world.entities.SpriteObject;
 import code.math.Culling;
 import code.math.Ray;
 import code.math.Vector3D;
+import code.utils.Asset;
 import java.util.Vector;
 import org.joml.Matrix4f;
 
@@ -28,6 +31,8 @@ public class World {
     float[] fogColor;
     float fogStart, fogEnd, fogDensity;
     
+    //SpriteObject sobj;
+    
     public World(Mesh[] meshes, int skyColor, Mesh[] skybox) {
         allMeshes = meshes;
         makeNodes();
@@ -36,6 +41,8 @@ public class World {
         this.skyColor = skyColor;
         
         objects = new Vector();
+        /*sobj = new SpriteObject();
+        sobj.spr = new Sprite(Asset.getMaterial("/test.png;alpha_test=1"), false, 10, 10, Sprite.CENTER);*/
     }
     
     void makeNodes() {
@@ -178,6 +185,7 @@ public class World {
         
         //Check objects
         for(Entity object : objects) object.render(e3d, this);
+        //sobj.render(e3d, this);
         
         e3d.renderVectors();
     }
@@ -191,6 +199,11 @@ public class World {
         ray.dir.mul(1000, 1000, 1000); //hand distance lmao
         
         Entity got = rayCast(ray, false, player);
+        /*if(click) {
+            sobj.pos.set(ray.dir);
+            sobj.pos.setLength(ray.distance);
+            sobj.pos.add(ray.start.x, ray.start.y, ray.start.z);
+        }*/
         
         for(Entity obj : objects) {
             if(obj.activate(main, got, ray, click)) break;

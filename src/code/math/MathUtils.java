@@ -18,29 +18,21 @@ public class MathUtils {
         return (float) (M_PI_4*x - x*(Math.abs(x) - 1)*(0.2447 + 0.0663*Math.abs(x)));
     }
     
-    public static float distanceToRay(Vector3D point, Vector3D a, Vector3D dir) {
-        float dx = dir.x;
-        float dy = dir.y;
-        float dz = dir.z;
+    public static float distanceToRay(Vector3D point, Vector3D start, Vector3D dir) {
+        Vector3D d = new Vector3D(dir);
+        Vector3D w = new Vector3D(point.x - start.x, point.y - start.y, point.z - start.z);
 
-        float wx = point.x - a.x;
-        float wy = point.y - a.y;
-        float wz = point.z - a.z;
-
-        float dp = dx*dx + dy*dy + dz*dz;
+        float len = d.lengthSquared();
         float dt = 0;
-        if(dp != 0) dt = (wx*dx + wy*dy + wz*dz) / dp;
+        if(len != 0) dt = w.dot(d) / len;
         if(dt < 0) dt = 0;
         if(dt > 1) dt = 1;
 
-        dx = a.x + dx * dt;
-        dy = a.y + dy * dt;
-        dz = a.z + dz * dt;
+        d.mul(dt, dt, dt);
+        d.add(start.x, start.y, start.z);
 
-        dx -= point.x;
-        dy -= point.y;
-        dz -= point.z;
-        return dx*dx + dy*dy + dz*dz;
+        d.sub(point.x, point.y, point.z);
+        return d.lengthSquared();
     }
     
     public static float distanceToLine(Vector3D point, Vector3D a, Vector3D b) {

@@ -31,9 +31,12 @@ public class Game extends Screen {
     public World world;
     public Player player;
     
-    Fade fade;
+    private Fade fade;
+    
     String nextMap;
     Vector3D newPlayerPos;
+    float nextRotY;
+    
     String nextDialog;
     boolean loadDialogFromFile;
     
@@ -49,19 +52,26 @@ public class Game extends Screen {
     }
     
     public void loadMap(String nextMap) {
-        loadMap(nextMap, null);
+        loadMap(nextMap, null, Float.MAX_VALUE);
     }
     
-    public void loadMap(String nextMap, Vector3D newPlayerPos) {
+    public void loadMap(String nextMap, Vector3D newPlayerPos, float rotY) {
         this.nextMap = nextMap;
         this.newPlayerPos = newPlayerPos;
+        this.nextRotY = rotY;
         this.nextDialog = null;
     }
     
-    private void loadMapImpl() {
+    void loadMapImpl() {
         long loadtime = System.currentTimeMillis();
+        
         WorldLoader.loadWorld(this, nextMap);
         if(newPlayerPos != null) player.pos.set(newPlayerPos);
+        if(nextRotY != Float.MAX_VALUE) {
+            player.rotX = 0;
+            player.rotY = nextRotY;
+        }
+        
         nextMap = null;
         newPlayerPos = null;
         FPS.previousFrame += System.currentTimeMillis() - loadtime;
@@ -78,7 +88,7 @@ public class Game extends Screen {
         }
     }
     
-    private void openDialogImpl() {
+    void openDialogImpl() {
         long loadtime = System.currentTimeMillis();
         
         if(loadDialogFromFile) dialog.load(nextDialog, this, main.font);
@@ -94,6 +104,7 @@ public class Game extends Screen {
     }
     
     public void setFade(Fade fade) {
+        if(this.fade != null) System.out.println("warning! fade effect is already set!");
         this.fade = fade;
         main.musPlayer.setVolume(fade.in?0:1);
         //paused = true;
@@ -159,7 +170,11 @@ public class Game extends Screen {
         if(fade != null) {
             float intensity = fade.step(e3d, w, h);
             main.musPlayer.setVolume(1-intensity);
-            if(fade.checkDone()) fade = null;
+            if(fade.checkDone()) {
+                Fade oldFade = fade;
+                fade = null;
+                oldFade.onDone();
+            }
         }
     }
     
@@ -174,10 +189,6 @@ public class Game extends Screen {
                 });
             }
             return;
-        } else if(Keys.isThatBinding(key, Keys.OK)) {
-            if(paused) return; 
-            openDialog("Тестстстестт*еее*Привет привет!!!@Второй экран!@$question 4@Сделай выбор!@111@222@333@444@$end@$end@$end@чотыре"
-            , false);
         }
     }
     

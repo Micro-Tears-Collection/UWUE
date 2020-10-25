@@ -31,10 +31,17 @@ public class WorldLoader {
         IniFile lvl = new IniFile(new Hashtable());
         lvl.set(lines, true);
         
-        game.player.pos.set(0,0,0);
+        game.player.pos.set(0, 0, 0);
+        game.player.rotX = 0;
+        game.player.rotY = 0;
         if(lvl.groupExists("player")) {
-            float[] pPos = StringTools.cutOnFloats(lvl.get("player", "pos"), ',');
-            game.player.pos.add(pPos[0], pPos[1], pPos[2]);
+            String tmp = lvl.get("player", "pos");
+            if(tmp != null) {
+                float[] pPos = StringTools.cutOnFloats(tmp, ',');
+                game.player.pos.set(pPos[0], pPos[1], pPos[2]);
+            }
+            
+            game.player.rotY = lvl.getFloat("player", "rot_y", 0);
         }
         
         Mesh[] skybox = null;
@@ -87,8 +94,6 @@ public class WorldLoader {
         
         Object[] objGroups = IniFile.createGroups(lines);
         loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world);
-        
-        game.player.rotX = game.player.rotY = 0;
         
         game.world = world;
         world.objects.add(game.player);

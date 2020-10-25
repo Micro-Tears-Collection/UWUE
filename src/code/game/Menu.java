@@ -142,7 +142,7 @@ public class Menu extends Screen {
         }
     }
     
-    public void keyPressed(int key) {
+    public void keyReleased(int key) {
         if(Keys.isThatBinding(key, Keys.DOWN)) {
             menu.scrollDown();
             Keys.reset();

@@ -241,6 +241,7 @@ public class DialogScreen extends Screen {
     }
 
     public void tick() {
+        if(game.nextMap != null) game.loadMapImpl();
         game.render();
 
         int x = getDialogX();

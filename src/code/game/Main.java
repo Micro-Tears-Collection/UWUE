@@ -5,6 +5,7 @@ import code.Engine;
 import code.Screen;
 import code.audio.SoundSource;
 import code.engine3d.E3D;
+import code.math.Vector3D;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.IniFile;
@@ -82,6 +83,7 @@ public class Main {
 
     public Game getGame() {
         if(screen instanceof Game) return (Game)screen;
+        else if(screen instanceof DialogScreen) return ((DialogScreen) screen).game;
         else return null;
     }
 
@@ -181,6 +183,7 @@ public class Main {
             System.out.println("num " + val.todouble());
             System.out.println("str " + val.tojstring());
             consoleText = null;
+            return;
         }
         
         if(consoleOpen) return;
@@ -282,6 +285,33 @@ public class Main {
         }
         
         return LuaValue.NIL;
+    }
+
+    public void loadMap(LuaValue mapArg, LuaValue data) {
+        String map = mapArg.toString();
+        Game game = getGame();
+
+        Vector3D newPlayerPos = null;
+        float rotY = Float.MAX_VALUE;
+        
+        if(data != null && data.istable()) {
+            LuaValue pos = data.get("pos");
+            
+            if(pos != null && pos.istable()) {
+                newPlayerPos = new Vector3D(
+                        pos.get(1).tofloat(),
+                        pos.get(2).tofloat(),
+                        pos.get(3).tofloat());
+            }
+            
+            if(data.get("rotY") != LuaValue.NIL) rotY = data.get("rotY").tofloat();
+        }
+
+        if(game == null) {
+            game = new Game(this);
+            setScreen(game, true);
+        }
+        game.loadMap(map, newPlayerPos, rotY);
     }
 
 }

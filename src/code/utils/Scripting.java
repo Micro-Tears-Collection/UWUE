@@ -3,6 +3,7 @@ package code.utils;
 import code.Engine;
 import code.Screen;
 import code.game.DialogScreen;
+import code.game.Fade;
 import code.game.Game;
 import code.game.Main;
 import code.math.Vector3D;
@@ -33,23 +34,42 @@ public class Scripting {
         LuaTable lua = main.lua;
         
         lua.set("loadMap", new TwoArgFunction() {
-            public LuaValue call(LuaValue arg, LuaValue pos)  {
-                String map = arg.toString();
-                Screen screen = main.getScreen();
-                
-                Vector3D newPlayerPos = null;
-                if(pos != null && pos instanceof LuaTable) {
-                    LuaTable table = (LuaTable)pos;
-                    newPlayerPos = new Vector3D(table.get(1).tofloat(), table.get(2).tofloat(), table.get(3).tofloat());
-                } 
-                
-                if(screen instanceof Game) {
-                    ((Game) screen).loadMap(map, newPlayerPos);
-                } else {
-                    Game game = new Game(main);
-                    main.setScreen(game, true);
-                    game.loadMap(map, newPlayerPos);
+            public LuaValue call(LuaValue map, LuaValue data)  {
+                main.loadMap(map, data);
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("fadeMap", new TwoArgFunction() {
+            public LuaValue call(final LuaValue map, final LuaValue data)  {
+                final Game game = main.getGame();
+                if(game == null) {
+                    main.loadMap(map, data);
+                    return LuaValue.NIL;
                 }
+                
+                final int fadeColor;
+                final int fadeTime;
+                if(data != null && data.istable()) {
+                    if(data.get("fadeColor") != LuaValue.NIL) fadeColor = data.get("fadeColor").toint();
+                    else fadeColor = 0xffffff;
+                    
+                    if(data.get("fadeTime") != LuaValue.NIL) fadeTime = data.get("fadeTime").toint();
+                    else fadeTime = 1000;
+                } else {
+                    fadeColor = 0xffffff;
+                    fadeTime = 1000;
+                }
+                
+                game.paused = true;
+                game.setFade(new Fade(false, fadeColor, fadeTime) {
+                    public void onDone() {
+                        main.loadMap(map, data);
+                        game.paused = false;
+                        game.setFade(new Fade(true, fadeColor, fadeTime));
+                    };
+                });
+                
                 return LuaValue.NIL;
             }
         });
