@@ -159,6 +159,8 @@ public class WorldLoader {
     private static MeshObject loadMesh(Game game, World world, IniFile ini) {
         MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true));
         
+        mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
+        
         loadPhysEntity(mesh, game, world, ini);
         
         return mesh;
@@ -184,8 +186,12 @@ public class WorldLoader {
     }
     
     private static void loadPhysEntity(PhysEntity obj, Game game, World world, IniFile ini) {
-        obj.radius = ini.getFloat("phys_radius", obj.radius);
-        obj.height = ini.getFloat("phys_height", obj.height);
+        obj.radius = ini.getFloat("ph_radius", obj.radius);
+        obj.height = ini.getFloat("ph_height", obj.height);
+        
+        obj.physics = ini.getInt("ph_physics", obj.physics?1:0) == 1;
+        obj.pushable = ini.getInt("ph_pushable", obj.pushable?1:0) == 1;
+        obj.canPush = ini.getInt("ph_can_push", obj.canPush?1:0) == 1;
         
         obj.rotY = ini.getFloat("rot_y", obj.height);
         obj.hp = ini.getInt("hp", obj.hp);

@@ -16,11 +16,14 @@ import code.math.Vector3D;
 public class MeshObject extends PhysEntity {
     
     public Mesh mesh;
-    public boolean preciseCollision = true;
+    public boolean meshCollision = true;
     
     public MeshObject(Mesh[] meshes) {
         this.mesh = meshes[0];
         setSize(Math.max(Math.max(mesh.max.z,-mesh.min.z), Math.max(mesh.max.x,-mesh.min.x)), Math.max(0, mesh.max.y));
+        physics = false;
+        pushable = false;
+        canPush = false;
     }
     
     public void physicsUpdate(World world) {
@@ -30,7 +33,7 @@ public class MeshObject extends PhysEntity {
     }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
-        if(!preciseCollision) return super.rayCast(ray, onlyMeshes);
+        if(!meshCollision) return super.rayCast(ray, onlyMeshes);
         
         if(RayCast.isRayAABBCollision(ray, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
@@ -44,7 +47,7 @@ public class MeshObject extends PhysEntity {
     }
     
     public boolean meshSphereCast(Vector3D sphere, float radius) {
-        if(!preciseCollision) return false;
+        if(!meshCollision) return false;
         
         if(SphereCast.isSphereAABBCollision(sphere, radius, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 

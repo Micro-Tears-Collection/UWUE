@@ -19,6 +19,8 @@ public class PhysEntity extends Entity {
     
     boolean onGround;
     
+    public boolean physics = true, pushable = true, canPush = true;
+    
     public void setSize(float radius, float height) {
         this.radius = radius;
         this.height = height;
@@ -59,7 +61,7 @@ public class PhysEntity extends Entity {
     }
     
     public void physicsUpdate(World world) {
-        move(world);
+        if(physics) move(world);
         
         double horizFriction = onGround ? 0.546 : 0.61;
         double verticalFriction = 0.98;
@@ -118,6 +120,8 @@ public class PhysEntity extends Entity {
     }
     
     private static void collisionTest(PhysEntity c1, PhysEntity c2) {
+        if((!c1.pushable || !c2.canPush) && (!c2.pushable || !c1.canPush)) return;
+        
         Vector3D pos1 = c1.pos;
         Vector3D pos2 = c2.pos;
         float rSum = (c1.radius + c2.radius)/2;
@@ -140,8 +144,8 @@ public class PhysEntity extends Entity {
             Vector3D dir = new Vector3D(dx, dy, dz);
             dir.setLength(dis / 2);
             
-            c1.speed.add(dir.x, dir.y, dir.z);
-            c2.speed.add(-dir.x, -dir.y, -dir.z);
+            if(c1.pushable && c2.canPush) c1.speed.add(dir.x, dir.y, dir.z);
+            if(c2.pushable && c1.canPush) c2.speed.add(-dir.x, -dir.y, -dir.z);
         }
     }
     
