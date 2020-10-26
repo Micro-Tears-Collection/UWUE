@@ -211,5 +211,13 @@ public class World {
         
         ray.reset();
     }
+    
+    public Entity findObject(String name) {
+        for(Entity obj : objects) {
+            if(name.equals(obj.unicalID) || name.equals(obj.name)) return obj;
+        }
+        
+        return null;
+    }
 
 }

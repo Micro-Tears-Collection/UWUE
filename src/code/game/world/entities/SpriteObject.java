@@ -21,18 +21,7 @@ public class SpriteObject extends Entity {
         Vector3D tmp = new Vector3D(pos);
         tmp.add(0, spr.h*(spr.align+1)/2, 0);
         
-        float dist = MathUtils.distanceToRay(tmp, ray.start, ray.dir);
-        if(dist > spr.w*spr.w/4) return false;
-        
-        dist = Math.max(0, ray.start.distanceSqr(tmp) - spr.w*spr.w/4);
-        
-        if(dist < ray.dir.lengthSquared() && dist < ray.distance*ray.distance) {
-            ray.distance = (float) Math.sqrt(dist);
-            ray.mesh = null;
-            return true;
-        }
-        
-        return false;
+        return Entity.rayCastSphere(ray, tmp, spr.w/2);
     }
     
     public void render(E3D e3d, World world) {

@@ -203,7 +203,7 @@ public class DialogScreen extends Screen {
                     
                     itemList = new ItemList(items, textView.getWidth(), textView.getHeight(), font) {
                         public void itemSelected() {
-                            if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.start();
+                            if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.play();
                         }
                     };
                     itemList.setCenter(false);
@@ -307,7 +307,7 @@ public class DialogScreen extends Screen {
             Keys.reset();
             if(itemList != null && itemList.getIndex() == -1) break ok;
             
-            game.main.clickedS.start();
+            game.main.clickedS.play();
             if(!nextText()) {
                 if(reset) {
                     show();

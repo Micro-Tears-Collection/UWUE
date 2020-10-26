@@ -9,6 +9,7 @@ import code.game.Game;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
+import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
 import code.utils.IniFile;
 import code.utils.StringTools;
@@ -112,7 +113,7 @@ public class WorldLoader {
                 player.stop();
                 if(player.buffer != null) player.free();
                 player.loadFile(tmp);
-                player.start();
+                player.play();
             }
             if(lvl.getInt("music", "stop", 0) == 1) {
                 player.stop();
@@ -150,10 +151,33 @@ public class WorldLoader {
             obj = loadSprite(game, world, ini, true);
         } else if(objType.equals("mesh")) {
             obj = loadMesh(game, world, ini);
+        } else if(objType.equals("sound")) {
+            obj = loadSoundSourceEntity(game, world, ini);
         }
         
         if(obj != null) world.objects.add(obj);
         
+    }
+
+    private static SoundSourceEntity loadSoundSourceEntity(Game game, World world, IniFile ini) {
+        SoundSource source = Asset.getSoundSource(ini.get("sound"));
+        
+        source.setVolume(ini.getFloat("volume", 1));
+        source.setPitch(ini.getFloat("pitch", 1));
+        source.setLoop(ini.getInt("loop", 1) == 1);
+        
+        source.set3D(ini.getInt("3d_effects", 1) == 1);
+        source.setDistance(ini.getFloat("reference_distance", SoundSource.defRefDist), 
+                ini.getFloat("max_distance", SoundSource.defMaxDist));
+        
+        SoundSourceEntity sound = new SoundSourceEntity(source);
+        
+        loadDefEntity(sound, game, world, ini);
+        
+        source.setPosition(sound.pos);
+        if(ini.getInt("playing_from_start", 1) == 1) source.play();
+        
+        return sound;
     }
 
     private static MeshObject loadMesh(Game game, World world, IniFile ini) {

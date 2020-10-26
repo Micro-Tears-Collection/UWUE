@@ -3,6 +3,7 @@ package code.game.world.entities;
 import code.engine3d.E3D;
 import code.game.Main;
 import code.game.world.World;
+import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Vector3D;
 import org.luaj.vm2.LuaValue;
@@ -71,6 +72,21 @@ public class Entity {
             
             if(succesRun) return activateImpl(main);
             else return failImpl(main);
+        }
+        
+        return false;
+    }
+    
+    public static boolean rayCastSphere(Ray ray, Vector3D pos, float radius) {
+        float dist = MathUtils.distanceToRay(pos, ray.start, ray.dir);
+        if(dist > radius*radius) return false;
+        
+        dist = Math.max(0, ray.start.distanceSqr(pos) - radius*radius);
+        
+        if(dist < ray.dir.lengthSquared() && dist < ray.distance*ray.distance) {
+            ray.distance = (float) Math.sqrt(dist);
+            ray.mesh = null;
+            return true;
         }
         
         return false;

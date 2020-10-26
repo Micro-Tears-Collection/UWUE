@@ -32,18 +32,7 @@ public class PhysEntity extends Entity {
         Vector3D tmp = new Vector3D(pos);
         tmp.add(0, height-radius, 0);
         
-        float dist = MathUtils.distanceToRay(tmp, ray.start, ray.dir);
-        if(dist > radius*radius) return false;
-        
-        dist = Math.max(0, ray.start.distanceSqr(tmp) - radius*radius);
-        
-        if(dist < ray.dir.lengthSquared() && dist < ray.distance*ray.distance) {
-            ray.distance = (float) Math.sqrt(dist);
-            ray.mesh = null;
-            return true;
-        }
-        
-        return false;
+        return Entity.rayCastSphere(ray, tmp, radius);
     }
     
     public boolean damage(int damage, Entity attacker) {

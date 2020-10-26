@@ -6,6 +6,8 @@ import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
 import code.game.Main;
+import code.game.world.entities.Entity;
+import code.game.world.entities.SoundSourceEntity;
 import code.math.Vector3D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -94,8 +97,9 @@ public class Scripting {
                     main.musPlayer.stop();
                     main.musPlayer.free();
                     main.musPlayer.loadFile(name);
-                    main.musPlayer.start();
-                } else if(restart.toboolean()) main.musPlayer.rewind();
+                    main.musPlayer.play();
+                } else if(!main.musPlayer.isPlaying()) main.musPlayer.play();
+                else if(restart.toboolean()) main.musPlayer.rewind();
                 
                 return LuaValue.NIL;
             }
@@ -108,9 +112,57 @@ public class Scripting {
             }
         });
         
+        lua.set("isMusicPlaying", new ZeroArgFunction() {
+            public LuaValue call()  {
+                return LuaBoolean.valueOf(main.musPlayer.isPlaying());
+            }
+        });
+        
         lua.set("setMusicPitch", new OneArgFunction() {
             public LuaValue call(LuaValue arg)  {
                 main.musPlayer.setPitch(arg.tofloat());
+                return LuaValue.NIL;
+            }
+        });
+        
+        addEntitiesScripts(main, lua);
+        
+    }
+    
+    private static void addEntitiesScripts(final Main main, LuaTable lua) {
+        
+        lua.set("playSource", new OneArgFunction() {
+            public LuaValue call(LuaValue obj)  {
+                Game game = main.getGame();
+                Entity found = game != null?game.world.findObject(obj.toString()):null;
+                SoundSourceEntity snd = 
+                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+                
+                if(snd != null) snd.source.play();
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("stopSource", new OneArgFunction() {
+            public LuaValue call(LuaValue obj)  {
+                Game game = main.getGame();
+                Entity found = game != null?game.world.findObject(obj.toString()):null;
+                SoundSourceEntity snd = 
+                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+                
+                if(snd != null) snd.source.stop();
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("rewindSource", new OneArgFunction() {
+            public LuaValue call(LuaValue obj)  {
+                Game game = main.getGame();
+                Entity found = game != null?game.world.findObject(obj.toString()):null;
+                SoundSourceEntity snd = 
+                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+                
+                if(snd != null) snd.source.rewind();
                 return LuaValue.NIL;
             }
         });

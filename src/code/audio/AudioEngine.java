@@ -30,7 +30,7 @@ public class AudioEngine {
         alCapabilities = AL.createCapabilities(alcCapabilities);
         //AL10.alGetError();
         
-        AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE);
+        AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
         AL11.alSpeedOfSound(34300f);
     }
 

@@ -35,7 +35,7 @@ public class Menu extends Screen {
         shadow.blendMode = Material.BLEND;
         
         main.musPlayer.loadFile("/music/menu.ogg");
-        main.musPlayer.start();
+        main.musPlayer.play();
         
         Engine.hideCursor(false);
         
@@ -52,7 +52,7 @@ public class Menu extends Screen {
         menu = new ItemList(new String[]{"START","OPTIONS","ABOUT","EXIT"}, 
                 getWidth()/2, getHeight(), main.font) {
                     public void itemSelected() {
-                        main.selectedS.start();
+                        main.selectedS.play();
                     }
                 };
     }
@@ -118,7 +118,7 @@ public class Menu extends Screen {
         if(index == 0) {
             main.musPlayer.setVolume(0);
             main.musPlayer.stop();
-            main.gameStartS.start();
+            main.gameStartS.play();
         
             Engine.hideCursor(true);
             
@@ -134,10 +134,10 @@ public class Menu extends Screen {
             main.setScreen(blank, true);
             
         } else if(index == 2) {
-            main.clickedS.start();
+            main.clickedS.play();
             main.setScreen(new About(main, this));
         } else if(index == 3) {
-            main.clickedS.start();
+            main.clickedS.play();
             main.stop();
         }
     }
