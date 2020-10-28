@@ -98,6 +98,7 @@ public class PhysEntity extends Entity {
             onGround = tmpRay.collision;
             if(tmpRay.collision) {
                 pos.y = tmpRay.collisionPoint.y;
+                speed.y = 0;
             }
             
             flen -= r;

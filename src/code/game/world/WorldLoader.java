@@ -26,7 +26,10 @@ public class WorldLoader {
         Asset.free();
         
         String path = folder;
-        if(!folder.toLowerCase().endsWith(".ini")) path += "map.ini";
+        if(!folder.toLowerCase().endsWith(".ini")) {
+            if(folder.endsWith("/")) path += "map.ini";
+            else path = "/maps/"+path+"/map.ini";
+        }
         
         String[] lines = Asset.loadLines(path);
         IniFile lvl = new IniFile(new Hashtable());
