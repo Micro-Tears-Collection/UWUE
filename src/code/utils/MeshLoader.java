@@ -6,6 +6,7 @@ import code.engine3d.Mesh;
 import code.math.Vector3D;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
@@ -108,7 +109,13 @@ public class MeshLoader {
     }
     
     public static Mesh[] loadObj(String name, boolean createPhysics) {
-        File file = new File("data", name);
+        String[] data = StringTools.cutOnStrings(name, '|');
+        Hashtable<String, String> replace = new Hashtable();
+        for(int i=1; i<data.length; i+=2) {
+            replace.put(data[i], data[i+1]);
+        }
+        
+        File file = new File("data", data[0]);
         String line = null;
         
         try {
@@ -189,7 +196,7 @@ public class MeshLoader {
                         float[][] normals = new float[keysArr.length][];
                         
                         for(int i=0; i<keysArr.length; i++) {
-                            texs[i] = Asset.getMaterial(keysArr[i]);
+                            texs[i] = Asset.getMaterial(keysArr[i], replace);
                             Vector<Face> meshFaces = materials.get(keysArr[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];
