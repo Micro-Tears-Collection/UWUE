@@ -292,6 +292,7 @@ public class Main {
         Game game = getGame();
 
         Vector3D newPlayerPos = null;
+        float rotX = Float.MAX_VALUE;
         float rotY = Float.MAX_VALUE;
         
         if(data != null && data.istable()) {
@@ -304,6 +305,7 @@ public class Main {
                         pos.get(3).tofloat());
             }
             
+            if(data.get("rotX") != LuaValue.NIL) rotY = data.get("rotX").tofloat();
             if(data.get("rotY") != LuaValue.NIL) rotY = data.get("rotY").tofloat();
         }
 
@@ -311,7 +313,7 @@ public class Main {
             game = new Game(this);
             setScreen(game, true);
         }
-        game.loadMap(map, newPlayerPos, rotY);
+        game.loadMap(map, newPlayerPos, rotX, rotY);
     }
 
 }

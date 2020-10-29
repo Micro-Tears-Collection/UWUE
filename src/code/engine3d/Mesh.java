@@ -21,6 +21,7 @@ public class Mesh extends Renderable {
     
     public int[] vertsID, uvsID, normals, vertsCount;
     public Material[] mats;
+    public boolean collision = true, visible = true;
     
     public float[][] physicsVerts;
     public float[][] normalsPerFace;
@@ -44,6 +45,13 @@ public class Mesh extends Renderable {
         this.omax = new Vector3D(max);
         this.min = min;
         this.max = max;
+    }
+    
+    public void load(IniFile ini) {
+        super.load(ini);
+        
+        collision = ini.getInt("collision", 1) == 1;
+        visible = ini.getInt("visible", 1) == 1;
     }
     
     public void setPhysics(float[][] xyz) {
@@ -165,6 +173,10 @@ public class Mesh extends Renderable {
         return middle.z;
     }
     
+    public void prepareRender(E3D e3d) {
+        if(visible) super.prepareRender(e3d);
+    }
+    
     public void render(E3D e3d) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadMatrixf(drawMatrix);
@@ -184,7 +196,9 @@ public class Mesh extends Renderable {
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, normals[submesh]);
             GL15.glNormalPointer(GL15.GL_FLOAT, 0, 0);
 
-            mats[submesh].bind();
+            mats[submesh].bind(e3d, 
+                    (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
+                    (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2);
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertsCount[submesh]);
         }
 

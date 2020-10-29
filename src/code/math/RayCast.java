@@ -32,6 +32,8 @@ public class RayCast {
     }
 
     public static void rayCast(Mesh mesh, float[] mat, Ray ray) {
+        if(!mesh.collision) return;
+        
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         

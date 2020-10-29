@@ -22,9 +22,10 @@ public class E3D {
     
     public Vector<Renderable> toRender, preDraw, postDraw;
     
-    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO;
+    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, rectNormals;
     
     public boolean mode2D;
+    public int maxLights;
     
     public E3D() {
         toRender = new Vector();
@@ -39,20 +40,28 @@ public class E3D {
                     1, 1, 0, 0, 1, 0
                 }, GL15.GL_STATIC_DRAW);
         
-        arrowVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, arrowVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
-                new short[]{
-                    -1, -1, 0, 1, 0, 0,
-                    -1, 1, 0,
-                }, GL15.GL_STATIC_DRAW);
-        
         rectuvVBO = GL15.glGenBuffers(); //Creates a VBO ID
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvVBO); //Loads the current VBO to store the data
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
                 new short[]{
                     0, 0, 1, 0,
                     1, 1, 0, 1
+                }, GL15.GL_STATIC_DRAW);
+        
+        rectNormals = GL15.glGenBuffers(); //Creates a VBO ID
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectNormals); //Loads the current VBO to store the data
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+                new short[]{
+                    0, 0, 1, 0, 0, 1,
+                    0, 0, 1, 0, 0, 1
+                }, GL15.GL_STATIC_DRAW);
+        
+        arrowVBO = GL15.glGenBuffers(); //Creates a VBO ID
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, arrowVBO); //Loads the current VBO to store the data
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+                new short[]{
+                    -1, -1, 0, 1, 0, 0,
+                    -1, 1, 0,
                 }, GL15.GL_STATIC_DRAW);
         
         rectuvMVBO = GL15.glGenBuffers(); //Creates a VBO ID
@@ -72,17 +81,23 @@ public class E3D {
                 }, GL15.GL_STATIC_DRAW);
         
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+        
+        GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
+        GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+        maxLights = GL11.glGetInteger(GL11.GL_MAX_LIGHTS);
     }
     
     public void destroy() {
         GL15.glDeleteBuffers(rectCoordVBO);
         GL15.glDeleteBuffers(rectuvVBO);
         GL15.glDeleteBuffers(rectuvMVBO);
+        GL15.glDeleteBuffers(rectNormals);
         GL15.glDeleteBuffers(windowColVBO);
         GL15.glDeleteBuffers(arrowVBO);
     }
     
     public Matrix4f cam = new Matrix4f(), invCam = new Matrix4f(), proj = new Matrix4f();
+    public float[] invCamf = new float[16];
     public Matrix4f m = new Matrix4f();
     float[] tmp = new float[16];
     
@@ -97,6 +112,7 @@ public class E3D {
         
         invCam.set(cam);
         invCam.invert();
+        invCam.get(invCamf);
         
         proj.identity();
         proj.perspective((float) Math.toRadians(fov), (float) w / h, 1f, 40000.0f);

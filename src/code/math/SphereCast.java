@@ -24,6 +24,8 @@ public class SphereCast {
     }
     
     public static boolean sphereCast(Mesh mesh, float[] mat, Vector3D pos, float rad) {
+        if(!mesh.collision) return false;
+        
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         

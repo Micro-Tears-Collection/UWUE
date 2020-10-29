@@ -178,10 +178,9 @@ public class World {
         else if(fogMode == EXP) e3d.setExpFog(fogDensity, fogColor);
         
         //Check all location meshes
-        e3d.invCam.get(tmp);
-        Culling.set(tmp, e3d.fovX, e3d.fovY, 1, 40000);
+        Culling.set(e3d.invCamf, e3d.fovX, e3d.fovY, 1, 40000);
         
-        for(Node node : renderNodes) node.render(e3d, tmp, this);
+        for(Node node : renderNodes) node.render(e3d, e3d.invCamf, this);
         
         //Check objects
         for(Entity object : objects) object.render(e3d, this);

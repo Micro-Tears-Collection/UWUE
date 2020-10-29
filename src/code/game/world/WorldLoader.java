@@ -1,6 +1,8 @@
 package code.game.world;
 
 import code.audio.SoundSource;
+import code.engine3d.Light;
+import code.engine3d.LightGroup;
 import code.utils.Asset;
 import code.engine3d.Mesh;
 import code.engine3d.Sprite;
@@ -11,9 +13,11 @@ import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
 import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
+import code.math.Vector3D;
 import code.utils.IniFile;
 import code.utils.StringTools;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  *
@@ -24,6 +28,11 @@ public class WorldLoader {
     public static void loadWorld(Game game, String folder) {
         Asset.destroyThings(Asset.DISPOSABLE);
         Asset.free();
+        
+        LightGroup.lightgroups.removeAllElements();
+        LightGroup.allLights.removeAllElements();
+        LightGroup.defaultGroup = new LightGroup("default");
+        LightGroup.lightgroups.add(LightGroup.defaultGroup);
         
         String path = folder;
         if(!folder.toLowerCase().endsWith(".ini")) {
@@ -72,9 +81,9 @@ public class WorldLoader {
             String tmp = lvl.get("fog", "color");
             if(tmp != null) {
                 int c = StringTools.getRGB(tmp,',');
-                world.fogColor = new float[] {((c>>16)&255) / 255f, 
-                    ((c>>8)&255) / 255f, 
-                    (c&255) / 255f, 1};
+                world.fogColor = new float[] {(float)((c>>16)&255) / 255f, 
+                    (float)((c>>8)&255) / 255f, 
+                    (float)(c&255) / 255f, 1};
             }
             
             tmp = lvl.get("fog", "density");
@@ -98,6 +107,10 @@ public class WorldLoader {
         
         Object[] objGroups = IniFile.createGroups(lines);
         loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world);
+        if(LightGroup.allLights.isEmpty()) {
+            LightGroup.defaultGroup = null;
+            LightGroup.lightgroups.removeAllElements();
+        }
         
         game.world = world;
         world.objects.add(game.player);
@@ -131,17 +144,89 @@ public class WorldLoader {
     }
     
     public static void loadObjects(String[] names, IniFile[] objs, Game game, World world) {
+        Vector lightgroupdata = new Vector();
+        boolean defaultWas = false;
         
         for(int i=0; i<names.length; i++) {
             String name = names[i];
-            if(!name.startsWith("obj ")) continue;
-            
-            String objType = name.substring(4);
             IniFile obj = objs[i];
             
-            loadObject(game, world, objType, obj);
+            if(name.startsWith("obj ")) {
+                String objType = name.substring(4);
+
+                loadObject(game, world, objType, obj);
+            } else if(name.startsWith("light ") || name.equals("light")) {
+                float[] pos = null;
+                float[] color = StringTools.cutOnFloats(obj.getDef("color", "255,255,255"), ',');
+                
+                String tmp = obj.getDef("type", "point");
+                if(tmp.equals("point")) {
+                    pos = StringTools.cutOnFloats(obj.get("pos"), ',');
+                    pos = new float[]{pos[0], pos[1], pos[2], 1};
+                } else if(tmp.equals("dir")) {
+                    Vector3D dir = new Vector3D();
+                    dir.setDirection(obj.getFloat("rot_x", 0), obj.getFloat("rot_y", 0));
+                    pos = new float[]{dir.x, dir.y, dir.z, 0};
+                }
+                
+                Light light = new Light(name.length()>6?name.substring(6):"", pos, color);
+
+                LightGroup.allLights.add(light);
+            } else if(name.startsWith("lightgroup ")) {
+                String lname = name.substring(11);
+                
+                LightGroup group;
+                boolean defaultGroup = lname.equals("default");
+                defaultWas |= defaultGroup;
+                if(defaultGroup) {
+                    group = LightGroup.defaultGroup;
+                } else {
+                    group = new LightGroup(lname);
+                    LightGroup.lightgroups.add(group);
+                }
+                
+                group.setAmbient(StringTools.cutOnFloats(obj.getDef("ambient", "255,255,255"), ','));
+                
+                lightgroupdata.add(group);
+                lightgroupdata.add(StringTools.cutOnStrings(obj.getDef("include", defaultGroup?"all":""), ','));
+                lightgroupdata.add(StringTools.cutOnStrings(obj.getDef("exclude", ""), ','));
+            }
         }
         
+        if(!defaultWas) {
+            lightgroupdata.add(LightGroup.defaultGroup);
+            lightgroupdata.add(new String[]{"all"});
+            lightgroupdata.add(new String[0]);
+        }
+
+        for(int i=0; i<lightgroupdata.size(); i+=3) {
+            LightGroup group = (LightGroup) lightgroupdata.elementAt(i);
+
+            String[] groupLights = (String[]) lightgroupdata.elementAt(i+1);
+            boolean all = groupLights.length==1?groupLights[0].equals("all"):false;
+            
+            if(all) group.lights = (Vector<Light>)LightGroup.allLights.clone();
+            else for(String lightName : groupLights) {
+                for(Light light : LightGroup.allLights) {
+                    if(light.name.equals(lightName)) {
+                        group.lights.add(light);
+                        break;
+                    }
+                }
+            }
+            
+            groupLights = (String[]) lightgroupdata.elementAt(i+2);
+            
+            for(String lightName : groupLights) {
+                for(int xx=0; xx<group.lights.size(); xx++) {
+                    Light light = group.lights.elementAt(xx);
+                    if(light.name.equals(lightName)) {
+                        group.lights.removeElementAt(xx);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private static void loadObject(Game game, World world, String objType, IniFile ini) {

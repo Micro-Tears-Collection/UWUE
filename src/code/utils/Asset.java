@@ -73,16 +73,22 @@ public class Asset {
         System.gc();
     }
     
-    public static Material getMaterial(String name) {
+    public static Material getMaterial(String name, Hashtable<String,String> replace) {
         String[] lines = StringTools.cutOnStrings(name, ';');
         IniFile stuff = new IniFile(lines, false);
         
-        Texture tex = getTexture(lines[0]);
+        String path = lines[0];
+        if(replace != null && replace.get(path) != null) path = replace.get(path); 
+        Texture tex = getTexture(path);
         Material mat = new Material(tex);
         
         mat.load(stuff);
         
         return mat;
+    }
+    
+    public static Material getMaterial(String name) {
+        return getMaterial(name, null);
     }
     
     public static Texture getTexture(String name) {

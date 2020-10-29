@@ -1,5 +1,6 @@
 package code.engine3d;
 
+import code.math.Vector3D;
 import code.utils.IniFile;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -11,6 +12,7 @@ import org.lwjgl.opengl.GL14;
 public class Material {
     
     public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5;
+    public static final int UNDEFINED = -2, DEFAULT = -1;
     
     public Texture tex;
     
@@ -19,6 +21,8 @@ public class Material {
     public boolean alphaTest;
     
     public int blendMode = OFF;
+    public String lightGroupName;
+    public LightGroup lightGroup = null;
 
     public Material(Texture tex) {
         this.tex = tex;
@@ -46,9 +50,13 @@ public class Material {
         else if(tmp.equals("scr")) blendMode = SCR;
         else if(tmp.equals("max")) blendMode = MAX;
         else blendMode = OFF;
+        
+        tmp = ini.getDef("lightgroup", "default");
+        if(tmp.equals("0")) lightGroupName = null;
+        else lightGroupName = tmp;
     }
     
-    public void bind() {
+    private void bindImpl() {
         int id = tex.id;
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
         
@@ -84,18 +92,38 @@ public class Material {
                 GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
             }
         }
+    }
+    
+    public void bind() {
+        bindImpl();
+        GL11.glDisable(GL11.GL_LIGHTING);
+    }
+    
+    public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
+        bindImpl();
         
-        /*GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_CONSTANT_ATTENUATION, 0);
-        GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_QUADRATIC_ATTENUATION, 0.00001F);
-        GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
-        GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_SPECULAR, new float[]{0,0,0,1});
-        GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_POSITION, new float[]{0,485,0,1});
-        
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_AMBIENT, new float[]{0,0,0,1});
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_SPECULAR, new float[]{0.2f,0.2f,0.2f,1});
-        GL11.glEnable(GL11.GL_LIGHT0);*/
+        if(!LightGroup.lightgroups.isEmpty() && lightGroupName != null) {
+            GL11.glEnable(GL11.GL_LIGHTING);
+            
+            if(lightGroup == null) {
+                for(LightGroup lightGroup2 : LightGroup.lightgroups) {
+                    if(lightGroup2.name.equals(lightGroupName)) {
+                        lightGroup = lightGroup2;
+                        break;
+                    }
+                }
+
+                if(lightGroup == null) {
+                    lightGroupName = null;
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    return;
+                }
+            }
+            
+            lightGroup.bind(e3d, x, y, z, xs, ys, zs);
+        } else {
+            GL11.glDisable(GL11.GL_LIGHTING);
+        }
         
     }
 

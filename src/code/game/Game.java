@@ -28,6 +28,8 @@ public class Game extends Screen {
     public E3D e3d;
     public DialogScreen dialog;
     LuaTable luasession;
+    
+    public String currentMap;
     public World world;
     public Player player;
     
@@ -35,7 +37,7 @@ public class Game extends Screen {
     
     String nextMap;
     Vector3D newPlayerPos;
-    float nextRotY;
+    float nextRotX, nextRotY;
     
     String nextDialog;
     boolean loadDialogFromFile;
@@ -52,12 +54,13 @@ public class Game extends Screen {
     }
     
     public void loadMap(String nextMap) {
-        loadMap(nextMap, null, Float.MAX_VALUE);
+        loadMap(nextMap, null, Float.MAX_VALUE, Float.MAX_VALUE);
     }
     
-    public void loadMap(String nextMap, Vector3D newPlayerPos, float rotY) {
+    public void loadMap(String nextMap, Vector3D newPlayerPos, float rotX, float rotY) {
         this.nextMap = nextMap;
         this.newPlayerPos = newPlayerPos;
+        this.nextRotX = rotX;
         this.nextRotY = rotY;
         this.nextDialog = null;
     }
@@ -66,11 +69,14 @@ public class Game extends Screen {
         long loadtime = System.currentTimeMillis();
         
         WorldLoader.loadWorld(this, nextMap);
+        currentMap = nextMap;
+        
         if(newPlayerPos != null) player.pos.set(newPlayerPos);
         if(nextRotY != Float.MAX_VALUE) {
             player.rotX = 0;
             player.rotY = nextRotY;
         }
+        if(nextRotX != Float.MAX_VALUE) player.rotX = nextRotX;
         
         nextMap = null;
         newPlayerPos = null;

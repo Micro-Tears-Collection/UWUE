@@ -67,6 +67,17 @@ public class Scripting {
             }
         });
         
+        lua.set("reload", new ZeroArgFunction() {
+            public LuaValue call()  {
+                Game game = main.getGame();
+                
+                if(game != null) {
+                    game.loadMap(game.currentMap, new Vector3D(game.player.pos), game.player.rotX, game.player.rotY);
+                }
+                return LuaValue.NIL;
+            }
+        });
+        
         lua.set("showDialog", new OneArgFunction() {
             public LuaValue call(LuaValue arg)  {
                 String dialog = arg.toString();
