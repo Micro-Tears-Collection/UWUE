@@ -63,6 +63,7 @@ public class World {
             for(int x=0; x<allNodes.length; x++) {
                 if(x == i) continue;
                 Node node2 = allNodes[x];
+                if(node.hasChild(node2)) continue;
                 Mesh mesh2 = node2.mesh;
                 
                 if(mesh.min.x < mesh2.min.x || mesh.max.x > mesh2.max.x ||

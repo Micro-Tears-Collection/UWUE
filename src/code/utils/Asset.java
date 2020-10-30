@@ -73,12 +73,25 @@ public class Asset {
         System.gc();
     }
     
-    public static Material getMaterial(String name, Hashtable<String,String> replace) {
+    public static Material getMaterial(String name, 
+            Hashtable<String,String> replace, String prefix, String postfix) {
         String[] lines = StringTools.cutOnStrings(name, ';');
         IniFile stuff = new IniFile(lines, false);
         
         String path = lines[0];
-        if(replace != null && replace.get(path) != null) path = replace.get(path); 
+        
+        if(replace != null && replace.get(path) != null) {
+            path = replace.get(path);
+        } else if(prefix != null || postfix != null) {
+            //Trenchbroom handling
+            StringBuffer sb = new StringBuffer();
+            
+            if(prefix != null) sb.append(prefix);
+            sb.append(path);
+            if(postfix != null) sb.append(postfix);
+            path = sb.toString();
+        }
+        
         Texture tex = getTexture(path);
         Material mat = new Material(tex);
         
@@ -88,7 +101,7 @@ public class Asset {
     }
     
     public static Material getMaterial(String name) {
-        return getMaterial(name, null);
+        return getMaterial(name, null, null, null);
     }
     
     public static Texture getTexture(String name) {

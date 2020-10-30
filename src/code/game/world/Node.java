@@ -23,6 +23,16 @@ public class Node {
         childs = new Vector();
     }
     
+    public boolean hasChild(Node child) {
+        if(child == this) return true;
+        
+        for(Node node : childs) {
+            if(node.hasChild(child)) return true;
+        }
+        
+        return false;
+    }
+    
     static final Culling cul = new Culling();
     
     public void render(E3D e3d, float[] invCam, World world) {

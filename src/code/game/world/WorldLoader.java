@@ -71,7 +71,12 @@ public class WorldLoader {
         
         Mesh[] worldMeshes = null;
         if(lvl.groupExists("world")) {
-            worldMeshes = MeshLoader.loadObj(lvl.get("world", "model"), true);
+            String prefix = null, postfix = null;
+            if(lvl.getInt("world", "trenchbroom", 0) == 1) {
+                prefix = "/textures/";
+                postfix = ".png";
+            }
+            worldMeshes = MeshLoader.loadObj(lvl.get("world", "model"), true, prefix, postfix);
         }
         
         World world = new World(worldMeshes, skyColor, skybox);
@@ -277,7 +282,7 @@ public class WorldLoader {
     }
 
     private static MeshObject loadMesh(Game game, World world, IniFile ini) {
-        MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true));
+        MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true, null, null));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
         

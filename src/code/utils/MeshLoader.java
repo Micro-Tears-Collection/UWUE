@@ -105,10 +105,10 @@ public class MeshLoader {
     }
     
     public static Mesh[] loadObj(String name) {
-        return loadObj(name, false);
+        return loadObj(name, false, null, null);
     }
     
-    public static Mesh[] loadObj(String name, boolean createPhysics) {
+    public static Mesh[] loadObj(String name, boolean createPhysics, String prefix, String postfix) {
         String[] data = StringTools.cutOnStrings(name, '|');
         Hashtable<String, String> replace = new Hashtable();
         for(int i=1; i<data.length; i+=2) {
@@ -196,7 +196,7 @@ public class MeshLoader {
                         float[][] normals = new float[keysArr.length][];
                         
                         for(int i=0; i<keysArr.length; i++) {
-                            texs[i] = Asset.getMaterial(keysArr[i], replace);
+                            texs[i] = Asset.getMaterial(keysArr[i], replace, prefix, postfix);
                             Vector<Face> meshFaces = materials.get(keysArr[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];
