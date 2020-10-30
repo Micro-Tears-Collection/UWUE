@@ -12,6 +12,7 @@ import code.math.Culling;
 import code.math.Ray;
 import code.math.Vector3D;
 import code.utils.Asset;
+import code.utils.FPS;
 import java.util.Vector;
 import org.joml.Matrix4f;
 
@@ -101,8 +102,10 @@ public class World {
         for(Entity object : objects) object.physicsUpdate(this);
         
         player.pos.add(0, player.eyeHeight, 0);
+        player.speed.add(0, 8F * FPS.frameTime / 50, 0);
         AudioEngine.setListener(player.pos, player.speed, player.rotX, player.rotY);
         player.pos.sub(0, player.eyeHeight, 0);
+        player.speed.sub(0, 8F * FPS.frameTime / 50, 0);
     }
 
     public boolean sphereCast(Vector3D sphere, float radius) {

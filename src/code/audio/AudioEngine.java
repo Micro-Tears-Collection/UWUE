@@ -28,7 +28,7 @@ public class AudioEngine {
 
         alcCapabilities = ALC.createCapabilities(device);
         alCapabilities = AL.createCapabilities(alcCapabilities);
-        //AL10.alGetError();
+        AL10.alGetError();
         
         AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
         AL11.alSpeedOfSound(34300f);
@@ -42,7 +42,7 @@ public class AudioEngine {
         listenerPos[0] = pos.x; listenerPos[1] = pos.y; listenerPos[2] = pos.z;
         
         listenerSpeed[0] = speed.x * 1000 / 50; 
-        listenerSpeed[1] = speed.y * 1000 / 50; 
+        listenerSpeed[1] = speed.y * 1000 / 50;
         listenerSpeed[2] = speed.z * 1000 / 50;
         
         final float xa = 1f;
