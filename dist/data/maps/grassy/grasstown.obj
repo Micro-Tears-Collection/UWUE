@@ -27,7 +27,7 @@ vt 0.99019604921341 0.54756188392639 0
 # 10 texture coordinates
 
 o carper;collision=0
-usemtl /maps/grassy/carpet.png;lightgroup=outside
+usemtl /textures/grassy/carpet.png;lightgroup=outside
 f 2/4 4/3 3/2 1/1
 f 4/3 6/6 5/5 3/2
 f 6/6 8/8 7/7 5/5
@@ -311,7 +311,7 @@ vt 0.91760617494583 0.35912549495697 0
 # 73 texture coordinates
 
 o junk;collision=0
-usemtl /maps/grassy/woody.png
+usemtl /textures/grassy/woody.png
 f 12/14/1 14/13/1 13/12/1 11/11/1
 f 17/14/2 18/13/2 14/12/2 12/11/2
 f 11/14/3 13/13/3 16/12/3 15/11/3
@@ -361,7 +361,7 @@ f 161/14/1 162/13/1 158/12/1 156/11/1
 f 155/14/4 157/13/4 160/12/4 159/11/4
 f 159/14/2 160/13/2 162/12/2 161/11/2
 
-usemtl /maps/grassy/junk.png;alpha_test=1
+usemtl /textures/grassy/junk.png;alpha_test=1
 f 16/18/5 13/17/5 14/16/5 18/15/5
 f 24/18/5 21/17/5 22/16/5 26/15/5
 f 32/18/5 29/17/5 30/16/5 34/15/5
@@ -390,7 +390,7 @@ f 142/18/5 140/17/5 146/16/5 145/15/5
 f 152/18/5 149/17/5 150/16/5 154/15/5
 f 160/18/5 157/17/5 158/16/5 162/15/5
 
-usemtl /maps/grassy/wood.png
+usemtl /textures/grassy/wood.png
 f 196/56/10 195/55/10 193/54/10 194/53/10
 f 198/60/10 194/59/10 193/58/10 197/57/10
 f 176/62/3 184/62/3 182/61/3 170/61/3
@@ -785,7 +785,7 @@ vt 0.265625 0.46875 0
 # 22 texture coordinates
 
 o flowers;collision=0
-usemtl /maps/grassy/junk.png;alpha_test=1
+usemtl /textures/grassy/junk.png;alpha_test=1
 f 344/87/11 346/86/11 345/85/11 343/84/11
 f 347/84/12 349/85/12 350/86/12 348/87/12
 f 352/87/13 354/86/13 353/85/13 351/84/13
@@ -954,7 +954,7 @@ vn 0.14673773944378 -0.06250980496407 -0.98719835281372
 # 0 texture coordinate
 
 o flowersinv;collision=0
-usemtl /maps/grassy/junk.png;alpha_test=1
+usemtl /textures/grassy/junk.png;alpha_test=1
 f 343/84/87 345/85/87 346/86/87 344/87/87
 f 348/87/88 350/86/88 349/85/88 347/84/88
 f 351/84/89 353/85/89 354/86/89 352/87/89
@@ -1166,7 +1166,7 @@ vt 0.5 0.75 0
 # 17 texture coordinates
 
 o shtori2;collision=0
-usemtl /maps/grassy/shtori.png;alpha_test=1
+usemtl /textures/grassy/shtori.png;alpha_test=1
 f 469/94/164 485/108/164 484/107/163 470/106/163
 f 468/112/165 472/111/166 471/110/166 467/109/165
 f 472/112/166 474/111/167 473/110/167 471/109/166
@@ -1254,7 +1254,7 @@ vn 0.67858225107193 0.33074235916138 -0.65584725141525
 # 0 texture coordinate
 
 o shtori;collision=0
-usemtl /maps/grassy/shtori.png;alpha_test=1
+usemtl /textures/grassy/shtori.png;alpha_test=1
 f 470/106/210 484/107/210 485/108/209 469/94/209
 f 467/109/211 471/110/212 472/111/212 468/112/211
 f 471/109/212 473/110/213 474/111/213 472/112/212
@@ -1405,7 +1405,7 @@ vt 0.37362748384476 0.27076327800751 0
 # 52 texture coordinates
 
 o Объект_Плоскость.2
-usemtl /maps/grassy/woody.png
+usemtl /textures/grassy/woody.png
 f 525/126/4 551/125/4 533/124/4 526/123/4
 f 530/130/5 532/129/5 533/128/5 523/127/5
 f 524/134/3 523/133/3 533/132/3 551/131/3
@@ -1602,7 +1602,7 @@ vt 0.47368422150612 0 0
 # 69 texture coordinates
 
 o Объект_Плоскость.4
-usemtl /maps/grassy/wood.png
+usemtl /textures/grassy/wood.png
 f 649/178/1 646/177/1 625/176/1 650/175/1
 f 628/186/5 650/185/5 625/184/5 654/183/5
 f 637/189/5 634/188/5 631/106/5 638/187/5
@@ -1635,7 +1635,7 @@ f 640/208/2 662/238/2 656/242/2 629/207/2
 f 628/213/3 655/241/3 661/240/3 639/212/3
 f 649/211/3 664/239/3 663/243/3 648/113/3
 
-usemtl /maps/grassy/carpet.png
+usemtl /textures/grassy/carpet.png
 f 660/182/5 659/181/5 657/180/5 658/179/5
 f 662/194/254 666/193/254 664/192/254 661/191/254
 f 655/198/255 659/181/1 660/182/1 656/197/255
@@ -1687,7 +1687,7 @@ v -3851.25 -759.45623779296875 2595
 # 0 texture coordinate
 
 o Объект_Плоскость.6
-usemtl /maps/grassy/wood.png
+usemtl /textures/grassy/wood.png
 f 687/178/1 685/177/1 669/176/1 688/175/1
 f 672/186/5 688/185/5 669/184/5 692/183/5
 f 679/189/5 676/188/5 587/106/5 594/187/5
@@ -1720,7 +1720,7 @@ f 681/208/2 700/238/2 694/242/2 673/207/2
 f 672/213/3 693/241/3 699/240/3 680/212/3
 f 687/211/3 702/239/3 701/243/3 686/113/3
 
-usemtl /maps/grassy/carpet.png
+usemtl /textures/grassy/carpet.png
 f 698/182/5 697/181/5 695/180/5 696/179/5
 f 700/194/254 704/193/254 702/192/254 699/191/254
 f 693/198/255 697/181/1 698/182/1 694/197/255
@@ -1784,7 +1784,7 @@ vt 0.31707316637039 0 0
 # 18 texture coordinates
 
 o shelves;collision=0
-usemtl /maps/grassy/wood.png
+usemtl /textures/grassy/wood.png
 f 712/245/4 708/245/4 705/244/4 709/244/4
 f 708/247/2 707/94/2 706/111/2 705/246/2
 f 710/251/1 706/250/1 707/249/1 711/248/1
@@ -1892,7 +1892,7 @@ vt 0.06122449040413 1 0
 # 15 texture coordinates
 
 o Объект_Плоскость.1
-usemtl /maps/grassy/wood.png
+usemtl /textures/grassy/wood.png
 f 740/94/5 742/111/5 741/110/5 739/106/5
 f 737/262/3 740/262/3 739/106/3 642/106/3
 f 738/111/1 742/111/1 740/94/1 737/94/1
@@ -2043,13 +2043,13 @@ vt 1 0.99965667724609 0
 # 48 texture coordinates
 
 o Объект_Плоскость.3
-usemtl /maps/grassy/window.png;alpha_test=1
+usemtl /textures/grassy/window.png;alpha_test=1
 f 165/110/3 804/106/3 803/113/3 164/116/3
 f 834/315/3 836/314/3 163/111/3 164/116/3
 f 830/316/3 834/315/3 164/116/3 803/113/3
 f 832/317/3 833/94/3 163/111/3 836/314/3
 
-usemtl /maps/grassy/wal2.png
+usemtl /textures/grassy/wal2.png
 f 801/278/2 817/94/2 802/20/2 847/277/2
 f 821/296/2 824/295/2 823/294/2 820/293/2
 f 822/298/2 816/94/2 818/297/2 820/293/2
@@ -2064,18 +2064,7 @@ f 820/293/2 818/297/2 815/20/2 821/296/2
 f 823/294/2 819/299/2 817/278/2 825/300/2
 f 849/278/258 831/94/258 852/20/258 848/277/258
 
-usemtl /maps/grassy/ceil.png
-f 835/106/10 841/321/10 166/284/10 163/283/10
-f 163/283/10 166/284/10 167/285/10 164/286/10
-f 164/286/10 167/285/10 168/287/10 165/94/10
-f 841/321/10 842/322/10 843/281/10 166/284/10
-f 166/284/10 843/281/10 844/289/10 167/285/10
-f 167/285/10 844/289/10 845/290/10 168/287/10
-f 842/322/10 846/110/10 847/280/10 843/281/10
-f 843/281/10 847/280/10 802/292/10 844/289/10
-f 844/289/10 802/292/10 815/111/10 845/290/10
-
-usemtl /maps/grassy/flor.png
+usemtl /textures/grassy/flor.png
 f 839/282/5 808/281/5 801/280/5 838/279/5
 f 803/286/5 806/285/5 805/284/5 833/283/5
 f 804/94/5 807/287/5 806/285/5 803/286/5
@@ -2086,20 +2075,31 @@ f 837/291/5 833/283/5 805/284/5 840/288/5
 f 809/289/5 817/292/5 801/280/5 808/281/5
 f 810/290/5 816/111/5 817/292/5 809/289/5
 
-usemtl /maps/grassy/shkav.png
+usemtl /textures/grassy/shkav.png
 f 822/304/5 827/303/5 829/302/5 825/301/5
 f 826/110/2 828/116/2 829/113/2 827/106/2
 
-usemtl /maps/grassy/walshaded.png
+usemtl /textures/grassy/walshaded.png
 f 835/308/3 163/307/3 833/306/3 837/305/3
 
-usemtl /maps/grassy/carpet.png
+usemtl /textures/grassy/carpet.png
 f 812/4/1 814/8/1 813/7/1 811/1/1
 
-usemtl /maps/grassy/wal.png
+usemtl /textures/grassy/wal.png
 f 814/313/1 804/106/1 165/110/1 813/312/1
 f 837/320/4 851/308/4 850/319/4 835/318/4
 f 848/324/258 850/308/4 851/319/4 849/323/258
+
+usemtl /textures/grassy/ceil.png
+f 835/106/10 841/321/10 166/284/10 163/283/10
+f 163/283/10 166/284/10 167/285/10 164/286/10
+f 164/286/10 167/285/10 168/287/10 165/94/10
+f 841/321/10 842/322/10 843/281/10 166/284/10
+f 166/284/10 843/281/10 844/289/10 167/285/10
+f 167/285/10 844/289/10 845/290/10 168/287/10
+f 842/322/10 846/110/10 847/280/10 843/281/10
+f 843/281/10 847/280/10 802/292/10 844/289/10
+f 844/289/10 802/292/10 815/111/10 845/290/10
 
 v -3520 -537 2152
 v -3520 -793 2152
@@ -2135,7 +2135,7 @@ vt 0.265625 0.15625 0
 # 2 texture coordinates
 
 o Объект_Плоскость.7
-usemtl /maps/grassy/junk.png;alpha_test=1
+usemtl /textures/grassy/junk.png;alpha_test=1
 f 875/91/259 857/95/259 856/94/259 876/88/259
 f 872/87/259 869/100/259 870/99/259 871/84/259
 f 874/105/259 868/326/259 867/325/259 873/102/259
@@ -2683,7 +2683,7 @@ vt 0.62993484735489 0.0086213350296 0
 # 47 texture coordinates
 
 o Объект_Плоскость.30
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 897/330/5 898/329/5 895/328/5 890/327/5
 f 890/334/1 895/333/1 894/332/1 896/331/1
 f 892/336/5 899/335/5 898/329/5 897/330/5
@@ -3150,7 +3150,7 @@ vt 0.70689332485199 0.11674642562866 0
 # 6 texture coordinates
 
 o Объект_Плоскость.20
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 1189/351/2 1160/350/2 1188/349/2 1273/348/2
 f 1157/353/2 1160/350/2 1189/351/2 1191/352/2
 f 1273/348/2 1317/375/2 1367/374/2
@@ -3371,7 +3371,7 @@ vt 0.35560667514801 0.99591535329819 0
 # 6 texture coordinates
 
 o Объект_Плоскость.11
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 1389/336/5 1391/335/5 1374/329/5 1388/330/5
 f 1382/331/5 1378/331/5 1377/337/5 1376/337/5
 f 1376/337/5 1377/337/5 1390/338/5 1380/338/5
@@ -4874,7 +4874,7 @@ v -2025 4420 2700
 # 0 texture coordinate
 
 o Объект_Плоскость.19
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 1654/362/1 2191/359/1 2190/356/1 2195/361/1
 f 2195/362/1 2190/359/1 1725/356/1 2194/361/1
 f 1832/362/1 1855/359/1 1902/356/1 1877/361/1
@@ -5523,7 +5523,7 @@ v -2025 810 2700
 # 0 texture coordinate
 
 o Объект_Плоскость
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 2861/362/1 2947/359/1 2946/356/1 2948/361/1
 f 2948/362/1 2946/359/1 2191/356/1 1654/361/1
 f 2876/331/2 2901/332/2 2902/333/2 2861/334/2
@@ -5722,7 +5722,7 @@ v -3645 -440 -270
 # 0 texture coordinate
 
 o Объект_Плоскость.12
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 2982/330/5 2983/329/5 2980/328/5 2974/327/5
 f 2974/334/3 2980/333/3 2979/332/3 2981/331/3
 f 2976/336/5 2984/335/5 2983/329/5 2982/330/5
@@ -6373,7 +6373,7 @@ v -3105 -1080 -270
 # 0 texture coordinate
 
 o Объект_Плоскость.13
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3591/344/3 3054/343/3 3097/339/3 3051/337/3
 f 3053/327/10 3094/328/10 3095/329/10 3052/330/10
 f 3068/331/2 3093/332/2 3094/333/2 3053/334/2
@@ -7128,7 +7128,7 @@ vt 0.4738632440567 0.99591535329819 0
 # 4 texture coordinates
 
 o Объект_Плоскость.9
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3738/330/5 3739/329/5 3736/328/5 3730/327/5
 f 3730/334/3 3736/333/3 3735/332/3 3737/331/3
 f 3732/336/5 3740/335/5 3739/329/5 3738/330/5
@@ -7402,7 +7402,7 @@ vt 0.23385375738144 0.55213052034378 0
 # 4 texture coordinates
 
 o Объект_Плоскость.14
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3806/393/5 3808/392/5 3807/391/5 3805/390/5
 f 3809/393/5 3811/392/5 3810/391/5 3603/390/5
 f 3813/393/5 3815/392/5 3814/391/5 3812/390/5
@@ -8029,7 +8029,7 @@ v -1755 -540 -270
 # 0 texture coordinate
 
 o Объект_Плоскость.1_1
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4467/344/3 3927/343/3 3970/339/3 3924/337/3
 f 3926/327/10 3967/328/10 3968/329/10 3925/330/10
 f 3941/331/2 3966/332/2 3967/333/2 3926/334/2
@@ -8676,7 +8676,7 @@ v -2025 -440 -270
 # 0 texture coordinate
 
 o Объект_Плоскость.6_1
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4448/362/1 2953/359/1 3011/356/1 4482/361/1
 f 4482/362/1 3011/359/1 2971/356/1 3826/361/1
 f 4505/330/5 4506/329/5 4503/328/5 4498/327/5
@@ -8920,7 +8920,7 @@ v 675 -1620 810
 # 0 texture coordinate
 
 o Объект_Плоскость.4_1
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4575/363/1 4595/362/1 4574/361/1 4702/360/1
 f 4672/360/3 4670/365/3 4626/364/3 4627/363/3
 f 4578/358/3 4577/367/3 4571/366/3 4710/357/3
@@ -9242,7 +9242,7 @@ v -3645 1890 3240
 # 0 texture coordinate
 
 o Объект_Плоскость.39
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4717/363/2 4735/362/2 4716/361/2 4832/360/2
 f 4726/362/2 4758/359/2 4802/356/2 4757/361/2
 f 4804/360/2 4782/365/2 4765/364/2 4772/363/2
@@ -9419,7 +9419,7 @@ v -3645 -1080 270
 # 0 texture coordinate
 
 o Объект_Плоскость.15
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3122/359/2 4911/358/2 4942/357/2 3209/356/2
 f 4937/360/2 4936/365/2 4924/364/2 4925/363/2
 f 4910/358/2 4909/367/2 4906/366/2 4951/357/2
@@ -9496,7 +9496,7 @@ v -3645 -3510 0
 # 0 texture coordinate
 
 o Объект_Плоскость.21
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3074/359/2 4952/358/2 4959/357/2 3079/356/2
 f 4917/360/2 4919/365/2 4956/364/2 4957/363/2
 f 4957/360/2 4956/365/2 4954/364/2 4953/363/2
@@ -9515,7 +9515,7 @@ f 4955/358/2 4954/367/2 4956/366/2 4958/357/2
 # 0 texture coordinate
 
 o Объект_Плоскость.3_1
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4681/358/3 4475/367/3 4419/366/3 4680/357/3
 f 4591/358/3 4466/367/3 4290/366/3 4576/357/3
 f 4698/358/3 4477/367/3 4475/366/3 4681/357/3
@@ -9630,7 +9630,7 @@ vn 1 0 0
 # 0 texture coordinate
 
 o Объект_Плоскость.8
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 4995/337/260 4994/341/260 4997/342/3 4998/338/3
 f 4991/337/4 4998/339/4 4997/343/4 4996/344/4
 f 4993/330/5 4994/329/5 5000/328/5 4999/327/5
@@ -9729,7 +9729,7 @@ f 5002/331/261 5000/340/261 4994/341/260 4995/337/260
 # 0 texture coordinate
 
 o Объект_Плоскость.7_1
-usemtl /maps/grassy/grasstown.png;lightgroup=outside
+usemtl /textures/grassy/grasstown.png;lightgroup=outside
 f 3874/387/3 5017/358/3 4529/367/3 3875/386/3
 f 5017/381/3 4664/358/3 4423/367/3 4529/380/3
 
