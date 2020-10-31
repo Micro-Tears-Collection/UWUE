@@ -25,6 +25,12 @@ map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\wood.
 Kd 1 1 1
 illum 7
 
+newmtl /maps/grassy/shtori.png;alpha_test=1
+Ka 0.10000000149012 0.05146666616201 0.00899999961257
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\shtori.png
+Kd 1 1 1
+illum 7
+
 newmtl /maps/grassy/carpet.png
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\carpet.png
@@ -55,6 +61,12 @@ map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\shkav
 Kd 1 1 1
 illum 7
 
+newmtl /maps/grassy/walshaded.png
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\walshaded.png
+Kd 1 1 1
+illum 7
+
 newmtl /maps/grassy/wal.png
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\wal.png
@@ -64,12 +76,6 @@ illum 7
 newmtl /maps/grassy/ceil.png
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\ceil.png
-Kd 1 1 1
-illum 7
-
-newmtl /maps/grassy/walshaded.png
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\maps\grassy\walshaded.png
 Kd 1 1 1
 illum 7
 

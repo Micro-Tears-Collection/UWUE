@@ -74,7 +74,7 @@ public class LightGroup {
             Light light = renderLights.elementAt(ii);
             
             GL11.glLightf(GL11.GL_LIGHT0+ii, GL11.GL_CONSTANT_ATTENUATION, 0);
-            GL11.glLightf(GL11.GL_LIGHT0+ii, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F);
+            GL11.glLightf(GL11.GL_LIGHT0+ii, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
             
             GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_DIFFUSE, light.color);
             //GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_SPECULAR, light.color);
