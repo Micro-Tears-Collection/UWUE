@@ -13,6 +13,7 @@ import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
 import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
+import code.game.world.entities.Teleport;
 import code.math.Vector3D;
 import code.utils.IniFile;
 import code.utils.StringTools;
@@ -251,6 +252,11 @@ public class WorldLoader {
             obj = loadMesh(game, world, ini);
         } else if(objType.equals("sound")) {
             obj = loadSoundSourceEntity(game, world, ini, soundsToPlay);
+        } else if(objType.equals("entity")) {
+            obj = new Entity();
+            loadDefEntity(obj, game, world, ini);
+        } else if(objType.equals("teleport")) {
+            obj = loadTP(game, world, ini);
         }
         
         if(obj != null) world.objects.add(obj);
@@ -279,6 +285,27 @@ public class WorldLoader {
         }
         
         return sound;
+    }
+
+    private static Teleport loadTP(Game game, World world, IniFile ini) {
+        boolean useOffset = false;
+        Vector3D pos = new Vector3D();
+        
+        String tmp;
+        if((tmp = ini.get("set")) != null) {
+            float[] pos2 = StringTools.cutOnFloats(tmp, ',');
+            pos.set(pos2[0], pos2[1], pos2[2]);
+        } else if((tmp = ini.get("to")) != null) {
+            float[] pos2 = StringTools.cutOnFloats(tmp, ',');
+            pos.set(pos2[0], pos2[1], pos2[2]);
+            useOffset = true;
+        }
+        
+        Teleport tp = new Teleport(pos, useOffset);
+        
+        loadDefEntity(tp, game, world, ini);
+        
+        return tp;
     }
 
     private static MeshObject loadMesh(Game game, World world, IniFile ini) {
@@ -318,7 +345,7 @@ public class WorldLoader {
         obj.pushable = ini.getInt("ph_pushable", obj.pushable?1:0) == 1;
         obj.canPush = ini.getInt("ph_can_push", obj.canPush?1:0) == 1;
         
-        obj.rotY = ini.getFloat("rot_y", obj.height);
+        obj.rotY = ini.getFloat("rot_y", 0);
         obj.hp = ini.getInt("hp", obj.hp);
         
         loadDefEntity(obj, game, world, ini);

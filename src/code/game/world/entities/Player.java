@@ -15,6 +15,7 @@ public class Player extends PhysEntity {
     public float rotX;
     
     public Player() {
+        name = "player";
         setSize(25, 180);
         eyeHeight = 175;
     }
