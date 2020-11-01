@@ -105,7 +105,7 @@ public class World {
         
         player.pos.add(0, player.eyeHeight, 0);
         player.speed.add(0, 8F * FPS.frameTime / 50, 0);
-        AudioEngine.setListener(player.pos, player.speed, player.rotX, player.rotY);
+        AudioEngine.setListener(player.pos, player.speed, player.rotY);
         player.pos.sub(0, player.eyeHeight, 0);
         player.speed.sub(0, 8F * FPS.frameTime / 50, 0);
     }

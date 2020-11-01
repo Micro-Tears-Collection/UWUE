@@ -38,20 +38,17 @@ public class AudioEngine {
     static float[] listenerSpeed = new float[]{0.0f, 0.0f, 0.0f};
     static float[] listenerOri = new float[]{0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
     
-    public static void setListener(Vector3D pos, Vector3D speed, float rotX, float rotY) {
+    public static void setListener(Vector3D pos, Vector3D speed, float rotY) {
         listenerPos[0] = pos.x; listenerPos[1] = pos.y; listenerPos[2] = pos.z;
         
         listenerSpeed[0] = speed.x * 1000 / 50; 
         listenerSpeed[1] = speed.y * 1000 / 50;
         listenerSpeed[2] = speed.z * 1000 / 50;
         
-        final float xa = 1f;
-        float ya = xa * (float) Math.cos(Math.toRadians(rotX));
-        float yaYDSin = ya * (float) -Math.sin(Math.toRadians(rotY));
-        float yaYDCos = ya * (float) -Math.cos(Math.toRadians(rotY));
+        float yaYDSin = (float) -Math.sin(Math.toRadians(rotY));
+        float yaYDCos = (float) -Math.cos(Math.toRadians(rotY));
 
         listenerOri[0] = yaYDSin;
-        listenerOri[1] = xa * (float) Math.sin(Math.toRadians(rotX));
         listenerOri[2] = yaYDCos;
         
         AL10.alListenerfv(AL10.AL_POSITION, listenerPos);
