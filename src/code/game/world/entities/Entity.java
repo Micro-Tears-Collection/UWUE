@@ -5,6 +5,7 @@ import code.game.Main;
 import code.game.world.World;
 import code.math.MathUtils;
 import code.math.Ray;
+import code.math.Sphere;
 import code.math.Vector3D;
 import org.luaj.vm2.LuaValue;
 
@@ -23,7 +24,7 @@ public class Entity {
     public void physicsUpdate(World world) {}
     public void collisionTest(Entity entity) {}
     public boolean rayCast(Ray ray, boolean onlyMeshes) {return false;}
-    public boolean meshSphereCast(Vector3D sphere, float radius) {return false;}
+    public boolean meshSphereCast(Sphere sphere) {return false;}
     //spherecast is only for mesh objects
     //this physics system sucks i should rewrite it
     

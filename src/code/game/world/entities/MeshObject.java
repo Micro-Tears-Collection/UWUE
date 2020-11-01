@@ -6,6 +6,7 @@ import code.engine3d.Renderable;
 import code.game.world.World;
 import code.math.Ray;
 import code.math.RayCast;
+import code.math.Sphere;
 import code.math.SphereCast;
 import code.math.Vector3D;
 
@@ -46,13 +47,15 @@ public class MeshObject extends PhysEntity {
         return false;
     }
     
-    public boolean meshSphereCast(Vector3D sphere, float radius) {
+    public boolean meshSphereCast(Sphere sphere) {
         if(!meshCollision) return false;
         
-        if(SphereCast.isSphereAABBCollision(sphere, radius, 
+        if(SphereCast.isSphereAABBCollision(sphere, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
-            return SphereCast.sphereCast(mesh, mesh.modelMatrix, sphere, radius);
+            SphereCast.sphereCast(mesh, mesh.modelMatrix, sphere);
+            
+            if(sphere.mesh == mesh) return true;
         }
         
         return false;

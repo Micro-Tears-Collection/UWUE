@@ -10,6 +10,7 @@ import code.game.world.entities.Player;
 import code.game.world.entities.SpriteObject;
 import code.math.Culling;
 import code.math.Ray;
+import code.math.Sphere;
 import code.math.Vector3D;
 import code.utils.Asset;
 import code.utils.FPS;
@@ -109,23 +110,19 @@ public class World {
         player.speed.sub(0, 8F * FPS.frameTime / 50, 0);
     }
 
-    public boolean sphereCast(Vector3D sphere, float radius) {
-        return sphereCast(sphere, radius, null);
+    public void sphereCast(Sphere sphere) {
+        sphereCast(sphere, null);
     }
 
-    public boolean sphereCast(Vector3D sphere, float radius, Entity skip) {
-        boolean col = false;
-        
+    public void sphereCast(Sphere sphere, Entity skip) {
         for(Node node : renderNodes) {
-            col |= node.sphereCast(sphere, radius);
+            node.sphereCast(sphere);
         }
         
         for(Entity obj : objects) {
             if(obj == skip) continue;
-            col |= obj.meshSphereCast(sphere, radius);
+            obj.meshSphereCast(sphere);
         }
-        
-        return col;
     }
     
     public Entity rayCast(Ray ray, boolean onlyMeshes) {

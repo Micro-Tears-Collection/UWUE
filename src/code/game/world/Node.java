@@ -5,6 +5,7 @@ import code.engine3d.Mesh;
 import code.math.Culling;
 import code.math.Ray;
 import code.math.RayCast;
+import code.math.Sphere;
 import code.math.SphereCast;
 import code.math.Vector3D;
 import java.util.Vector;
@@ -48,22 +49,18 @@ public class Node {
         }
     }
     
-    public boolean sphereCast(Vector3D sphere, float radius) {
-        boolean col = false;
-
+    public void sphereCast(Sphere sphere) {
         if(SphereCast.isSphereAABBCollision(
-                sphere, radius,
+                sphere,
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.physicsVerts != null) col |= SphereCast.sphereCast(mesh, sphere, radius);
+            if(mesh.physicsVerts != null) SphereCast.sphereCast(mesh, sphere);
             
             for(int i=0; i<childs.size(); i++) {
-                col |= childs.elementAt(i).sphereCast(sphere, radius);
+                childs.elementAt(i).sphereCast(sphere);
             }
         }
-        
-        return col;
     }
     
     public void rayCast(Ray ray) {

@@ -12,24 +12,33 @@ public class SphereCast {
     private static final Vector3D nor = new Vector3D();
     private static final Vector3D v1 = new Vector3D(), v2 = new Vector3D(), v3 = new Vector3D();
     
-    public static boolean isSphereAABBCollision(Vector3D pos, float rad, 
+    public static boolean isSphereAABBCollision(Sphere sphere, 
             float minx, float miny, float minz, float maxx, float maxy, float maxz) {
         
-        return !(pos.x+rad < minx || pos.y < miny || pos.z+rad < minz 
-                || pos.x-rad > maxx || pos.y-rad > maxy || pos.z-rad > maxz);
+        return !(sphere.pos.x+sphere.radius < minx || 
+                sphere.pos.y+sphere.height/2 < miny || 
+                sphere.pos.z+sphere.radius < minz || 
+                sphere.pos.x-sphere.radius > maxx || 
+                sphere.pos.y-sphere.height/2 > maxy || 
+                sphere.pos.z-sphere.radius > maxz);
     }
     
-    public static boolean sphereCast(Mesh mesh, Vector3D pos, float rad) {
-        return SphereCast.sphereCast(mesh, null, pos, rad);
+    public static void sphereCast(Mesh mesh, Sphere sphere) {
+        SphereCast.sphereCast(mesh, null, sphere);
     }
     
-    public static boolean sphereCast(Mesh mesh, float[] mat, Vector3D pos, float rad) {
-        if(!mesh.collision) return false;
+    public static void sphereCast(Mesh mesh, float[] mat, Sphere sphere) {
+        if(!mesh.collision) return;
         
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         
-        boolean col = false;
+        Vector3D pos = sphere.pos;
+        float rad = sphere.radius;
+        float height = sphere.height / 2f;
+        
+        float toRad = 1*rad/height;
+        float toHeight = 1*height/rad;
         
         for(int t=0; t<xyz.length; t++) {
             float[] verts = xyz[t];
@@ -51,36 +60,45 @@ public class SphereCast {
 
                 if(max(v1.x, v2.x, v3.x) < pos.x - rad) continue;
                 if(min(v1.x, v2.x, v3.x) > pos.x + rad) continue;
-                if(max(v1.y, v2.y, v3.y) < pos.y - rad) continue;
-                if(min(v1.y, v2.y, v3.y) > pos.y + rad) continue;
+                if(max(v1.y, v2.y, v3.y) < pos.y - height) continue;
+                if(min(v1.y, v2.y, v3.y) > pos.y + height) continue;
                 if(max(v1.z, v2.z, v3.z) < pos.z - rad) continue;
                 if(min(v1.z, v2.z, v3.z) > pos.z + rad) continue;
                 
+                v1.y = (v1.y-pos.y)*toRad + pos.y;
+                v2.y = (v2.y-pos.y)*toRad + pos.y;
+                v3.y = (v3.y-pos.y)*toRad + pos.y;
+                
                 nor.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
                 if(mat != null) nor.transformNoOffset(mat);
+                
+                boolean floor = nor.y < -0.3f;
+                
+                nor.mul(toRad, 1, toRad);
+                nor.setLength(1);
                 float dis = distanceSphereToPolygon(v1, v2, v3, nor, pos, rad);
 
                 if(dis != Float.MAX_VALUE && dis > 0) {
-                    pos.add(-nor.x * dis, -nor.y * dis, -nor.z * dis);
-                    col = true;
+                    pos.add(-nor.x * dis, -nor.y * dis * toHeight, -nor.z * dis);
+                    sphere.set(mesh, t, i);
+                    
+                    if(floor) sphere.onFloor = true;
                 }
             }
         }
-        
-        return col;
     }
 
     private static float distanceSphereToPolygon(Vector3D a, Vector3D b, Vector3D c, 
             Vector3D nor, Vector3D point, float rad) {
         
         temp.set(point.x-a.x, point.y-a.y, point.z-a.z);
-        float dot = temp.dot(nor); //Расстояние
-        if(dot > rad) return Float.MAX_VALUE;
+        float dist = temp.dot(nor); //Расстояние
+        if(dist > rad) return Float.MAX_VALUE;
         
         //Проекция на плоскость
-        temp.set(point.x-(nor.x*dot), point.y-(nor.y*dot), point.z-(nor.z*dot));
+        temp.set(point.x-(nor.x*dist), point.y-(nor.y*dist), point.z-(nor.z*dist));
         if(MathUtils.isPointOnPolygon(temp, a, b, c, nor)) {
-            return rad - Math.abs(dot);
+            return rad - Math.abs(dist);
         }
 
         final float len1 = MathUtils.distanceToLine(point, a, b);
@@ -88,10 +106,33 @@ public class SphereCast {
         final float len3 = MathUtils.distanceToLine(point, c, a);
 
         float min = min(len1, len2, len3);
+        if(min == len1) {
+            nor.set(closestPointOnLineSegment(a, b, point));
+        } else if(min == len2) {
+            nor.set(closestPointOnLineSegment(b, c, point));
+        } else if(min == len3) {
+            nor.set(closestPointOnLineSegment(c, a, point));
+        }
+        nor.sub(point);
+        nor.setLength(1);
         
         if(min <= rad*rad) return rad - (float)Math.sqrt(min);
         
         return Float.MAX_VALUE;
+    }
+    
+    private static Vector3D closestPointOnLineSegment(Vector3D a, Vector3D b, Vector3D point) {
+        Vector3D ab = new Vector3D(b);
+        ab.sub(a);
+        temp.set(point);
+        temp.sub(a);
+        float t = temp.dot(ab) / ab.lengthSquared();
+        t = Math.min(Math.max(t, 0), 1);
+        
+        temp.set(ab);
+        temp.mul(t, t, t);
+        temp.add(a);
+        return temp;
     }
     
     public static float min(float x1, float x2, float x3) {

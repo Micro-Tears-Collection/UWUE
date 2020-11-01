@@ -26,16 +26,32 @@ public class Vector3D {
         this.x = x; this.y = y; this.z = z;
     }
     
+    public void add(Vector3D vec) {
+        add(vec.x, vec.y, vec.z);
+    }
+    
     public void add(float x, float y, float z) {
         this.x += x; this.y += y; this.z += z;
+    }
+    
+    public void sub(Vector3D vec) {
+        sub(vec.x, vec.y, vec.z);
     }
     
     public void sub(float x, float y, float z) {
         this.x -= x; this.y -= y; this.z -= z;
     }
     
+    public void mul(Vector3D vec) {
+        mul(vec.x, vec.y, vec.z);
+    }
+    
     public void mul(float x, float y, float z) {
         this.x *= x; this.y *= y; this.z *= z;
+    }
+    
+    public void div(Vector3D vec) {
+        div(vec.x, vec.y, vec.z);
     }
     
     public void div(float x, float y, float z) {
@@ -112,6 +128,14 @@ public class Vector3D {
         x = yaYDSin;
         y = xa * (float) Math.sin(Math.toRadians(rotX));
         z = yaYDCos;
+    }
+    
+    public void calcNormal(Vector3D a, Vector3D b, Vector3D c) {
+        x = (a.y - b.y) * (a.z - c.z) - (a.z - b.z) * (a.y - c.y);
+        y = (a.z - b.z) * (a.x - c.x) - (a.x - b.x) * (a.z - c.z);
+        z = (a.x - b.x) * (a.y - c.y) - (a.y - b.y) * (a.x - c.x);
+
+        setLength(1);
     }
 
 }

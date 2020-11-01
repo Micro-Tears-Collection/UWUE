@@ -3,6 +3,7 @@ package code.game.world.entities;
 import code.game.world.World;
 import code.math.MathUtils;
 import code.math.Ray;
+import code.math.Sphere;
 import code.math.Vector3D;
 import code.utils.FPS;
 
@@ -66,42 +67,41 @@ public class PhysEntity extends Entity {
     }
     
     static final Vector3D tmp = new Vector3D(), tmp2 = new Vector3D();
-    static final Ray tmpRay = new Ray();
+    static final Sphere tmpSphere = new Sphere();
     
     private void move(World world) {
         tmp2.set(speed);
         tmp2.mul(FPS.frameTime, FPS.frameTime, FPS.frameTime);
         tmp2.div(50f, 50f, 50f);
         
+        tmpSphere.radius = radius;
+        tmpSphere.height = height;
+        
         float flen = tmp2.length();
         float r = radius * 0.95f;
+        int iter = 0;
         while(flen > 0) {
             tmp.set(tmp2);
             tmp.setLength(Math.min(flen, r));
 
             pos.add(tmp.x, tmp.y, tmp.z);
 
-            Vector3D sphere = tmpRay.start;
-            sphere.set(pos.x, pos.y + height, pos.z);
+            tmpSphere.reset();
+            tmpSphere.pos.set(pos.x, pos.y + height / 2, pos.z);
 
-            boolean col = world.sphereCast(sphere, radius, this);
-            if(col) {
-                pos.set(sphere.x, sphere.y - height, sphere.z);
-            }
-
-            tmpRay.reset();
-            tmpRay.start.set(pos);
-            tmpRay.start.add(0, height, 0);
-            tmpRay.dir.set(0, -height, 0);
-
-            world.rayCast(tmpRay, true, this);
-            onGround = tmpRay.collision;
-            if(tmpRay.collision) {
-                pos.y = tmpRay.collisionPoint.y;
-                speed.y = 0;
+            world.sphereCast(tmpSphere, this);
+            onGround = false;
+            if(tmpSphere.collision) {
+                if(tmpSphere.onFloor) {
+                    onGround = true;
+                    speed.y = 0;
+                }
+                pos.set(tmpSphere.pos.x, tmpSphere.pos.y - height / 2, tmpSphere.pos.z);
             }
             
             flen -= r;
+            iter++;
+            if(iter >= 10) break;
         }
     }
 
