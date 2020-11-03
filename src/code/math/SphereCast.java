@@ -93,7 +93,7 @@ public class SphereCast {
         
         temp.set(point.x-a.x, point.y-a.y, point.z-a.z);
         float dist = temp.dot(nor); //Расстояние
-        if(dist > rad) return Float.MAX_VALUE;
+        if(dist > 0) return Float.MAX_VALUE;
         
         //Проекция на плоскость
         temp.set(point.x-(nor.x*dist), point.y-(nor.y*dist), point.z-(nor.z*dist));
