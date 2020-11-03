@@ -17,7 +17,7 @@ public class Player extends PhysEntity {
     public Player() {
         name = "player";
         setSize(25, 180);
-        eyeHeight = 175;
+        eyeHeight = 180-15;
     }
     
     public void update(World world) {
