@@ -7,7 +7,7 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\lesa.png
 illum 7
 
-newmtl C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\tree.png;alpha_test=1
+newmtl /textures/grassy/tree.png;alpha_test=1
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\tree.png
@@ -127,7 +127,7 @@ map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\c
 Kd 1 1 1
 illum 7
 
-newmtl /textures/grassy/grasstile.png
+newmtl /textures/grassy/grasstile.png;lightgroup=green roof
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093

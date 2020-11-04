@@ -177,7 +177,7 @@ public class WorldLoader {
                 } else if(tmp.equals("dir")) {
                     Vector3D dir = new Vector3D();
                     dir.setDirection(obj.getFloat("rot_x", 0), obj.getFloat("rot_y", 0));
-                    pos = new float[]{dir.x, dir.y, dir.z, 0};
+                    pos = new float[]{-dir.x, -dir.y, -dir.z, 0};
                 }
                 
                 Light light = new Light(name.length()>6?name.substring(6):"", pos, color);
