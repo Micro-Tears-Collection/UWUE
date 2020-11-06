@@ -3,10 +3,12 @@ package code.game;
 import code.Engine;
 import code.Screen;
 import code.engine3d.E3D;
+import code.engine3d.Material;
 import code.game.world.World;
 import code.game.world.WorldLoader;
 import code.game.world.entities.Player;
 import code.math.Vector3D;
+import code.ui.ItemList;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
@@ -18,6 +20,8 @@ import org.luaj.vm2.LuaTable;
  */
 public class Game extends Screen {
     
+    public static final int PROPORTIONAL = 0, PROPORTIONAL_FULL = 1, FULL = 2;
+    
     public Main main;
     
     public long time;
@@ -28,12 +32,18 @@ public class Game extends Screen {
     public E3D e3d;
     public DialogScreen dialog;
     LuaTable luasession;
+    boolean inPauseScreen;
+    ItemList pauseScreen;
     
     public String currentMap;
     public World world;
     public Player player;
     
-    private Fade fade;
+    private Fade fade, wakeUpFade;
+    //todo
+    private Material image;
+    private int imageScale = 0;
+    private int imageBackgroundColor = 0;
     
     String nextMap;
     Vector3D newPlayerPos;
@@ -48,9 +58,19 @@ public class Game extends Screen {
         
         e3d = main.e3d;
         dialog = new DialogScreen();
+        createPauseScreen();
         
         Engine.hideCursor(true);
         player = new Player();
+    }
+    
+    public void createPauseScreen() {
+        pauseScreen = new ItemList(new String[]{"CONTINUE","WAKE UP"}, 
+                getWidth(), getHeight(), main.font) {
+                    public void itemSelected() {
+                        main.selectedS.play();
+                    }
+                };
     }
     
     public void loadMap(String nextMap) {
@@ -145,7 +165,7 @@ public class Game extends Screen {
     }
     
     void update() {
-        if(paused) return;
+        if(isPaused()) return;
         
         if(Engine.hideCursor && isFocused()) {
             player.rotY -= (getMouseX() - (w >> 1)) * 60f / h;
@@ -171,9 +191,16 @@ public class Game extends Screen {
         
         e3d.prepare2D(0, 0, w, h);
         
+        if(inPauseScreen) {
+            e3d.drawRect(null, 0, 0, getWidth(), getHeight(), 0, 0.5f);
+            
+            pauseScreen.mouseUpdate(0, 0, getMouseX(), getMouseY());
+            pauseScreen.draw(main.e3d, 0, 0, main.fontColor, main.fontSelColor, false);
+        }
+        
         main.font.drawString("FPS: "+FPS.fps, 10, 10, 1, main.fontColor);
         
-        if(fade != null) {
+        if(fade != null && (!inPauseScreen || isWakingUp())) {
             float intensity = fade.step(e3d, w, h);
             main.musPlayer.setVolume(1-intensity);
             if(fade.checkDone()) {
@@ -184,37 +211,97 @@ public class Game extends Screen {
         }
     }
     
-    public void keyPressed(int key) {
-        if(Keys.isThatBinding(key, Keys.ESC)) {
-            if(fade == null) {
-                paused = true;
-                setFade(new Fade(false, 0xffffff, 1000) {
-                    public void onDone() {
-                        main.setScreen(new Menu(main), true);
-                    };
-                });
-            }
-            return;
+    public void togglePauseScreen() {
+        if(inPauseScreen) {
+            setCursorPos(w >> 1, h >> 1);
+            Engine.hideCursor(true);
+        } else {
+            Engine.hideCursor(false);
+            setCursorPos(w >> 1, (h - main.font.getHeight()) >> 1);
         }
+        
+        inPauseScreen ^= true;
+    }
+    
+    public void pauseClicked() {
+        int index = pauseScreen.getIndex();
+
+        if(index == 0) {
+            main.clickedS.play();
+            togglePauseScreen();
+        } else if(index == 1) {
+            main.clickedS.play();
+            wakeUp();
+        } 
     }
     
     public void keyReleased(int key) {
+        if(isWakingUp()) return;
         
+        if(Keys.isThatBinding(key, Keys.ESC)) {
+            main.clickedS.play();
+            togglePauseScreen();
+            return;
+        }
+        
+        if(inPauseScreen) {
+            Keys.reset();
+            if(Keys.isThatBinding(key, Keys.DOWN)) {
+                pauseScreen.scrollDown();
+            } else if(Keys.isThatBinding(key, Keys.UP)) {
+                pauseScreen.scrollUp();
+            }
+
+            if(Keys.isThatBinding(key, Keys.OK)) {
+                pauseClicked();
+            }
+        }
     }
     
     public void mouseAction(int button, boolean pressed) {
+        if(isWakingUp()) return;
+        
         if(!pressed && button == MOUSE_LEFT) {
-            world.activateSomething(main, player, true);
+            if(!isPaused()) world.activateSomething(main, player, true);
+            else if(inPauseScreen) {
+                if(pauseScreen.isInBox(0, 0, getMouseX(), getMouseY())) pauseClicked();
+            }
         }
     }
     
     public void mouseScroll(double x, double y) {
+        if(isWakingUp()) return;
         
+        if(inPauseScreen) {
+            int scroll = (int) (y * main.font.getHeight() / 2f);
+            pauseScreen.scrollY(scroll);
+        }
     }
 
     public void sizeChanged(int w, int h, Screen from) {
         this.w = w; this.h = h;
+        createPauseScreen();
         if(from != dialog && dialog != null) dialog.sizeChanged(w, h, this);
+    }
+    
+    public void wakeUp() {
+        if(isWakingUp()) return;
+        
+        paused = true;
+        wakeUpFade = new Fade(false, 0xffffff, 1000) {
+            public void onDone() {
+                main.setScreen(new Menu(main), true);
+            };
+        };
+        setFade(wakeUpFade);
+    }
+    
+    public boolean isPaused() {
+        return inPauseScreen || paused || image != null;
+    }
+    
+    public boolean isWakingUp() {
+        return wakeUpFade != null && fade == wakeUpFade;
     }
 
 }

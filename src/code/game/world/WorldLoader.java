@@ -125,8 +125,12 @@ public class WorldLoader {
         if(lvl.groupExists("music")) {
             SoundSource player = game.main.musPlayer;
             
+            boolean pitchWasSet = false;
             String tmp = lvl.get("music", "pitch");
-            if(tmp != null) player.setPitch(StringTools.parseFloat(tmp));
+            if(tmp != null) {
+                player.setPitch(StringTools.parseFloat(tmp));
+                pitchWasSet = true;
+            }
             
             boolean playing = player.isPlaying();
             boolean dontChange = lvl.getInt("music", "dont_change", 0) == 1;
@@ -135,6 +139,7 @@ public class WorldLoader {
             if(tmp != null && !(playing && (dontChange || tmp.equals(player.soundName)))) {
                 player.stop();
                 if(player.buffer != null) player.free();
+                if(!pitchWasSet) player.setPitch(1);
                 player.loadFile(tmp);
                 player.play();
             }
