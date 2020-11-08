@@ -41,7 +41,7 @@ public class Scripting {
                 final Game game = main.getGame();
                 LuaValue fade = (data != null && data.istable()) ? data.get("fade") : null;
                 
-                if(game == null || fade == null) {
+                if(game == null || fade == LuaValue.NIL) {
                     main.loadMap(map, data);
                     return LuaValue.NIL;
                 } else {
