@@ -1,8 +1,6 @@
-newmtl __TB_empty
 newmtl colors/black
 newmtl colors/blue_deep
 newmtl colors/green_deeper
-newmtl colors/grey
 newmtl colors/grey_dark
 newmtl colors/grey_light
 newmtl colors/ochre
