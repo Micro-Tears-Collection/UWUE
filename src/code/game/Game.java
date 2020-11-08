@@ -199,6 +199,9 @@ public class Game extends Screen {
         }
         
         main.font.drawString("FPS: "+FPS.fps, 10, 10, 1, main.fontColor);
+        main.font.drawString(
+                Math.round(player.pos.x)+", "+Math.round(player.pos.y)+", "+Math.round(player.pos.z),
+                10, 10+main.font.getHeight(), 1, main.fontColor);
         
         if(fade != null && (!inPauseScreen || isWakingUp())) {
             float intensity = fade.step(e3d, w, h);
@@ -266,6 +269,8 @@ public class Game extends Screen {
             else if(inPauseScreen) {
                 if(pauseScreen.isInBox(0, 0, getMouseX(), getMouseY())) pauseClicked();
             }
+        } else if(!pressed && button == MOUSE_RIGHT) {
+            if(!isPaused()) world.debugPos(player);
         }
     }
     
