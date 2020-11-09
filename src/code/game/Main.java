@@ -295,18 +295,18 @@ public class Main {
         float rotX = Float.MAX_VALUE;
         float rotY = Float.MAX_VALUE;
         
-        if(data != null && data.istable()) {
+        if(!data.isnil() && data.istable()) {
             LuaValue pos = data.get("pos");
             
-            if(pos != null && pos.istable()) {
+            if(!pos.isnil() && pos.istable()) {
                 newPlayerPos = new Vector3D(
                         pos.get(1).tofloat(),
                         pos.get(2).tofloat(),
                         pos.get(3).tofloat());
             }
             
-            if(data.get("rotX") != LuaValue.NIL) rotY = data.get("rotX").tofloat();
-            if(data.get("rotY") != LuaValue.NIL) rotY = data.get("rotY").tofloat();
+            if(!data.get("rotX").isnil()) rotY = data.get("rotX").tofloat();
+            if(!data.get("rotY").isnil()) rotY = data.get("rotY").tofloat();
         }
 
         if(game == null) {

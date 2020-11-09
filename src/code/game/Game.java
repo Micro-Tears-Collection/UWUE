@@ -12,7 +12,6 @@ import code.ui.ItemList;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
-import org.luaj.vm2.LuaTable;
 
 /**
  *
@@ -31,7 +30,6 @@ public class Game extends Screen {
     
     public E3D e3d;
     public DialogScreen dialog;
-    LuaTable luasession;
     boolean inPauseScreen;
     ItemList pauseScreen;
     

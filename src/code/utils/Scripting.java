@@ -39,18 +39,18 @@ public class Scripting {
         lua.set("loadMap", new TwoArgFunction() {
             public LuaValue call(final LuaValue map, final LuaValue data)  {
                 final Game game = main.getGame();
-                LuaValue fade = (data != null && data.istable()) ? data.get("fade") : null;
+                LuaValue fade = (!data.isnil() && data.istable()) ? data.get("fade") : LuaValue.NIL;
                 
-                if(game == null || fade == LuaValue.NIL) {
+                if(game == null || fade.isnil()) {
                     main.loadMap(map, data);
                     return LuaValue.NIL;
                 } else {
                     final int fadeColor;
                     final int fadeTime;
-                    if(fade.get("color") != LuaValue.NIL) fadeColor = fade.get("color").toint();
+                    if(!fade.get("color").isnil()) fadeColor = fade.get("color").toint();
                     else fadeColor = 0xffffff;
 
-                    if(fade.get("time") != LuaValue.NIL) fadeTime = fade.get("time").toint();
+                    if(!fade.get("time").isnil()) fadeTime = fade.get("time").toint();
                     else fadeTime = 1000;
 
                     game.paused = true;
