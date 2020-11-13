@@ -202,9 +202,10 @@ public class Game extends Screen {
         e3d.prepare2D(0, 0, w, h);
         
         if(toActivate != null) {
-            float size = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.tex.h)) * handIcon.tex.h;
-            e3d.drawRect(handIcon, (w-size)/2, (h-size)/2, 
-                    size * handIcon.tex.w / handIcon.tex.h, size, 0xffffff, 1);
+            float sizeh = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.tex.h)) * handIcon.tex.h;
+            float sizew = sizeh * handIcon.tex.w / handIcon.tex.h;
+            e3d.drawRect(handIcon, (w-sizew)/2, (h-sizeh)/2, 
+                    sizew, sizeh, 0xffffff, 1);
         }
         
         if(inPauseScreen) {
