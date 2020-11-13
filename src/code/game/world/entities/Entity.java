@@ -59,7 +59,7 @@ public class Entity {
         return false;
     }
 
-    public boolean activate(Main main, Entity lookingAt, Ray ray, boolean click) {
+    public boolean canBeActivated(Entity lookingAt, Ray ray, boolean click) {
         if(!activable || clickable != click) return false;
         
         boolean oldInRadius = inRadius;
@@ -68,14 +68,17 @@ public class Entity {
         //in radius and old in radius was false
         //or it doesnt need to check this radius thing because activation is called by click
         if(inRadius && (clickable || !oldInRadius) && (!pointable || lookingAt == this)) {
-            
-            boolean succesRun = activateWhen == null || main.runScript(activateWhen).toboolean();
-            
-            if(succesRun) return activateImpl(main);
-            else return failImpl(main);
+            return true;
         }
         
         return false;
+    }
+
+    public boolean activate(Main main) {
+        boolean succesRun = activateWhen == null || main.runScript(activateWhen).toboolean();
+
+        if(succesRun) return activateImpl(main);
+        else return failImpl(main);
     }
     
     public static boolean rayCastSphere(Ray ray, Vector3D pos, float radius) {

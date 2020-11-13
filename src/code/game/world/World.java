@@ -44,7 +44,7 @@ public class World {
         
         objects = new Vector();
         sobj = new SpriteObject();
-        sobj.spr = new Sprite(Asset.getMaterial("/test.png;alpha_test=1;lightgroup=0"), false, 20, 20, Sprite.CENTER);
+        sobj.spr = new Sprite(Asset.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), false, 20, 20, Sprite.CENTER);
     }
     
     void makeNodes() {
@@ -192,7 +192,7 @@ public class World {
     
     static final Ray ray = new Ray();
 
-    public void activateSomething(Main main, Player player, boolean click) {
+    public void activateObject(Main main, Player player, boolean click) {
         ray.start.set(player.pos);
         ray.start.add(0, player.eyeHeight, 0);
         ray.dir.setDirection(player.rotX, player.rotY);
@@ -201,10 +201,35 @@ public class World {
         Entity got = rayCast(ray, false, player);
         
         for(Entity obj : objects) {
-            if(obj.activate(main, got, ray, click)) break;
+            if(obj.canBeActivated(got, ray, click)) {
+                if(obj.activate(main)) break;
+            }
         }
         
         ray.reset();
+    }
+
+    //copy pasting sucks but i just dont know
+    public Entity findObjectToActivate(Player player, boolean click) {
+        Entity toActivate = null;
+        
+        ray.start.set(player.pos);
+        ray.start.add(0, player.eyeHeight, 0);
+        ray.dir.setDirection(player.rotX, player.rotY);
+        ray.dir.mul(1000, 1000, 1000); //hand distance lmao
+        
+        Entity got = rayCast(ray, false, player);
+        
+        for(Entity obj : objects) {
+            if(obj.canBeActivated(got, ray, click)) {
+                toActivate = obj;
+                break;
+            }
+        }
+        
+        ray.reset();
+        
+        return toActivate;
     }
     
     public void debugPos(Player player) {

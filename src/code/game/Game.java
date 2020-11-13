@@ -6,6 +6,7 @@ import code.engine3d.E3D;
 import code.engine3d.Material;
 import code.game.world.World;
 import code.game.world.WorldLoader;
+import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 import code.math.Vector3D;
 import code.ui.ItemList;
@@ -38,6 +39,8 @@ public class Game extends Screen {
     public Player player;
     
     private Fade fade, wakeUpFade;
+    Entity toActivate;
+    Material handIcon;
     //todo
     private Material image;
     private int imageScale = 0;
@@ -53,18 +56,22 @@ public class Game extends Screen {
     public Game(Main main) {
         this.main = main;
         w = getWidth(); h = getHeight();
+        Engine.hideCursor(true);
         
         e3d = main.e3d;
         dialog = new DialogScreen();
         createPauseScreen();
         
         Engine.hideCursor(true);
+        handIcon = Asset.getMaterial("/images/hand.png;alpha_test=1");
+        handIcon.tex.lock();
+        
         player = new Player();
     }
     
     public void createPauseScreen() {
         pauseScreen = new ItemList(new String[]{"CONTINUE","WAKE UP"}, 
-                getWidth(), getHeight(), main.font) {
+                w, h, main.font) {
                     public void itemSelected() {
                         main.selectedS.play();
                     }
@@ -84,6 +91,7 @@ public class Game extends Screen {
     }
     
     void loadMapImpl() {
+        toActivate = null;
         long loadtime = System.currentTimeMillis();
         
         WorldLoader.loadWorld(this, nextMap);
@@ -142,17 +150,20 @@ public class Game extends Screen {
         main.musPlayer.setVolume(1);
         main.musPlayer.setPitch(1);
         
+        handIcon.tex.unlock();
         Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
         
         main.clearLua();
     }
     
     public void tick() {
-        if(nextMap != null) loadMapImpl();
-        if(nextDialog != null) {
-            openDialogImpl();
-            return;
-        } 
+        if(!inPauseScreen) {
+            if(nextMap != null) loadMapImpl();
+            if(nextDialog != null) {
+                openDialogImpl();
+                return;
+            }
+        }
         
         update();
         render();
@@ -174,7 +185,8 @@ public class Game extends Screen {
         }
         
         world.update(player);
-        world.activateSomething(main, player, false);
+        world.activateObject(main, player, false);
+        toActivate = world.findObjectToActivate(player, true);
         
         time += FPS.frameTime;
     }
@@ -189,8 +201,14 @@ public class Game extends Screen {
         
         e3d.prepare2D(0, 0, w, h);
         
+        if(toActivate != null) {
+            float size = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.tex.h)) * handIcon.tex.h;
+            e3d.drawRect(handIcon, (w-size)/2, (h-size)/2, 
+                    size * handIcon.tex.w / handIcon.tex.h, size, 0xffffff, 1);
+        }
+        
         if(inPauseScreen) {
-            e3d.drawRect(null, 0, 0, getWidth(), getHeight(), 0, 0.5f);
+            e3d.drawRect(null, 0, 0, w, h, 0, 0.5f);
             
             pauseScreen.mouseUpdate(0, 0, getMouseX(), getMouseY());
             pauseScreen.draw(main.e3d, 0, 0, main.fontColor, main.fontSelColor, false);
@@ -263,8 +281,13 @@ public class Game extends Screen {
         if(isWakingUp()) return;
         
         if(!pressed && button == MOUSE_LEFT) {
-            if(!isPaused()) world.activateSomething(main, player, true);
-            else if(inPauseScreen) {
+            if(!isPaused()) {
+                if(toActivate != null) {
+                    Entity tmp = toActivate;
+                    toActivate = null;
+                    tmp.activate(main);
+                }
+            } else if(inPauseScreen) {
                 if(pauseScreen.isInBox(0, 0, getMouseX(), getMouseY())) pauseClicked();
             }
         } else if(!pressed && button == MOUSE_RIGHT) {

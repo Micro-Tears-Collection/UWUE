@@ -225,6 +225,7 @@ public class E3D {
         
         if(mat != null) mat.bind();
         else {
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
             GL11.glEnable(GL11.GL_BLEND);
             GL14.glBlendEquation(GL14.GL_FUNC_ADD);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -263,6 +264,7 @@ public class E3D {
         GL11.glEnable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
         
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glEnableClientState(GL15.GL_COLOR_ARRAY);
@@ -322,6 +324,7 @@ public class E3D {
         GL11.glEnable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
             
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         

@@ -17,6 +17,7 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Texture extends ReusableContent {
     
+    public int w = 1, h = 1;
     public int id;
     
     public Texture(int id) {
@@ -56,6 +57,9 @@ public class Texture extends ReusableContent {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             
             MemoryUtil.memFree(img);
+            
+            tex.w = w[0];
+            tex.h = h[0];
             
             return tex;
         } catch (Exception e) {
