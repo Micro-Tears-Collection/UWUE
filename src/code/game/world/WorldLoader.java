@@ -3,6 +3,7 @@ package code.game.world;
 import code.audio.SoundSource;
 import code.engine3d.Light;
 import code.engine3d.LightGroup;
+import code.engine3d.Material;
 import code.utils.Asset;
 import code.engine3d.Mesh;
 import code.engine3d.Sprite;
@@ -326,15 +327,28 @@ public class WorldLoader {
     private static SpriteObject loadSprite(Game game, World world, IniFile ini, boolean billboard) {
         SpriteObject spr = new SpriteObject();
         
-        float size = ini.getFloat("size", 100);
-        float height = ini.getFloat("height", size);
+        Material mat = Asset.getMaterial(ini.get("tex"));
+        float w = 100, h = 100;
+        
+        float ww = ini.getFloat("width", Float.MAX_VALUE);
+        float hh = ini.getFloat("height", Float.MAX_VALUE);
+        
+        if(ww != Float.MAX_VALUE && hh == Float.MAX_VALUE) {
+            w = ww;
+            h = ww * mat.tex.h / mat.tex.w;
+        } else if(ww == Float.MAX_VALUE && hh != Float.MAX_VALUE) {
+            w = hh * mat.tex.w / mat.tex.h;
+            h = hh;
+        } else if(ww != Float.MAX_VALUE && hh != Float.MAX_VALUE) {
+            w = ww; h = hh;
+        }
         
         String tmp = ini.getDef("align", billboard?"bottom":"center");
         int align = Sprite.BOTTOM;
         if(tmp.equals("center")) align = Sprite.CENTER;
         else if(tmp.equals("top")) align = Sprite.TOP;
         
-        spr.spr = new Sprite(Asset.getMaterial(ini.get("tex")), billboard, size, height, align);
+        spr.spr = new Sprite(mat, billboard, w, h, align);
         spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
         
         loadDefEntity(spr, game, world, ini);
