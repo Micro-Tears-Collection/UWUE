@@ -1,0 +1,48 @@
+mtllib map.mtl
+# vertices
+v -576 -32 -320
+v -576 -32 320
+v -576 0 320
+v -576 0 -320
+v 576 0 320
+v 576 -32 320
+v 576 -32 -320
+v 576 0 -320
+
+# texture coordinates
+vt 5 -0.5
+vt -5 -0.5
+vt -5 -0
+vt 5 -0
+vt 9 -0
+vt -9 -0
+vt -9 -0.5
+vt 9 -0.5
+vt 9 -5
+vt -9 -5
+vt -9 5
+vt 9 5
+
+# face normals
+vn -1 0 0
+vn 0 0 1
+vn 0 -1 -0
+vn -0 1 -0
+vn 0 -0 -1
+vn 1 0 0
+
+# objects
+o entity0_brush0
+usemtl forest/3
+f 1/1/1 2/2/1 3/3/1 4/4/1
+usemtl forest/3
+f 5/5/2 3/6/2 2/7/2 6/8/2
+usemtl forest/3
+f 6/9/3 2/10/3 1/11/3 7/12/3
+usemtl forest/3
+f 8/12/4 4/11/4 3/10/4 5/9/4
+usemtl forest/3
+f 7/8/5 1/7/5 4/6/5 8/5/5
+usemtl forest/3
+f 8/4/6 5/3/6 6/2/6 7/1/6
+
