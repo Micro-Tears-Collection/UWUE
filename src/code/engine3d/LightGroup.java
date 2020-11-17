@@ -53,10 +53,15 @@ public class LightGroup {
                 t = Math.max(Math.abs(z - light.posOrDir[2]) - zs, 0);
                 d += t*t;
                 
-                if(d != 0) light.influence = (light.color[0] + light.color[1] + light.color[2]) * 10000 / d;
-                else light.influence = Float.MAX_VALUE;
+                if(d != 0) {
+                    light.influence = Math.abs(light.color[0]) 
+                            + Math.abs(light.color[1]) 
+                            + Math.abs(light.color[2]);
+                    
+                    light.influence = light.influence * 10000 * 10 / d;
+                } else light.influence = Float.MAX_VALUE;
                 
-                if(light.influence <= 3f/255) break;
+                if(light.influence <= 3f/255f) break;
             } else {
                 //directional source
                 light.influence = Float.MAX_VALUE;
@@ -85,7 +90,7 @@ public class LightGroup {
         renderLights.removeAllElements();
         
         int lc = i;
-        for(;i<prevLightsCount;i++) {
+        for(;i<prevLightsCount; i++) {
             GL11.glDisable(GL11.GL_LIGHT0+i);
         }
         prevLightsCount = lc;

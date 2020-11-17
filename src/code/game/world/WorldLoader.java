@@ -202,7 +202,7 @@ public class WorldLoader {
                     LightGroup.lightgroups.add(group);
                 }
                 
-                group.setAmbient(StringTools.cutOnFloats(obj.getDef("ambient", "255,255,255"), ','));
+                group.setAmbient(StringTools.cutOnFloats(obj.getDef("ambient", "0,0,0"), ','));
                 
                 lightgroupdata.add(group);
                 lightgroupdata.add(StringTools.cutOnStrings(obj.getDef("include", defaultGroup?"all":""), ','));
