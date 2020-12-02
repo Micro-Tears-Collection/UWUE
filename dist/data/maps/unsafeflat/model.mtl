@@ -14,6 +14,27 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks2.png
 illum 7
 
+newmtl /textures/flatpack/fridge.png;wrap=clamp
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\fridge.png
+illum 7
+
+newmtl /textures/flatpack/rakovina.png
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\rakovina.png
+illum 7
+
+newmtl /textures/flatpack/stove.png
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\stove.png
+illum 7
+
 newmtl /textures/flatpack/wdfloor.png
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png

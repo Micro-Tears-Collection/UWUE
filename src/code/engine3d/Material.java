@@ -19,6 +19,7 @@ public class Material {
     public boolean mipMapping;
     public boolean linearInterpolation;
     public boolean alphaTest;
+    public boolean wrapClamp;
     
     public int blendMode = OFF;
     public String lightGroupName;
@@ -54,6 +55,8 @@ public class Material {
         tmp = ini.getDef("lightgroup", "default");
         if(tmp.equals("0")) lightGroupName = null;
         else lightGroupName = tmp;
+        
+        wrapClamp = ini.getDef("wrap", "repeat").equals("clamp");
     }
     
     private void bindImpl() {
@@ -67,6 +70,9 @@ public class Material {
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, interp);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mag);
+        
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT);
         
         if(alphaTest) {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
