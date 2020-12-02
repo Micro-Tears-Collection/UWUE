@@ -181,7 +181,7 @@ public class Asset {
         String[] lines = loadLines(path);
         
         IniFile ini = new IniFile(new Hashtable());
-        ini.set(lines, sections);
+        if(lines != null) ini.set(lines, sections);
         
         return ini;
     }

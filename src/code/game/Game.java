@@ -167,10 +167,6 @@ public class Game extends Screen {
         
         update();
         render();
-        
-        if(userTryingToCloseApp()) {
-            main.stop();
-        }
     }
     
     void update() {

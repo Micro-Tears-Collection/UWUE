@@ -6,6 +6,7 @@ import code.Screen;
 import code.audio.SoundSource;
 import code.engine3d.E3D;
 import code.math.Vector3D;
+import code.ui.TextBox;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.IniFile;
@@ -29,7 +30,8 @@ public class Main {
     //bilding
     public static int TILDE, ERASE;
 
-    public IniFile conf;
+    public IniFile gamecfg;
+    public Configuration conf;
     
     public E3D e3d;
     public SoundSource musPlayer;
@@ -44,12 +46,16 @@ public class Main {
     boolean needToDestroyScreen;
     SoundSource selectedS, clickedS, gameStartS;
     
-    boolean consoleOpen;
-    String consoleText;
+    TextBox textBox;
+    TextBox console;
+    
+    public Main(int w, int h) {
+        gamecfg = Asset.loadIni("game.ini", true);
+        conf = new Configuration(w, h);
+    }
 
     public void init() {
-        conf = Asset.loadIni("game.ini", true);
-        Engine.setTitle(conf.get("game", "name"));
+        Engine.setTitle(gamecfg.get("game", "name"));
         
         musPlayer = ((SoundSource) Asset.getSoundSource().lock()).beMusicPlayer();
         selectedS = (SoundSource) Asset.getSoundSource("/sounds/select.ogg").lock();
@@ -59,20 +65,47 @@ public class Main {
         gameStartS = (SoundSource) Asset.getSoundSource("/sounds/game start.ogg").lock();
         gameStartS.buffer.neverUnload = true;
         
-        font = BMFont.loadFont(conf.get("hud", "font"));
+        font = BMFont.loadFont(gamecfg.get("hud", "font"));
         font.setInterpolation(false);
         setFontScale(Engine.h);
         
-        fontColor = StringTools.getRGB(conf.getDef("hud", "font_color", "255,255,255"), ',');
-        fontSelColor = StringTools.getRGB(conf.getDef("hud", "font_selected_color", "221,136,149"), ',');
+        fontColor = StringTools.getRGB(gamecfg.getDef("hud", "font_color", "255,255,255"), ',');
+        fontSelColor = StringTools.getRGB(gamecfg.getDef("hud", "font_selected_color", "221,136,149"), ',');
         
         e3d = new E3D();
         
         clearLua();
 
         setScreen(new Menu(this));
+        
+        console = new TextBox(this, font) {
+            public void cancel() {
+                super.cancel();
+                text = "";
+            }
+            
+            public void enter() {
+                super.enter();
+
+                LuaValue val = runScript(text);
+                System.out.println("bool " + val.toboolean());
+                System.out.println("int " + val.toint());
+                System.out.println("num " + val.todouble());
+                System.out.println("str " + val.tojstring());
+                
+                text = "";
+            }
+        }.setXYW(0, 0, Engine.w);
 
         run();
+    }
+    
+    public void openTextBox(TextBox textBox) {
+        this.textBox = textBox;
+    }
+    
+    public void closeTextBox() {
+        this.textBox = null;
     }
     
     public void clearLua() {
@@ -137,11 +170,9 @@ public class Main {
                 screen.tick();
             }
             
-            if(consoleOpen) {
+            if(textBox == console) {
                 if(!e3d.mode2D) e3d.prepare2D(0, 0, Engine.w, Engine.h);
-                
-                e3d.drawRect(null, 0, 0, Engine.w, font.getHeight(), 0, 0.5f);
-                font.drawString(consoleText, 0, 0, 1, 0xffffff);
+                console.draw(e3d);
             }
             
             e3d.flush();
@@ -151,48 +182,50 @@ public class Main {
                 //max 125 fps
             } catch (Exception e) {}
             FPS.frameEnd();
+            
+            if(screen != null && screen.userTryingToCloseApp()) {
+                stop();
+            }
         }
 
         destroy();
     }
     
     public void charInput(int codepoint) {
-        if(consoleOpen) {
+        if(textBox != null) {
             char[] chrs = Character.toChars(codepoint);
-            consoleText += String.valueOf(chrs, 0, chrs.length);
+            textBox.addChars(chrs);
         }
     }
 
     public void keyReleased(int key) {
-        if(!consoleOpen) Keys.keyReleased(key);
+        if(textBox == null) Keys.keyReleased(key);
         
-        if(Keys.isThatBinding(key, TILDE)) {
-            consoleOpen ^= true;
-            consoleText = consoleOpen?"":null;
+        if((textBox == console || textBox == null) && Keys.isThatBinding(key, TILDE)) {
+            if(textBox == null) openTextBox(console);
+            else console.cancel();
+            
             return;
-        } else if(consoleOpen && Keys.isThatBinding(key, ERASE)) {
-            if(consoleText.length() > 0) 
-                consoleText = consoleText.substring(0, consoleText.length()-1);
+        } else if(textBox != null && Keys.isThatBinding(key, ERASE)) {
+            if(textBox.text.length() > 0) 
+                textBox.text = textBox.text.substring(0, textBox.text.length()-1);
             
-        } else if(consoleOpen && Keys.isThatBinding(key, Keys.OK)) {
-            consoleOpen = false;
-            
-            LuaValue val = runScript(consoleText);
-            System.out.println("bool " + val.toboolean());
-            System.out.println("int " + val.toint());
-            System.out.println("num " + val.todouble());
-            System.out.println("str " + val.tojstring());
-            consoleText = null;
+            return;
+        } else if(textBox != null && Keys.isThatBinding(key, Keys.OK)) {
+            textBox.enter();
+            return;
+        } else if(textBox != null && Keys.isThatBinding(key, Keys.ESC)) {
+            textBox.cancel();
             return;
         }
         
-        if(consoleOpen) return;
+        if(textBox != null) return;
         
         if(screen != null) screen.keyReleased(key);
     }
 
     public void keyPressed(int key) {
-        if(consoleOpen) return;
+        if(textBox != null) return;
         
         Keys.keyPressed(key);
         if(screen != null) screen.keyPressed(key);
@@ -204,6 +237,7 @@ public class Main {
 
     public void sizeChanged(int w, int h, Screen scr) {
         setFontScale(h);
+        console.setXYW(0, 0, w);
         
         if(screen != null) screen.sizeChanged(w, h, scr);
     }

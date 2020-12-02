@@ -30,7 +30,17 @@ public class About extends Screen {
         text = new TextView(null, getWidth(), getHeight(), main.font);
         text.setCenter(true);
         text.setVCenter(true);
-        text.setString("LSD Dream Emulator jam fan game by arki and romochka**Controls:*WASD - Walk*Space - jump*LMB - interact*ESC - back*Enter - confirm*F2 - screenshot*F11 - Windowed mode/fullscreen**2020*UWUEngine");
+        text.setString("LSD Dream Emulator jam fan game by arki and romochka**"
+                + "Special for LSDJAM2020**"
+                + "Controls:*"
+                + "WASD - walk*"
+                + "Space - jump*"
+                + "LMB - interact*"
+                + "ESC - back*"
+                + "Enter - confirm*"
+                + "F2 - save screenshot*"
+                + "F11 - toggle fullscreen*"
+                + "*2020*UWUEngine");
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
@@ -51,7 +61,7 @@ public class About extends Screen {
         if(Keys.isPressed(Keys.UP)) text.scroll(3);
     }
     
-    public void keyPressed(int key) {
+    public void keyReleased(int key) {
         if(Keys.isThatBinding(key, Keys.ESC)) {
             Keys.reset();
             main.clickedS.play();

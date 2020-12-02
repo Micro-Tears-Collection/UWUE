@@ -2,11 +2,11 @@ package code;
 
 import code.game.Main;
 import code.audio.AudioEngine;
+import code.game.Configuration;
 import code.game.world.entities.Player;
 import code.utils.Keys;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
@@ -42,6 +42,17 @@ public class Engine {
     
     public static void main(String[] args) {
         System.setOut(new Log(System.out));
+        System.setErr(System.out);
+        GLFWErrorCallback.createPrint(System.err).set();
+
+        if(!GLFW.glfwInit()) {
+            throw new IllegalStateException("Unable to initialize GLFW");
+        }
+
+        GLFW.glfwDefaultWindowHints();
+        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
+        
         System.out.println("ultra wacky\n"
                 + "UHHHHHHHHHHHHHHHHHHHHHHH.....\n"
                 + "engine\n\n"
@@ -58,7 +69,13 @@ public class Engine {
         Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
         Main.ERASE = Keys.addKeyToBinding(Main.ERASE, GLFW.GLFW_KEY_BACKSPACE);
         
-        main = new Main();
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        main = new Main(vidmode.width(), vidmode.height());
+        
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, main.conf.aa);
+        
+        w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
+        h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
         
         keyInputCallback = new KeyInput(main);
         textCallback = new TextCallback(main);
@@ -66,33 +83,18 @@ public class Engine {
         scrollCallback = new ScrollCallback(main);
         resizeCallback = new ResizeCallback(main);
         
-        init();
+        initGL(main.conf.startInFullscr);
         AudioEngine.init();
         
         main.init();
     }
     
-    static void init() {
-        GLFWErrorCallback.createPrint(System.err).set();
-
-        if(!GLFW.glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
-        }
-
-        GLFW.glfwDefaultWindowHints();
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
-        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
-
-        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-
-        w = vidmode.width(); h = vidmode.height();
-
+    static void initGL(boolean fullscr) {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 1);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 5);
         
         window = GLFW.glfwCreateWindow(w, h,
-                "UWUE", GLFW.glfwGetPrimaryMonitor(), NULL);
+                "UWUE", fullscr?GLFW.glfwGetPrimaryMonitor():NULL, NULL);
         
         if(window == NULL) {
             throw new IllegalStateException("Unable to create GLFW Window");
@@ -115,6 +117,28 @@ public class Engine {
         GLFW.glfwSetScrollCallback(window, scrollCallback);
     }
     
+    public static boolean setWindow(Configuration conf, boolean fullscr) {
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, conf.aa);
+
+        int ww, hh;
+        
+        if(fullscr) {
+            ww = conf.fw; hh = conf.fh;
+            GLFW.glfwSetWindowMonitor(Engine.window,
+                    GLFW.glfwGetPrimaryMonitor(),
+                    0, 0, conf.fw, conf.fh, vidmode.refreshRate());
+        } else {
+            ww = conf.ww; hh = conf.wh;
+            GLFW.glfwSetWindowMonitor(Engine.window, MemoryUtil.NULL,
+                    (vidmode.width() - conf.ww) / 2, (vidmode.height() - conf.wh) / 2,
+                    conf.ww, conf.wh, vidmode.refreshRate());
+        }
+        
+        return w == ww && h == hh;
+    }
+    
     public static void setTitle(String title) {
         if(title != null) GLFW.glfwSetWindowTitle(window, title);
     }
@@ -128,6 +152,10 @@ public class Engine {
         }
 
         hideCursor = hide;
+    }
+    
+    public static boolean isFullscr() {
+        return GLFW.glfwGetWindowMonitor(Engine.window) != MemoryUtil.NULL;
     }
     
     public static void destroy() {
@@ -217,5 +245,4 @@ class Log extends PrintStream {
             fos.close();
         } catch(Exception e) {}
     }
-    
 }

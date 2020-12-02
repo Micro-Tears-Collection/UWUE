@@ -14,11 +14,16 @@ public class ItemList {
     
     private int index = -1, yOffset;
 
+    public ItemList(int w, int h, BMFont font) {
+        this.w = w; this.h = h;
+        this.font = font;
+    }
+
     public ItemList(String[] items, int w, int h, BMFont font) {
         this.items = items;
         this.w = w; this.h = h;
         this.font = font;
-        yOffset = (h - getHeight()) >> 1;
+        centralize();
     }
     
     public ItemList(String[] items, int w, int h, BMFont font, boolean[] ms) {
@@ -26,7 +31,21 @@ public class ItemList {
         this.w = w; this.h = h;
         this.font = font;
         this.midSel = ms;
-        yOffset = (h - getHeight()) >> 1;
+        centralize();
+    }
+    
+    public void centralize() {
+        if(getHeight() < h) yOffset = (h - getHeight()) >> 1;
+        else yOffset = 0;
+    }
+    
+    public void setItems(String[] items) {
+        this.items = items;
+        centralize();
+    }
+    
+    public void setMS(boolean[] ms) {
+        this.midSel = ms;
     }
     
     public void draw(E3D e3d, int x, int y, 
@@ -151,8 +170,16 @@ public class ItemList {
         return center;
     }
 
-    public void setCenter(boolean cen) {
-        center = cen;
+    public void setCenter(boolean bol) {
+        center = bol;
+    }
+
+    public boolean getSkipMiddle() {
+        return skipMid;
+    }
+
+    public void setSkipMiddle(boolean bol) {
+        skipMid = bol;
     }
     
     public final String getCurrentItem() {

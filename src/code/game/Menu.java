@@ -127,12 +127,15 @@ public class Menu extends Screen {
                 public void action() {
                     Game game = new Game(main);
                     main.setScreen(game, true);
-                    game.loadMap(main.conf.get("game", "start_map"));
+                    game.loadMap(main.gamecfg.get("game", "start_map"));
                     game.setFade(new Fade(true, 0, 1000));
                 }
             };
             main.setScreen(blank, true);
             
+        } else if(index == 1) {
+            main.clickedS.play();
+            main.setScreen(new Settings(main, this));
         } else if(index == 2) {
             main.clickedS.play();
             main.setScreen(new About(main, this));
