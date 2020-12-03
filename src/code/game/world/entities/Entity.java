@@ -28,6 +28,7 @@ public class Entity {
     //spherecast is only for mesh objects
     //this physics system sucks i should rewrite it
     
+    public void animate(long step, boolean paused, Entity teteAtete) {}
     public void render(E3D e3d, World world) {}
     
     //Scripting stuff
@@ -38,6 +39,8 @@ public class Entity {
     public float activateDistance = 250;
     public boolean clickable = true;
     public boolean pointable = true;
+    
+    public boolean animateWhenPaused;
     
     boolean inRadius = true;
     

@@ -91,6 +91,7 @@ public class Sprite extends Renderable {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectuvMVBO);
         GL15.glTexCoordPointer(2, GL15.GL_SHORT, 0, 0);
 
+        mat.animate(time);
         mat.bind(e3d, xx, yy, zz, 0, 0, 0);
         GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
 

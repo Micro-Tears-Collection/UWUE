@@ -14,6 +14,8 @@ public class Renderable {
     
     public int drawOrder, orderOffset;
     
+    public long time;
+    
     public void load(IniFile ini) {
         String tmp = ini.get("order");
         
@@ -39,6 +41,10 @@ public class Renderable {
         else e3d.toRender.add(this);
     }
     
+    public void animate(long time, boolean set) {
+        if(set) this.time = time;
+        else this.time += time;
+    }
     public void render(E3D e3d) {}
     
     public static final Matrix4f tmpMat = new Matrix4f();

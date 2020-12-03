@@ -170,7 +170,10 @@ public class Game extends Screen {
     }
     
     void update() {
-        if(isPaused()) return;
+        if(isPaused()) {
+            world.pausedAnimate(null);
+            return;
+        }
         
         if(Engine.hideCursor && isFocused()) {
             player.rotY -= (getMouseX() - (w >> 1)) * 60f / h;

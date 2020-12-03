@@ -42,17 +42,10 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\window open.png
 illum 7
 
-newmtl /textures/grassy/tree.png;alpha_test=1
+newmtl /textures/grassy/tree.png;alpha_test=1;wrap=clamp
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\tree.png
-illum 7
-
-newmtl /textures/grassy/grasstile.png;lightgroup=green roof
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\grasstile.png
 illum 7
 
 newmtl /textures/grassy/carpet.png;lightgroup=outside;lightgroup=inside
@@ -132,5 +125,12 @@ newmtl /textures/grassy/ceil.png;lightgroup=inside
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\ceil.png
 Kd 1 1 1
+illum 7
+
+newmtl /textures/grassy/grasstile.png;lightgroup=green roof
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\grasstile.png
 illum 7
 

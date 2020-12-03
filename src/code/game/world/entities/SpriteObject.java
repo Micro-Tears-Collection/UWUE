@@ -6,6 +6,7 @@ import code.game.world.World;
 import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Vector3D;
+import code.utils.FPS;
 
 /**
  *
@@ -22,6 +23,14 @@ public class SpriteObject extends Entity {
         tmp.add(0, spr.h*(spr.align+1)/2, 0);
         
         return Entity.rayCastSphere(ray, tmp, spr.w/2);
+    }
+    
+    public void update(World world) {
+        animate(FPS.frameTime, false, null);
+    }
+    
+    public void animate(long step, boolean paused, Entity teteAtete) {
+        if(!paused || animateWhenPaused || teteAtete == this) spr.animate(step, false);
     }
     
     public void render(E3D e3d, World world) {

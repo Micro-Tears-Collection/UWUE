@@ -9,6 +9,7 @@ import code.math.RayCast;
 import code.math.Sphere;
 import code.math.SphereCast;
 import code.math.Vector3D;
+import code.utils.FPS;
 
 /**
  *
@@ -59,6 +60,14 @@ public class MeshObject extends PhysEntity {
         }
         
         return false;
+    }
+    
+    public void update(World world) {
+        animate(FPS.frameTime, false, null);
+    }
+    
+    public void animate(long step, boolean paused, Entity teteAtete) {
+        if(!paused || animateWhenPaused || teteAtete == this) mesh.animate(step, false);
     }
     
     public void render(E3D e3d, World world) {

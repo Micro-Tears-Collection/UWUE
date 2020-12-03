@@ -1,6 +1,5 @@
 package code.engine3d;
 
-import code.math.Vector3D;
 import code.utils.IniFile;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -24,6 +23,9 @@ public class Material {
     public int blendMode = OFF;
     public String lightGroupName;
     public LightGroup lightGroup = null;
+    
+    public float scrollXSpeed, scrollYSpeed;
+    public float scrollX, scrollY;
 
     public Material(Texture tex) {
         this.tex = tex;
@@ -57,11 +59,20 @@ public class Material {
         else lightGroupName = tmp;
         
         wrapClamp = ini.getDef("wrap", "repeat").equals("clamp");
+        
+        scrollXSpeed = ini.getFloat("scroll_x", 0);
+        scrollYSpeed = ini.getFloat("scroll_y", 0);
     }
     
     private void bindImpl() {
         int id = tex.id;
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+        
+        int matMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+        GL11.glMatrixMode(GL11.GL_TEXTURE);
+        GL11.glLoadIdentity();
+        if(scrollX != 0 || scrollY != 0) GL11.glTranslatef(scrollX, -scrollY, 0);
+        GL11.glMatrixMode(matMode);
         
         int mag = linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST;
         int interp = mipMapping ?
@@ -103,6 +114,11 @@ public class Material {
     public void bind() {
         bindImpl();
         GL11.glDisable(GL11.GL_LIGHTING);
+    }
+    
+    public void animate(long time) {
+        scrollX = time * scrollXSpeed / 1000;
+        scrollY = time * scrollYSpeed / 1000;
     }
     
     public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {

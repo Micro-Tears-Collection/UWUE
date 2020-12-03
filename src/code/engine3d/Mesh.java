@@ -196,6 +196,7 @@ public class Mesh extends Renderable {
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, normals[submesh]);
             GL15.glNormalPointer(GL15.GL_FLOAT, 0, 0);
 
+            mats[submesh].animate(time);
             mats[submesh].bind(e3d, 
                     (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
                     (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2);

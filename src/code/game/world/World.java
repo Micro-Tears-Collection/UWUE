@@ -33,6 +33,7 @@ public class World {
     float[] fogColor;
     float fogStart, fogEnd, fogDensity;
     
+    long renderTime;
     SpriteObject sobj;
     
     public World(Mesh[] meshes, int skyColor, Mesh[] skybox) {
@@ -86,6 +87,12 @@ public class World {
                 selected.childs.add(node);
             } else renderNodes.add(node);
             
+        }
+    }
+    
+    public void pausedAnimate(Entity except) {
+        for(Entity object : objects) {
+            if(object != except) object.animate(FPS.frameTime, true, null);
         }
     }
     
@@ -168,6 +175,7 @@ public class World {
 
             for(Mesh mesh : skybox) {
                 mesh.setMatrix(tmp);
+                mesh.animate(renderTime, true);
                 mesh.render(e3d);
             }
             
@@ -181,13 +189,14 @@ public class World {
         //Check all location meshes
         Culling.set(e3d.invCamf, e3d.fovX, e3d.fovY, 1, 40000);
         
-        for(Node node : renderNodes) node.render(e3d, e3d.invCamf, this);
+        for(Node node : renderNodes) node.render(e3d, e3d.invCamf, this, renderTime);
         
         //Check objects
         for(Entity object : objects) object.render(e3d, this);
         sobj.render(e3d, this);
         
         e3d.renderVectors();
+        renderTime += FPS.frameTime;
     }
     
     static final Ray ray = new Ray();

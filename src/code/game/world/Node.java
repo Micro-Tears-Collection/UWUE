@@ -8,6 +8,7 @@ import code.math.RayCast;
 import code.math.Sphere;
 import code.math.SphereCast;
 import code.math.Vector3D;
+import code.utils.FPS;
 import java.util.Vector;
 
 /**
@@ -36,15 +37,16 @@ public class Node {
     
     static final Culling cul = new Culling();
     
-    public void render(E3D e3d, float[] invCam, World world) {
+    public void render(E3D e3d, float[] invCam, World world, long renderTime) {
         mesh.setMatrix(invCam);
         cul.setBox(mesh.min, mesh.max);
         
         if(cul.visible()) {
+            mesh.animate(renderTime, true);
             mesh.prepareRender(e3d);
             
             for(int i=0; i<childs.size(); i++) {
-                childs.elementAt(i).render(e3d, invCam, world);
+                childs.elementAt(i).render(e3d, invCam, world, renderTime);
             }
         }
     }

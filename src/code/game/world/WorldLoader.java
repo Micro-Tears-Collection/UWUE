@@ -383,6 +383,8 @@ public class WorldLoader {
         obj.clickable = ini.getFloat("clickable", obj.clickable?1:0) == 1;
         obj.pointable = ini.getFloat("pointable", obj.pointable?1:0) == 1;
         
+        obj.animateWhenPaused = ini.getFloat("animate_when_paused", obj.animateWhenPaused?1:0) == 1;
+        
         String tmp = ini.get("activate_if");
         if(tmp != null) obj.activateWhen = game.main.loadScript("return "+tmp);
         
