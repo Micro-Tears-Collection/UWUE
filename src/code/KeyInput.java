@@ -27,6 +27,10 @@ public class KeyInput extends GLFWKeyCallback {
             if(key != GLFW.GLFW_KEY_F11) {
                 main.keyReleased(key);
             }
+        } else if(action == GLFW.GLFW_REPEAT) {
+            if(key == GLFW.GLFW_KEY_BACKSPACE) {
+                main.keyPressed(key);
+            }
         }
     }
 

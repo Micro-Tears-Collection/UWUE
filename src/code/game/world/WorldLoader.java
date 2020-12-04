@@ -365,7 +365,7 @@ public class WorldLoader {
         obj.canPush = ini.getInt("ph_can_push", obj.canPush?1:0) == 1;
         
         obj.rotY = ini.getFloat("rot_y", 0);
-        obj.hp = ini.getInt("hp", obj.hp);
+        obj.hp = ini.getFloat("hp", obj.hp);
         
         loadDefEntity(obj, game, world, ini);
     }
@@ -379,7 +379,7 @@ public class WorldLoader {
         //Scripting stuff
         
         obj.activable = ini.getInt("activable", obj.activable?1:0) == 1;
-        obj.activateDistance = ini.getFloat("activate_radius", obj.activateDistance);
+        obj.activateRadius = ini.getFloat("activate_radius", obj.activateRadius);
         obj.clickable = ini.getFloat("clickable", obj.clickable?1:0) == 1;
         obj.pointable = ini.getFloat("pointable", obj.pointable?1:0) == 1;
         

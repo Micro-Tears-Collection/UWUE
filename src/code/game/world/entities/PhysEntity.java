@@ -13,7 +13,7 @@ import code.utils.FPS;
  */
 public class PhysEntity extends Entity {
     
-    public int hp = 100;
+    public float hp = 100;
     public Vector3D speed = new Vector3D();
     public float rotY;
     public float radius, height;

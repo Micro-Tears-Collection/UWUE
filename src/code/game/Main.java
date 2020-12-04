@@ -206,11 +206,6 @@ public class Main {
             else console.cancel();
             
             return;
-        } else if(textBox != null && Keys.isThatBinding(key, ERASE)) {
-            if(textBox.text.length() > 0) 
-                textBox.text = textBox.text.substring(0, textBox.text.length()-1);
-            
-            return;
         } else if(textBox != null && Keys.isThatBinding(key, Keys.OK)) {
             textBox.enter();
             return;
@@ -225,7 +220,14 @@ public class Main {
     }
 
     public void keyPressed(int key) {
-        if(textBox != null) return;
+        if(textBox != null) {
+            if(Keys.isThatBinding(key, ERASE)) {
+                if(textBox.text.length() > 0)
+                    textBox.text = textBox.text.substring(0, textBox.text.length() - 1);
+            }
+
+            return;
+        }
         
         Keys.keyPressed(key);
         if(screen != null) screen.keyPressed(key);

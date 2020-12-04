@@ -36,11 +36,11 @@ public class Entity {
     public LuaValue onActivate, onFail;
     
     public boolean activable;
-    public float activateDistance = 250;
+    public float activateRadius = 250;
     public boolean clickable = true;
     public boolean pointable = true;
     
-    public boolean animateWhenPaused;
+    public boolean animateWhenPaused = false;
     
     boolean inRadius = true;
     
@@ -66,7 +66,7 @@ public class Entity {
         if(!activable || clickable != click) return false;
         
         boolean oldInRadius = inRadius;
-        inRadius = ray.start.distanceSqr(pos) < activateDistance*activateDistance;
+        inRadius = ray.start.distanceSqr(pos) < activateRadius*activateRadius;
         
         //in radius and old in radius was false
         //or it doesnt need to check this radius thing because activation is called by click
