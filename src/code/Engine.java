@@ -179,7 +179,7 @@ public class Engine {
             if(!file.exists()) file.mkdir();
             
             Calendar cal = Calendar.getInstance();
-            String data = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-"
+            String data = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH)+1) + "-"
                     + cal.get(Calendar.DAY_OF_MONTH) + " " + cal.get(Calendar.HOUR_OF_DAY) + "." 
                     + cal.get(Calendar.MINUTE) + "." + cal.get(Calendar.SECOND);
             file = new File("screenshots/"+data+".png");
