@@ -25,6 +25,7 @@ public class Settings extends Screen {
     Vector<TextBox> boxes = new Vector();
     
     long applyBegin;
+    int maxAA;
     
     public Settings(Main main, Menu menu) {
         this.main = main;
@@ -44,6 +45,8 @@ public class Settings extends Screen {
         
         createList();
         setList();
+        
+        maxAA = Engine.getMaxAA();
     }
     
     public void destroy() {
@@ -153,7 +156,7 @@ public class Settings extends Screen {
                 if(index == 1) mconf.startInFullscr ^= true;
                 else if(index == 5) {
                     mconf.aa <<= 1;
-                    if(mconf.aa == 16) mconf.aa = 1;
+                    if(mconf.aa > maxAA) mconf.aa = 1;
                 } else if(index == 7) {
                     currentList = 2;
                 } else if(index == 9) {
@@ -162,17 +165,22 @@ public class Settings extends Screen {
                     mconf.ww = Integer.valueOf(boxes.elementAt(2).text);
                     mconf.wh = Integer.valueOf(boxes.elementAt(3).text);
                 
-                    if(!Engine.setWindow(mconf, Engine.isFullscr())) {
+                    if(!mconf.isValid()) {
                         currentList = 3;
-                        Engine.setWindow(main.conf, Engine.isFullscr());
                         msg.getItems()[0] = "Unsupported videomode :(";
                     } else {
-                        applyBegin = System.currentTimeMillis();
-                        currentList = 1;
+                        mconf.apply();
+                        if(mconf.isNeedToConfirm(main.conf)) {
+                            applyBegin = System.currentTimeMillis();
+                            currentList = 1;
+                        } else {
+                            saveSettings();
+                            exit();
+                        }
                     }
                     
                 } else if(index == 10) {
-                    main.setScreen(menu);
+                    exit();
                 }
 
                 setList();
@@ -181,35 +189,41 @@ public class Settings extends Screen {
             int index = applyConfirm.getIndex();
             
             if(index == 3) {
-                mconf.save();
-                main.conf.copy(mconf);
-
-                main.setScreen(menu);
+                main.clickedS.play();
+                saveSettings();
+                exit();
             } else if(index == 4) {
-                Engine.setWindow(main.conf, Engine.isFullscr());
+                main.clickedS.play();
+                main.conf.apply();
                 currentList = 0;
             }
             
         } else if(currentList == 2) {
             int index = resetConfirm.getIndex();
             
-            if(index == 1) {
-                try {
-                    File file = new File("saves/");
-                    if(file.exists() && file.isDirectory()) {
-                        file = new File("saves", "luasave");
-                        if(file.exists()) file.delete();
-                    }
-                } catch(Exception e) {Engine.printError(e);}
-                
-                main.luasave = null;
-                main.clearLua();
-                main.setScreen(menu);
-            } else if(index == 2) {
+            if(index != -1) {
+                main.clickedS.play();
                 currentList = 0;
+                
+                if(index == 1) {
+                    try {
+                        File file = new File("saves/");
+                        if(file.exists() && file.isDirectory()) {
+                            file = new File("saves", "luasave");
+                            if(file.exists()) file.delete();
+                        }
+                    } catch (Exception e) {
+                        Engine.printError(e);
+                    }
+
+                    main.luasave = null;
+                    main.clearLua();
+                }
             }
         } else if(currentList == 3) {
+            
             if(msg.getIndex() == 1) {
+                main.clickedS.play();
                 currentList = 0;
             }
         }
@@ -223,7 +237,7 @@ public class Settings extends Screen {
     
     public void tick() {
         if(currentList == 1 && System.currentTimeMillis() - applyBegin >= 10000) {
-            Engine.setWindow(main.conf, Engine.isFullscr());
+            main.conf.apply();
             currentList = 0;
         }
         
@@ -282,7 +296,7 @@ public class Settings extends Screen {
             Keys.reset();
             main.closeTextBox();
             main.clickedS.play();
-            main.setScreen(menu);
+            exit();
         }
         
         if(Keys.isThatBinding(key, Keys.OK)) {
@@ -301,5 +315,14 @@ public class Settings extends Screen {
         
         list.scroll((int) (yy*main.scrollSpeed()));
     }
+    
+    private void exit() {
+        main.setScreen(menu);
+    }
+    
+    private void saveSettings() {
+        main.conf.copy(mconf);
+        main.conf.save();
+    } 
 
 }

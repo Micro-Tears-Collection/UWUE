@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
@@ -18,6 +19,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -156,6 +158,28 @@ public class Engine {
     
     public static boolean isFullscr() {
         return GLFW.glfwGetWindowMonitor(Engine.window) != MemoryUtil.NULL;
+    }
+
+    public static boolean isResolutionValid(int w, int h) {
+        GLFWVidMode.Buffer modes = GLFW.glfwGetVideoModes(GLFW.glfwGetPrimaryMonitor());
+        
+        while(modes.hasRemaining()) {
+            GLFWVidMode mode = modes.get();
+            if(mode.width() == w && mode.height() == h) return true;
+        }
+        
+        return false;
+    }
+    
+    public static int getMaxAA() {
+        int samples = GL11.glGetInteger(GL30.GL_MAX_SAMPLES);
+        
+        if(GL11.glGetError() != 0) {
+            System.out.println("Can't get GL_MAX_SAMPLES, looks like your GPU doesnt support openGL 3");
+            return 8;
+        }
+        
+        return samples;
     }
     
     public static void destroy() {

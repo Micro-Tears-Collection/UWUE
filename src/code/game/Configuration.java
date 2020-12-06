@@ -77,5 +77,17 @@ public class Configuration {
             Engine.printError(e);
         }
     }
+    
+    public boolean isNeedToConfirm(Configuration other) {
+        return other.fw != fw || other.fh != fh;
+    }
+    
+    public boolean isValid() {
+        return Engine.isResolutionValid(fw, fh);
+    }
+    
+    public void apply() {
+        Engine.setWindow(this, Engine.isFullscr());
+    }
 
 }
