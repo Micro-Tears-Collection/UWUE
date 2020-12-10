@@ -176,7 +176,7 @@ public class Engine {
         
         if(GL11.glGetError() != 0) {
             System.out.println("Can't get GL_MAX_SAMPLES, looks like your GPU doesnt support openGL 3");
-            return 8;
+            return 4;
         }
         
         return samples;

@@ -19,6 +19,10 @@ public class Light {
         this.posOrDir = pod;
         this.color = color;
         
+        setColor(color);
+    }
+    
+    public void setColor(float[] color) {
         if(color.length == 1) this.color = new float[]{color[0]/255f, color[0]/255f, color[0]/255f, 1};
         else if(color.length == 3) this.color = new float[]{color[0]/255f, color[1]/255f, color[2]/255f, 1};
     }

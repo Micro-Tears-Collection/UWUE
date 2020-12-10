@@ -19,6 +19,7 @@ public class MeshObject extends PhysEntity {
     
     public Mesh mesh;
     public boolean meshCollision = true;
+    public boolean visible = true;
     
     public MeshObject(Mesh[] meshes) {
         this.mesh = meshes[0];
@@ -71,8 +72,10 @@ public class MeshObject extends PhysEntity {
     }
     
     public void render(E3D e3d, World world) {
-        mesh.setMatrix(mesh.modelMatrix, world.m, e3d.invCam);
-        mesh.prepareRender(e3d);
+        if(visible) {
+            mesh.setMatrix(mesh.modelMatrix, world.m, e3d.invCam);
+            mesh.prepareRender(e3d);
+        }
     }
 
 }

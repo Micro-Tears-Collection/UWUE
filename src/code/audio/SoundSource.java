@@ -59,12 +59,24 @@ public class SoundSource extends DisposableContent {
         AL10.alSourcei(soundSource, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
     }
 
+    public boolean getLoop() {
+        return AL10.alGetSourcei(soundSource, AL10.AL_LOOPING) == AL10.AL_TRUE;
+    }
+
     public void setVolume(float gain) {
         AL10.alSourcef(soundSource, AL10.AL_GAIN, gain);
     }
 
+    public float getVolume() {
+        return AL10.alGetSourcef(soundSource, AL10.AL_GAIN);
+    }
+
     public void setPitch(float pitch) {
         AL10.alSourcef(soundSource, AL10.AL_PITCH, pitch);
+    }
+
+    public float getPitch() {
+        return AL10.alGetSourcef(soundSource, AL10.AL_PITCH);
     }
     
     public void setPosition(Vector3D pos) {

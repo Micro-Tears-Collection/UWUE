@@ -2,13 +2,17 @@ package code.utils;
 
 import code.Engine;
 import code.Screen;
+import code.engine3d.Light;
+import code.engine3d.LightGroup;
 import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
 import code.game.Main;
 import code.game.world.entities.Entity;
+import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
 import code.game.world.entities.SoundSourceEntity;
+import code.game.world.entities.SpriteObject;
 import code.math.Vector3D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -185,10 +189,41 @@ public class Scripting {
                 Entity entity = game != null?game.world.findObject(obj.toString()):null;
                 PhysEntity physEntity = 
                         (entity != null && entity instanceof PhysEntity)?(PhysEntity)entity:null;
-                
-                if(entity == null) return LuaValue.NIL;
+                MeshObject meshObj = 
+                        (entity != null && entity instanceof MeshObject)?(MeshObject)entity:null;
+                SpriteObject sprObj = 
+                        (entity != null && entity instanceof SpriteObject)?(SpriteObject)entity:null;
+                SoundSourceEntity sndObj = 
+                        (entity != null && entity instanceof SoundSourceEntity)?(SoundSourceEntity)entity:null;
                 
                 String varName = var.toString();
+                
+                if(entity == null) {
+                    Light light = LightGroup.findLight(obj.toString());
+                    
+                    if(light == null) return LuaValue.NIL;
+                    
+                    if(varName.equals("color")) {
+                        if(!val.isnil()) {
+                            if(val.istable()) 
+                                light.setColor(new float[] {
+                                val.get(1).tofloat(),
+                                val.get(2).tofloat(),
+                                val.get(3).tofloat()
+                            });
+                            else if(val.isnumber()) 
+                                light.setColor(new float[] {val.tofloat()});
+                        }
+
+                        return LuaTable.listOf(new LuaValue[]{
+                            LuaValue.valueOf(light.color[0]*255),
+                            LuaValue.valueOf(light.color[1]*255),
+                            LuaValue.valueOf(light.color[2]*255)
+                        });
+                    }
+                    
+                    return LuaValue.NIL;
+                }
                 
                 //All entities
                 if(varName.equals("pos")) {
@@ -205,49 +240,49 @@ public class Scripting {
                     });
                     
                 } else if(varName.equals("x")) {
-                    if(!val.isnil() && val.isnumber()) entity.pos.x = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) entity.pos.x = val.tofloat();
                     
                     return LuaValue.valueOf(entity.pos.x);
                     
                 } else if(varName.equals("y")) {
-                    if(!val.isnil() && val.isnumber()) entity.pos.y = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) entity.pos.y = val.tofloat();
                     
                     return LuaValue.valueOf(entity.pos.y);
                     
                 } else if(varName.equals("z")) {
-                    if(!val.isnil() && val.isnumber()) entity.pos.z = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) entity.pos.z = val.tofloat();
                     
                     return LuaValue.valueOf(entity.pos.z);
                     
                 } else if(varName.equals("activable")) {
-                    if(!val.isnil() && val.isboolean()) entity.activable = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) entity.activable = val.toboolean();
                     
                     return LuaValue.valueOf(entity.activable);
                     
                 } else if(varName.equals("activateRadius")) {
-                    if(!val.isnil() && val.isnumber()) entity.activateRadius = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) entity.activateRadius = val.tofloat();
                     
                     return LuaValue.valueOf(entity.activateRadius);
                     
                 } else if(varName.equals("clickable")) {
-                    if(!val.isnil() && val.isboolean()) entity.clickable = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) entity.clickable = val.toboolean();
                     
                     return LuaValue.valueOf(entity.clickable);
                     
                 } else if(varName.equals("pointable")) {
-                    if(!val.isnil() && val.isboolean()) entity.pointable = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) entity.pointable = val.toboolean();
                     
                     return LuaValue.valueOf(entity.pointable);
                     
                 } else if(varName.equals("animateWhenPaused")) {
-                    if(!val.isnil() && val.isboolean()) entity.animateWhenPaused = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) entity.animateWhenPaused = val.toboolean();
                     
                     return LuaValue.valueOf(entity.animateWhenPaused);
                     
                 } 
                 //Physics entities
                 else if(varName.equals("hp") && physEntity != null) {
-                    if(!val.isnil() && val.isnumber()) physEntity.hp = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) physEntity.hp = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.hp);
                     
@@ -265,36 +300,61 @@ public class Scripting {
                     });
                     
                 } else if(varName.equals("rotY") && physEntity != null) {
-                    if(!val.isnil() && val.isnumber()) physEntity.rotY = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) physEntity.rotY = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.rotY);
                     
                 } else if(varName.equals("radius") && physEntity != null) {
-                    if(!val.isnil() && val.isnumber()) physEntity.radius = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) physEntity.radius = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.radius);
                     
                 } else if(varName.equals("height") && physEntity != null) {
-                    if(!val.isnil() && val.isnumber()) physEntity.height = var.tofloat();
+                    if(!val.isnil() && val.isnumber()) physEntity.height = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.height);
                     
                 } else if(varName.equals("physics") && physEntity != null) {
-                    if(!val.isnil() && val.isboolean()) physEntity.physics = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) physEntity.physics = val.toboolean();
                     
                     return LuaValue.valueOf(physEntity.physics);
                     
                 } else if(varName.equals("pushable") && physEntity != null) {
-                    if(!val.isnil() && val.isboolean()) physEntity.pushable = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) physEntity.pushable = val.toboolean();
                     
                     return LuaValue.valueOf(physEntity.pushable);
                     
                 } else if(varName.equals("canPush") && physEntity != null) {
-                    if(!val.isnil() && val.isboolean()) physEntity.canPush = var.toboolean();
+                    if(!val.isnil() && val.isboolean()) physEntity.canPush = val.toboolean();
                     
                     return LuaValue.valueOf(physEntity.canPush);
                     
                 } 
+                //Meshes and Sprites
+                else if(varName.equals("visible") && (meshObj != null || sprObj != null)) {
+                    if(meshObj != null) {
+                        if(!val.isnil() && val.isboolean()) meshObj.visible = val.toboolean();
+                        return LuaValue.valueOf(meshObj.visible);
+                    } else {
+                        if(!val.isnil() && val.isboolean()) sprObj.visible = val.toboolean();
+                        return LuaValue.valueOf(sprObj.visible);
+                    }
+                    
+                }
+                //Sound sources
+                else if(varName.equals("volume") && sndObj != null) {
+                    if(!val.isnil() && val.isnumber()) sndObj.source.setVolume(val.tofloat());
+                    
+                    return LuaValue.valueOf(sndObj.source.getVolume());
+                } else if(varName.equals("pitch") && sndObj != null) {
+                    if(!val.isnil() && val.isnumber()) sndObj.source.setPitch(val.tofloat());
+                    
+                    return LuaValue.valueOf(sndObj.source.getPitch());
+                } else if(varName.equals("loop") && sndObj != null) {
+                    if(!val.isnil() && val.isboolean()) sndObj.source.setLoop(val.toboolean());
+                    
+                    return LuaValue.valueOf(sndObj.source.getLoop());
+                }
                 
                 return LuaValue.NIL;
             }

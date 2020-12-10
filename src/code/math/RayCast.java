@@ -26,6 +26,73 @@ public class RayCast {
         
         return !(startX>maxx || startY>maxy || startZ>maxz || endX<minx || endY<miny || endZ<minz);
     }
+    
+    public static boolean cubeRayCast(Ray ray,
+            float minx, float miny, float minz, float maxx, float maxy, float maxz) {
+        if(ray.start.x >= minx && ray.start.x <= maxx && 
+                ray.start.y >= miny && ray.start.y <= maxy &&
+                ray.start.z >= minz && ray.start.z <= maxz) {
+            ray.set(null, 0, 0, 0, ray.start);
+            return true;
+        }
+        
+        v2.set(ray.dir);
+        v2.setLength(1);
+        
+        boolean col = false;
+        
+        if(v2.y < 0 && ray.start.y >= maxy) {
+            col |= cubeRayCastMini(1, maxy, (maxy - ray.start.y) / v2.y,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        if(v2.y > 0 && ray.start.y <= miny) {
+            col |= cubeRayCastMini(1, miny, (miny - ray.start.y) / v2.y,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        if(v2.x < 0 && ray.start.x >= maxx) {
+            col |= cubeRayCastMini(0, maxx, (maxx - ray.start.x) / v2.x,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        if(v2.x > 0 && ray.start.x <= minx) {
+            col |= cubeRayCastMini(0, minx, (minx - ray.start.x) / v2.x,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        if(v2.z < 0 && ray.start.z >= maxz) {
+            col |= cubeRayCastMini(2, maxz, (maxz - ray.start.z) / v2.z,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        if(v2.z > 0 && ray.start.z <= minz) {
+            col |= cubeRayCastMini(2, minz, (minz - ray.start.z) / v2.z,
+                    ray, minx, miny, minz, maxx, maxy, maxz);
+        }
+        
+        return col;
+    }
+    
+    private static boolean cubeRayCastMini(int xyz, float vl, float d, Ray ray,
+            float minx, float miny, float minz, float maxx, float maxy, float maxz) {
+        v1.set(ray.dir);
+        v1.setLength(d);
+        v1.add(ray.start);
+        
+        if(xyz == 0) v1.x = vl;
+        else if(xyz == 1) v1.y = vl;
+        else v1.z = vl;
+
+        if(d < ray.distance && 
+                v1.x >= minx && v1.x <= maxx && 
+                v1.y >= miny && v1.y <= maxy &&
+                v1.z >= minz && v1.z <= maxz) {
+            ray.set(null, 0, 0, d, v1);
+            return true;
+        }
+        return false;
+    }
 
     public static void rayCast(Mesh mesh, Ray ray) {
         RayCast.rayCast(mesh, null, ray);

@@ -9,6 +9,7 @@ import code.engine3d.Mesh;
 import code.engine3d.Sprite;
 import code.utils.MeshLoader;
 import code.game.Game;
+import code.game.world.entities.CubeEntity;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
@@ -263,6 +264,8 @@ public class WorldLoader {
             loadDefEntity(obj, game, world, ini);
         } else if(objType.equals("teleport")) {
             obj = loadTP(game, world, ini);
+        } else if(objType.equals("cube")) {
+            obj = loadCube(game, world, ini);
         }
         
         if(obj != null) world.objects.add(obj);
@@ -314,10 +317,21 @@ public class WorldLoader {
         return tp;
     }
 
+    private static CubeEntity loadCube(Game game, World world, IniFile ini) {
+        float[] size = StringTools.cutOnFloats(ini.get("size"), ',');
+        
+        CubeEntity cube = new CubeEntity(size[0], size[1], size[2]);
+        
+        loadDefEntity(cube, game, world, ini);
+        
+        return cube;
+    }
+
     private static MeshObject loadMesh(Game game, World world, IniFile ini) {
         MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true, null, null));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
+        mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;
         
         loadPhysEntity(mesh, game, world, ini);
         
@@ -350,6 +364,8 @@ public class WorldLoader {
         
         spr.spr = new Sprite(mat, billboard, w, h, align);
         spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
+        
+        spr.visible = ini.getInt("visible", spr.visible?1:0) == 1;
         
         loadDefEntity(spr, game, world, ini);
         

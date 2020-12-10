@@ -7,6 +7,7 @@ import code.math.Vector3D;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
@@ -130,7 +131,7 @@ public class MeshLoader {
             Vector<Mesh> meshes = new Vector();
             Mesh currentMesh = null;
             
-            HashMap<String, Vector<Face>> materials = new HashMap();
+            LinkedHashMap<String, Vector<Face>> materials = new LinkedHashMap();
             Vector<Face> faces = null;
             String texName = null;
             

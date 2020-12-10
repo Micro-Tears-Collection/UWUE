@@ -15,6 +15,7 @@ import code.utils.FPS;
 public class SpriteObject extends Entity {
     
     public Sprite spr;
+    public boolean visible = true;
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes) return false;
@@ -34,8 +35,10 @@ public class SpriteObject extends Entity {
     }
     
     public void render(E3D e3d, World world) {
-        spr.setMatrix(pos, null, world.m, e3d.invCam);
-        spr.prepareRender(e3d);
+        if(visible) {
+            spr.setMatrix(pos, null, world.m, e3d.invCam);
+            spr.prepareRender(e3d);
+        }
     }
 
 }

@@ -61,7 +61,7 @@ public class LightGroup {
                     light.influence = light.influence * 10000 * 10 / d;
                 } else light.influence = Float.MAX_VALUE;
                 
-                if(light.influence <= 3f/255f) break;
+                if(light.influence <= 3f/255f) continue;
             } else {
                 //directional source
                 light.influence = Float.MAX_VALUE;
@@ -115,6 +115,14 @@ public class LightGroup {
                 }
             }
         }
+    }
+    
+    public static Light findLight(String find) {
+        for(Light light : allLights) {
+            if(light.name.equals(find)) return light;
+        }
+        
+        return null;
     }
 
 }

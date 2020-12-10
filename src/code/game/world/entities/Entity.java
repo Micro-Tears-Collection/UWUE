@@ -66,7 +66,7 @@ public class Entity {
         if(!activable || clickable != click) return false;
         
         boolean oldInRadius = inRadius;
-        inRadius = ray.start.distanceSqr(pos) < activateRadius*activateRadius;
+        inRadius = inRadius(ray.start);
         
         //in radius and old in radius was false
         //or it doesnt need to check this radius thing because activation is called by click
@@ -75,6 +75,10 @@ public class Entity {
         }
         
         return false;
+    }
+    
+    public boolean inRadius(Vector3D start) {
+        return start.distanceSqr(pos) < activateRadius*activateRadius;
     }
 
     public boolean activate(Main main) {
