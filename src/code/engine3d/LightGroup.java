@@ -85,6 +85,13 @@ public class LightGroup {
             //GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_SPECULAR, light.color);
             GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_POSITION, light.posOrDir);
             
+            if(light.spotDir != null) {
+                GL11.glLightf(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_CUTOFF, light.cutoff);
+                GL11.glLightfv(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_DIRECTION, light.spotDir);
+            } else {
+                GL11.glLighti(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_CUTOFF, 180);
+            }
+            
             GL11.glEnable(GL11.GL_LIGHT0+ii);
         }
         renderLights.removeAllElements();

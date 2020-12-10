@@ -8,12 +8,14 @@ import code.math.Vector3D;
  *
  * @author Roman Lahin
  */
-public class CubeEntity extends Entity {
+public class BoxEntity extends Entity {
     
     public Vector3D size = new Vector3D();
     
-    public CubeEntity(float sizex, float sizey, float sizez) {
+    public BoxEntity(float sizex, float sizey, float sizez) {
         size.set(sizex, sizey, sizez);
+        
+        activable = true;
     }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {

@@ -9,15 +9,19 @@ public class Light {
     public String name;
     
     public float[] posOrDir;
+    public float[] spotDir;
     public float[] color;
+    
+    public float cutoff = 45;
     
     //rendering stuff
     public float influence;
     
-    public Light(String name, float[] pod, float[] color) {
+    public Light(String name, float[] pod, float[] color, float[] spotDir) {
         this.name = name;
         this.posOrDir = pod;
         this.color = color;
+        this.spotDir = spotDir;
         
         setColor(color);
     }

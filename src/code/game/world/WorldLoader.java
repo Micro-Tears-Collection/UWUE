@@ -9,7 +9,7 @@ import code.engine3d.Mesh;
 import code.engine3d.Sprite;
 import code.utils.MeshLoader;
 import code.game.Game;
-import code.game.world.entities.CubeEntity;
+import code.game.world.entities.BoxEntity;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
@@ -166,32 +166,42 @@ public class WorldLoader {
         boolean defaultWas = false;
         
         for(int i=0; i<names.length; i++) {
-            String name = names[i];
+            String section = names[i];
             IniFile obj = objs[i];
             
-            if(name.startsWith("obj ")) {
-                String objType = name.substring(4);
-
-                loadObject(game, world, objType, obj, soundsToPlay);
-            } else if(name.startsWith("light ") || name.equals("light")) {
+            if(section.startsWith("obj light ") || section.equals("obj light")) {
                 float[] pos = null;
                 float[] color = StringTools.cutOnFloats(obj.getDef("color", "255,255,255"), ',');
                 
+                Vector3D dir = new Vector3D();
+                dir.setDirection(obj.getFloat("rot_x", 0), obj.getFloat("rot_y", 0));
+                float[] spot = new float[]{dir.x, dir.y, dir.z, 1};
+                    
                 String tmp = obj.getDef("type", "point");
-                if(tmp.equals("point")) {
+                boolean isSpot = tmp.equals("spot");
+                if(tmp.equals("point") || isSpot) {
                     pos = StringTools.cutOnFloats(obj.get("pos"), ',');
                     pos = new float[]{pos[0], pos[1], pos[2], 1};
+                    
+                    if(!isSpot) spot = null;
                 } else if(tmp.equals("dir")) {
-                    Vector3D dir = new Vector3D();
-                    dir.setDirection(obj.getFloat("rot_x", 0), obj.getFloat("rot_y", 0));
-                    pos = new float[]{-dir.x, -dir.y, -dir.z, 0};
+                    pos = spot;
+                    pos[0] = -spot[0];
+                    pos[1] = -spot[1];
+                    pos[2] = -spot[2];
+                    pos[3] = 0;
+                    spot = null;
                 }
                 
-                Light light = new Light(name.length()>6?name.substring(6):"", pos, color);
+                Light light = new Light(section.length()>10?section.substring(10):"", pos, color, spot);
+                
+                if(isSpot) {
+                    light.cutoff = obj.getFloat("cutoff", light.cutoff);
+                }
 
                 LightGroup.allLights.add(light);
-            } else if(name.startsWith("lightgroup ")) {
-                String lname = name.substring(11);
+            } else if(section.startsWith("obj lightgroup ")) {
+                String lname = section.substring(15);
                 
                 LightGroup group;
                 boolean defaultGroup = lname.equals("default");
@@ -208,6 +218,21 @@ public class WorldLoader {
                 lightgroupdata.add(group);
                 lightgroupdata.add(StringTools.cutOnStrings(obj.getDef("include", defaultGroup?"all":""), ','));
                 lightgroupdata.add(StringTools.cutOnStrings(obj.getDef("exclude", ""), ','));
+            } else if(section.startsWith("obj ")) {
+                String[] data = StringTools.cutOnStrings(section, ' ');
+                
+                String name = null;
+                if(data.length >= 3) {
+                    StringBuffer sb = new StringBuffer();
+                    for(int x=2; x<data.length; x++) {
+                        sb.append(data[x]);
+                        if(x != data.length - 1) sb.append(' ');
+                    }
+                    
+                    name = sb.toString();
+                }
+
+                loadObject(game, world, data[1], name, obj, soundsToPlay);
             }
         }
         
@@ -247,32 +272,33 @@ public class WorldLoader {
         }
     }
 
-    private static void loadObject(Game game, World world, String objType, IniFile ini, Vector soundsToPlay) {
+    private static void loadObject(Game game, World world, String objType, String name, IniFile ini, Vector soundsToPlay) {
         //yeah...
         
         Entity obj = null;
         if(objType.equals("spr")) {
-            obj = loadSprite(game, world, ini, false);
+            obj = loadSprite(name, game, world, ini, false);
         } else if(objType.equals("billboard")) {
-            obj = loadSprite(game, world, ini, true);
+            obj = loadSprite(name, game, world, ini, true);
         } else if(objType.equals("mesh")) {
-            obj = loadMesh(game, world, ini);
+            obj = loadMesh(name, game, world, ini);
         } else if(objType.equals("sound")) {
-            obj = loadSoundSourceEntity(game, world, ini, soundsToPlay);
+            obj = loadSoundSourceEntity(name, game, world, ini, soundsToPlay);
         } else if(objType.equals("entity")) {
             obj = new Entity();
-            loadDefEntity(obj, game, world, ini);
+            loadDefEntity(obj, name, game, world, ini);
         } else if(objType.equals("teleport")) {
-            obj = loadTP(game, world, ini);
-        } else if(objType.equals("cube")) {
-            obj = loadCube(game, world, ini);
+            obj = loadTP(name, game, world, ini);
+        } else if(objType.equals("box")) {
+            obj = loadBox(name, game, world, ini);
         }
         
         if(obj != null) world.objects.add(obj);
         
     }
 
-    private static SoundSourceEntity loadSoundSourceEntity(Game game, World world, IniFile ini, Vector soundsToPlay) {
+    private static SoundSourceEntity loadSoundSourceEntity(String name, 
+            Game game, World world, IniFile ini, Vector soundsToPlay) {
         SoundSource source = Asset.getSoundSource(ini.get("sound"));
         
         source.setVolume(ini.getFloat("volume", 1));
@@ -285,7 +311,7 @@ public class WorldLoader {
         
         SoundSourceEntity sound = new SoundSourceEntity(source);
         
-        loadDefEntity(sound, game, world, ini);
+        loadDefEntity(sound, name, game, world, ini);
         
         source.setPosition(sound.pos);
         if(ini.getInt("playing_from_start", 1) == 1) {
@@ -296,7 +322,7 @@ public class WorldLoader {
         return sound;
     }
 
-    private static Teleport loadTP(Game game, World world, IniFile ini) {
+    private static Teleport loadTP(String name, Game game, World world, IniFile ini) {
         boolean useOffset = false;
         Vector3D pos = new Vector3D();
         
@@ -312,33 +338,39 @@ public class WorldLoader {
         
         Teleport tp = new Teleport(pos, useOffset);
         
-        loadDefEntity(tp, game, world, ini);
+        loadDefEntity(tp, name, game, world, ini);
         
         return tp;
     }
 
-    private static CubeEntity loadCube(Game game, World world, IniFile ini) {
+    private static BoxEntity loadBox(String name, Game game, World world, IniFile ini) {
         float[] size = StringTools.cutOnFloats(ini.get("size"), ',');
         
-        CubeEntity cube = new CubeEntity(size[0], size[1], size[2]);
+        BoxEntity cube = new BoxEntity(size[0], size[1], size[2]);
         
-        loadDefEntity(cube, game, world, ini);
+        if(ini.getInt("on_inside", 0) == 1) {
+            cube.clickable = false;
+            cube.pointable = false;
+            cube.activateRadius = 0;
+        }
+        
+        loadDefEntity(cube, name, game, world, ini);
         
         return cube;
     }
 
-    private static MeshObject loadMesh(Game game, World world, IniFile ini) {
+    private static MeshObject loadMesh(String name, Game game, World world, IniFile ini) {
         MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true, null, null));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
         mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;
         
-        loadPhysEntity(mesh, game, world, ini);
+        loadPhysEntity(mesh, name, game, world, ini);
         
         return mesh;
     }
 
-    private static SpriteObject loadSprite(Game game, World world, IniFile ini, boolean billboard) {
+    private static SpriteObject loadSprite(String name, Game game, World world, IniFile ini, boolean billboard) {
         SpriteObject spr = new SpriteObject();
         
         Material mat = Asset.getMaterial(ini.get("tex"));
@@ -367,12 +399,12 @@ public class WorldLoader {
         
         spr.visible = ini.getInt("visible", spr.visible?1:0) == 1;
         
-        loadDefEntity(spr, game, world, ini);
+        loadDefEntity(spr, name, game, world, ini);
         
         return spr;
     }
     
-    private static void loadPhysEntity(PhysEntity obj, Game game, World world, IniFile ini) {
+    private static void loadPhysEntity(PhysEntity obj, String name, Game game, World world, IniFile ini) {
         obj.radius = ini.getFloat("ph_radius", obj.radius);
         obj.height = ini.getFloat("ph_height", obj.height);
         
@@ -383,14 +415,14 @@ public class WorldLoader {
         obj.rotY = ini.getFloat("rot_y", 0);
         obj.hp = ini.getFloat("hp", obj.hp);
         
-        loadDefEntity(obj, game, world, ini);
+        loadDefEntity(obj, name, game, world, ini);
     }
     
-    private static void loadDefEntity(Entity obj, Game game, World world, IniFile ini) {
+    private static void loadDefEntity(Entity obj, String name, Game game, World world, IniFile ini) {
         float[] pos = StringTools.cutOnFloats(ini.get("pos"), ',');
         obj.pos.set(pos[0], pos[1], pos[2]);
         
-        obj.name = ini.getDef("name", obj.name);
+        obj.name = name!=null?name:obj.name;
         
         //Scripting stuff
         
