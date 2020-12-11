@@ -5,6 +5,7 @@ import code.engine3d.Material;
 import code.engine3d.Mesh;
 import code.math.Vector3D;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -110,19 +111,25 @@ public class MeshLoader {
     }
     
     public static Mesh[] loadObj(String name, boolean createPhysics, String prefix, String postfix) {
-        String[] data = StringTools.cutOnStrings(name, '|');
+        //long begin = System.currentTimeMillis();
+        String[] replaceRaw = StringTools.cutOnStrings(name, '|');
         Hashtable<String, String> replace = new Hashtable();
-        for(int i=1; i<data.length; i+=2) {
-            replace.put(data[i], data[i+1]);
+        for(int i=1; i<replaceRaw.length; i+=2) {
+            replace.put(replaceRaw[i], replaceRaw[i+1]);
         }
         
-        File file = new File("data", data[0]);
+        File file = new File("data", replaceRaw[0]);
         String line = null;
         
         try {
             if(!file.exists()) throw new Exception("Can't find model "+file.getAbsolutePath());
-            Scanner sn = new Scanner(file, "UTF-8");
-            sn.useDelimiter("\n");
+            FileInputStream fis = new FileInputStream(file);
+            byte[] data = new byte[(int) file.length()];
+            fis.read(data);
+            fis.close();
+
+            String str = new String(data, "UTF-8");
+            String[] fileLines = StringTools.cutOnStrings(str, '\n');
             
             Vector<float[]> verts = new Vector();
             Vector<float[]> normalsV = new Vector();
@@ -137,10 +144,8 @@ public class MeshLoader {
             
             Vector3D max = new Vector3D(), min = new Vector3D();
             
-            boolean prev = false, cur;
-            while((cur = sn.hasNext()) || prev) {
-                line = cur ? sn.next().trim() : "end";
-                prev = cur;
+            for(int lineNum = 0; lineNum <= fileLines.length; lineNum++) {
+                line = (lineNum < fileLines.length) ? fileLines[lineNum].trim() : "end";
                 if(line.isEmpty()) continue;
                 
                 if(line.startsWith("f ")) {
@@ -268,8 +273,7 @@ public class MeshLoader {
                 }
             }
             
-            sn.close();
-            
+            //System.out.println(name+" "+(System.currentTimeMillis()-begin));
             return meshes.toArray(new Mesh[meshes.size()]);
         } catch (Exception e) {
             System.out.println(line);

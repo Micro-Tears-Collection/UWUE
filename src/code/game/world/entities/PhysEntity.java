@@ -19,6 +19,7 @@ public class PhysEntity extends Entity {
     public float radius, height;
     
     boolean onGround;
+    int fallingTime;
     
     public boolean physics = true, pushable = true, canPush = true;
     
@@ -51,7 +52,13 @@ public class PhysEntity extends Entity {
     }
     
     public void physicsUpdate(World world) {
-        if(physics) move(world);
+        if(physics) {
+            move(world);
+            if(!onGround) fallingTime += FPS.frameTime;
+            else fallingTime = 0;
+            
+            if(world.fallDeath && fallingTime >= 3000) hp = 0;
+        }
         
         double horizFriction = onGround ? 0.546 : 0.61;
         double verticalFriction = 0.98;

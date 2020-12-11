@@ -36,7 +36,7 @@ public class BoxEntity extends Entity {
         float zz = (start.z - pos.z);
         zz = Math.max(0, zz*zz - size.z*size.z/4);
         
-        return (xx+yy+zz) < activateRadius*activateRadius;
+        return (xx+yy+zz) <= activateRadius*activateRadius;
     }
 
 }

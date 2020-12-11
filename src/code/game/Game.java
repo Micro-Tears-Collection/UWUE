@@ -13,6 +13,7 @@ import code.ui.ItemList;
 import code.utils.Asset;
 import code.utils.FPS;
 import code.utils.Keys;
+import java.util.Vector;
 
 /**
  *
@@ -39,6 +40,7 @@ public class Game extends Screen {
     public Player player;
     
     private Fade fade, wakeUpFade;
+    Vector<Pause> pauses;
     Entity toActivate;
     Material handIcon;
     //todo
@@ -65,6 +67,8 @@ public class Game extends Screen {
         Engine.hideCursor(true);
         handIcon = Asset.getMaterial("/images/hand.png;alpha_test=1");
         handIcon.tex.lock();
+        
+        pauses = new Vector();
         
         player = new Player();
     }
@@ -135,6 +139,10 @@ public class Game extends Screen {
         FPS.previousFrame += System.currentTimeMillis() - loadtime;
     }
     
+    public void addPause(Pause pause) {
+        pauses.add(pause);
+    }
+    
     public void setFade(Fade fade) {
         if(this.fade != null) System.out.println("warning! fade effect is already set!");
         this.fade = fade;
@@ -172,6 +180,13 @@ public class Game extends Screen {
     void update() {
         if(isPaused()) {
             world.pausedAnimate(null);
+            
+            if(!inPauseScreen && !paused && !pauses.isEmpty()) {
+                Pause pause = pauses.firstElement();
+                
+                if(pause.update()) pauses.removeElementAt(0);
+            }
+            
             return;
         }
         
@@ -184,8 +199,13 @@ public class Game extends Screen {
         }
         
         world.update(player);
-        world.activateObject(main, player, false);
-        toActivate = world.findObjectToActivate(player, true);
+        if(player.isAlive()) {
+            world.activateObject(main, player, false);
+            toActivate = world.findObjectToActivate(player, true);
+        } else {
+            toActivate = null;
+            wakeUp();
+        }
         
         time += FPS.frameTime;
     }
@@ -324,7 +344,7 @@ public class Game extends Screen {
     }
     
     public boolean isPaused() {
-        return inPauseScreen || paused || image != null;
+        return inPauseScreen || paused || image != null || !pauses.isEmpty();
     }
     
     public boolean isWakingUp() {

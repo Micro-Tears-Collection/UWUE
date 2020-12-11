@@ -11,7 +11,6 @@ import code.game.world.entities.SpriteObject;
 import code.math.Culling;
 import code.math.Ray;
 import code.math.Sphere;
-import code.math.Vector3D;
 import code.utils.Asset;
 import code.utils.FPS;
 import java.util.Vector;
@@ -32,6 +31,8 @@ public class World {
     int fogMode = 0;
     float[] fogColor;
     float fogStart, fogEnd, fogDensity;
+    
+    public boolean fallDeath = true;
     
     long renderTime;
     SpriteObject sobj;

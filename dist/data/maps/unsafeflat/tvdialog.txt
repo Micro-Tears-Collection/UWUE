@@ -1,0 +1,19 @@
+TV:*??? <??> >> ?? ?? ???&????
+TV:*We're out of range here, I already like this flat... You look tired, I think you should go sleep.
+$question nocap 3
+Are you sure we out of range?
+I don't want to sleep
+Finally we can relax
+$go 3
+$go 4
+$go 5
+$3:
+I don't think we're out of radius. I saw the map and we are on the wrong side of the border. Look
+TV:*It's terrible, we need to go to another building as soon as possible, but on the other hand, it’s only an hour before the emission and border line is too far... I don’t know. Maybe we can get out of range if we will run... Pack your things.
+$cmd goOut=true
+$end
+$4:
+TV:*Maybe you want to eat? I have some food in my backpack, you can take it.
+$end
+$5:
+$end

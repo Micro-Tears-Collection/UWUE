@@ -78,7 +78,7 @@ public class Entity {
     }
     
     public boolean inRadius(Vector3D start) {
-        return start.distanceSqr(pos) < activateRadius*activateRadius;
+        return start.distanceSqr(pos) <= activateRadius*activateRadius;
     }
 
     public boolean activate(Main main) {

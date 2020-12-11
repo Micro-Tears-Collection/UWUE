@@ -6,6 +6,7 @@ import code.audio.SoundSource;
 import code.engine3d.Material;
 import code.engine3d.Texture;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -160,15 +161,18 @@ public class Asset {
         
         Vector<String> lines = new Vector();
         try {
-            Scanner sn = new Scanner(f, "UTF-8");
-            sn.useDelimiter("\n");
+            FileInputStream fis = new FileInputStream(f);
+            byte[] data = new byte[(int) f.length()];
+            fis.read(data);
+            fis.close();
+            String str = new String(data, "UTF-8");
+            String[] fileLines = StringTools.cutOnStrings(str, '\n');
             
-            while(sn.hasNext()) {
-                String str = sn.next().trim();
-                if(str.length() > 0) lines.add(str);
+            for(int i=0; i<fileLines.length; i++) {
+                String s = fileLines[i].trim();
+                if(s.length() > 0) lines.add(s);
             }
             
-            sn.close();
         } catch(Exception e) {
             System.out.println("Can't load "+f.getAbsolutePath());
             Engine.printError(e);

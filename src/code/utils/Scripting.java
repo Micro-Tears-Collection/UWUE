@@ -8,6 +8,7 @@ import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
 import code.game.Main;
+import code.game.Pause;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
@@ -137,6 +138,46 @@ public class Scripting {
         lua.set("setMusicPitch", new OneArgFunction() {
             public LuaValue call(LuaValue arg)  {
                 main.musPlayer.setPitch(arg.tofloat());
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("fade", new ThreeArgFunction() {
+            public LuaValue call(LuaValue fadeIn, final LuaValue func, LuaValue data)  {
+                Game game = main.getGame();
+                
+                if(game != null) {
+                    final int fadeColor;
+                    final int fadeTime;
+                    if(!data.isnil() && !data.get("color").isnil()) fadeColor = data.get("color").toint();
+                    else fadeColor = 0xffffff;
+
+                    if(!data.isnil() && !data.get("time").isnil()) fadeTime = data.get("time").toint();
+                    else fadeTime = 1000;
+
+                    game.setFade(new Fade(fadeIn.toboolean(), fadeColor, fadeTime) {
+                        public void onDone() {
+                            if(!func.isnil()) main.runScript(func);
+                        }
+                    });
+                }
+                
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("pause", new TwoArgFunction() {
+            public LuaValue call(LuaValue time, final LuaValue func)  {
+                Game game = main.getGame();
+                
+                if(game != null) {
+                    game.addPause(new Pause(time.toint()) {
+                        public void onDone() {
+                            if(!func.isnil()) main.runScript(func);
+                        }
+                    });
+                }
+                
                 return LuaValue.NIL;
             }
         });

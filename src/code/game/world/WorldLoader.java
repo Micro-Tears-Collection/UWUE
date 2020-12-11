@@ -84,6 +84,8 @@ public class WorldLoader {
         
         World world = new World(worldMeshes, skyColor, skybox);
         
+        world.fallDeath = lvl.getInt("world", "fall_death", world.fallDeath?1:0) == 1;
+        
         if(lvl.groupExists("fog")) {
             
             String tmp = lvl.get("fog", "color");
