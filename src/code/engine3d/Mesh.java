@@ -167,10 +167,8 @@ public class Mesh extends Renderable {
         middle.add(max.x, max.y, max.z);
         middle.mul(0.5f, 0.5f, 0.5f);
         middle.transform(drawMatrix);
-    }
-    
-    public float getZ() {
-        return middle.z;
+        
+        sortZ = middle.z;
     }
     
     public void prepareRender(E3D e3d) {

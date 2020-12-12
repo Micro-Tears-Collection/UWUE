@@ -111,17 +111,37 @@ public class LightGroup {
     }
     
     private static void sort(Vector<Light> list) {
-        for(int i=list.size()-2; i>=0; i--) {
-            for(int x=0; x<=i; x++) {
-                Light m1 = list.elementAt(x);
-                Light m2 = list.elementAt(x+1);
-                
-                if(m1.influence < m2.influence) {
-                    list.setElementAt(m2, x);
-                    list.setElementAt(m1, x+1);
-                }
+        sort(list, 0, list.size()-1);
+    }
+    
+    private static void sort(Vector<Light> list, int low, int high) {
+        if(low >= high) return; //Завершить выполнение если уже нечего делить
+        
+        Light base = list.elementAt((low+high)>>1); //Опорный элемент
+        float influence = base.influence;
+
+        //Разделить на подмассивы, который больше и меньше опорного элемента
+        int first = low, second = high;
+        while(first <= second) {
+            while(list.elementAt(first).influence > influence) {
+                first++;
+            }
+
+            while(list.elementAt(second).influence < influence) {
+                second--;
+            }
+
+            if(first <= second) { //Меняем местами
+                Light tmp = list.elementAt(first);
+                list.setElementAt(list.elementAt(second), first);
+                list.setElementAt(tmp, second);
+                first++; second--;
             }
         }
+        
+        //Сортировки левой и правой части
+        if(low < second) sort(list, low, second);
+        if(high > first) sort(list, first, high);
     }
     
     public static Light findLight(String find) {

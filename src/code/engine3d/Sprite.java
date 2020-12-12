@@ -14,7 +14,6 @@ public class Sprite extends Renderable {
     public static final int BOTTOM = 0, CENTER = -1, TOP = -2;
     
     private float[] drawMatrix = new float[16];
-    private float z;
     
     public Material mat;
     public float w = 200, h = 200;
@@ -65,11 +64,7 @@ public class Sprite extends Renderable {
         drawMatrix[12] -= w/2;
         if(!billboard) drawMatrix[13] += h*align/2f;
         
-        z = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
-    }
-    
-    public float getZ() {
-        return z;
+        sortZ = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
     }
     
     public void render(E3D e3d) {

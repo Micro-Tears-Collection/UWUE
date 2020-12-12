@@ -10,9 +10,10 @@ import org.joml.Matrix4f;
  */
 public class Renderable {
     
-    public static final int PREDRAW = 1, POSTDRAW = 2;
+    public static final int NORMALDRAW = 1, PREDRAW = 0, POSTDRAW = 2;
     
-    public int drawOrder, orderOffset;
+    public int drawOrder = NORMALDRAW, orderOffset;
+    public float sortZ;
     
     public long time;
     
@@ -33,12 +34,10 @@ public class Renderable {
     public void setMatrix(float[] put) {}
     public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {}
     
-    public float getZ() {return 0;}
-    
     public void prepareRender(E3D e3d) {
-        if(drawOrder == PREDRAW) e3d.preDraw.add(this);
-        else if(drawOrder == POSTDRAW) e3d.postDraw.add(this);
-        else e3d.toRender.add(this);
+        if(drawOrder == NORMALDRAW) e3d.toRender.add(this);
+        else if(drawOrder == PREDRAW) e3d.preDraw.add(this);
+        else e3d.postDraw.add(this);
     }
     
     public void animate(long time, boolean set) {

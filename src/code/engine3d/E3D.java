@@ -343,17 +343,24 @@ public class E3D {
     }
     
     private static void sort(Vector<Renderable> list) {
-        for(int i=list.size()-2; i>=0; i--) {
+        for(int i=list.size()-1; i>=1; i--) {
+            Renderable nearest = null;
+            int pos = 0;
+            
             for(int x=0; x<=i; x++) {
                 Renderable m1 = list.elementAt(x);
-                Renderable m2 = list.elementAt(x+1);
                 
                 //m1 ближе чем m2
-                if(-m1.getZ() < -m2.getZ() && m1.orderOffset >= m2.orderOffset) {
-                    list.setElementAt(m2, x);
-                    list.setElementAt(m1, x+1);
+                if(nearest == null || 
+                        (m1.sortZ > nearest.sortZ && m1.orderOffset >= nearest.orderOffset) ||
+                        m1.orderOffset > nearest.orderOffset) {
+                    nearest = m1;
+                    pos = x;
                 }
             }
+            
+            list.setElementAt(list.elementAt(i), pos);
+            list.setElementAt(nearest, i);
         }
     }
     
