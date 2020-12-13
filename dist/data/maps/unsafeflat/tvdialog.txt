@@ -16,4 +16,5 @@ $4:
 TV:*Maybe you want to eat? I have some food in my backpack, you can take it.
 $end
 $5:
+$cmd goOut=false
 $end
