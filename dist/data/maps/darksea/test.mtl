@@ -1,5 +1,5 @@
-# Blender MTL File: 'untitled.blend'
-# Material Count: 10
+# Blender MTL File: 'darkstatue.blend'
+# Material Count: 12
 
 newmtl textures/colors/gold.png
 Ns 225.000000
@@ -86,6 +86,17 @@ d 1.000000
 illum 2
 map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/flatpack/door.png
 
+newmtl textures/flatpack/lift.png
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/flatpack/lift.png
+
 newmtl textures/soviet_period1/star.png;alpha_test=1
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
@@ -97,7 +108,7 @@ d 1.000000
 illum 2
 map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/soviet_period1/star.png
 
-newmtl textures/soviet_period2/izvestiya-68-250x507.jpg
+newmtl textures/soviet_period2/sovsoul.jpg
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -106,4 +117,15 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/soviet_period2/izvestiya-68-250x507.jpg
+map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/soviet_period2/sovsoul.jpg
+
+newmtl textures/weird/mantle.png
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/weird/mantle.png
