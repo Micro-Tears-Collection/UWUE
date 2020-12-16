@@ -1,0 +1,25 @@
+LSD Dream Emulator jam fan game by arki and romochka
+
+
+Special for LSDJAM2020
+
+
+Controls:
+WASD - walk
+Space - jump
+LMB - interact
+ESC - back
+Enter - confirm
+F2 - save screenshot
+F11 - toggle fullscreen
+
+Game uses a lot of textures from soviettextures.com, please visit that awesome website!
+
+This game uses these Java libs:
+Lightweight Java Game Library
+Java OpenGL Math Library
+Luaj
+You can find additional information and licenses in "licenses" folder.
+
+2020
+UWUEngine

@@ -156,26 +156,35 @@ public class Asset {
         return source;
     }
     
-    public static String[] loadLines(String path) {
+    public static String loadString(String path) {
         File f = new File("data", path);
         
-        Vector<String> lines = new Vector();
         try {
             FileInputStream fis = new FileInputStream(f);
             byte[] data = new byte[(int) f.length()];
             fis.read(data);
             fis.close();
-            String str = new String(data, "UTF-8");
-            String[] fileLines = StringTools.cutOnStrings(str, '\n');
             
-            for(int i=0; i<fileLines.length; i++) {
-                String s = fileLines[i].trim();
-                if(s.length() > 0) lines.add(s);
-            }
-            
+            return new String(data);
         } catch(Exception e) {
             System.out.println("Can't load "+f.getAbsolutePath());
             Engine.printError(e);
+        }
+        
+        return null;
+    }
+    
+    public static String[] loadLines(String path) {
+        Vector<String> lines = new Vector();
+        String str = loadString(path);
+        
+        if(str != null) {
+            String[] fileLines = StringTools.cutOnStrings(str, '\n');
+
+            for(int i = 0; i < fileLines.length; i++) {
+                String s = fileLines[i].trim();
+                if(s.length() > 0) lines.add(s);
+            }
         }
         
         return lines.toArray(new String[lines.size()]);

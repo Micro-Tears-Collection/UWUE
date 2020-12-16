@@ -2,6 +2,7 @@ package code.game;
 
 import code.Screen;
 import code.ui.TextView;
+import code.utils.Asset;
 import code.utils.Keys;
 
 /**
@@ -13,11 +14,14 @@ public class About extends Screen {
     Main main;
     Menu menu;
     
+    String loadedText;
     TextView text;
     
     public About(Main main, Menu menu) {
         this.main = main;
         this.menu = menu;
+        
+        loadedText = Asset.loadString("about.txt");
         
         setText();
     }
@@ -29,18 +33,7 @@ public class About extends Screen {
     void setText() {
         text = new TextView(null, getWidth(), getHeight(), main.font);
         text.setCenter(true);
-        text.setVCenter(true);
-        text.setString("LSD Dream Emulator jam fan game by arki and romochka**"
-                + "Special for LSDJAM2020**"
-                + "Controls:*"
-                + "WASD - walk*"
-                + "Space - jump*"
-                + "LMB - interact*"
-                + "ESC - back*"
-                + "Enter - confirm*"
-                + "F2 - save screenshot*"
-                + "F11 - toggle fullscreen*"
-                + "*2020*UWUEngine");
+        text.setString(loadedText, '\n');
     }
     
     public void sizeChanged(int w, int h, Screen scr) {

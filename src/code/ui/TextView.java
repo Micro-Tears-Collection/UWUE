@@ -19,7 +19,7 @@ public class TextView {
         if(str != null) setString(str);
     }
 
-    private void createLines(String txt, Vector lines) {
+    private void createLines(String txt, Vector lines, char lineDivider) {
         int lineWidth = 0;
         int wordStart = 0;
         int lastSpace = -1;
@@ -32,7 +32,7 @@ public class TextView {
             if(cp == ' ') lastSpace = i;
 
             int wordEnd = -1;
-            if(cp == '*') { //символ переноса строки
+            if(cp == lineDivider) { //символ переноса строки
                 wordEnd = i;
                 i++; //пропускаем символ переноса
             } else if(lineWidth + charWidth > w) { //следующий символ не умещается
@@ -63,15 +63,30 @@ public class TextView {
         }
 
     }
-
+    
     public void addString(String str) {
-        createLines(str, lines);
+        addString(str, '*');
     }
 
+    public void addString(String str, char lineDivider) {
+        createLines(str, lines, lineDivider);
+        int textHeight = getTextHeight();
+        yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
+    }
+    
     public void setString(String str) {
+        setString(str, '*');
+    }
+
+    public void setString(String str, char lineDivider) {
         lines.removeAllElements();
-        createLines(str, lines);
-        yOffset = vCenter?(h-getTextHeight())/2:0;
+        createLines(str, lines, lineDivider);
+        int textHeight = getTextHeight();
+        yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
+    }
+    
+    public void removeText() {
+        lines.removeAllElements();
     }
 
     public void paint(E3D e3d, int x, int y, int color) {
@@ -113,7 +128,7 @@ public class TextView {
                 yOffset = h - textHeight;
             }
         } else {
-            yOffset = vCenter?(h-textHeight)/2:0;
+            yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
         }
     }
 
