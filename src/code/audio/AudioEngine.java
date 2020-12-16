@@ -56,6 +56,14 @@ public class AudioEngine {
         AL10.alListenerfv(AL10.AL_ORIENTATION, listenerOri);
     }
     
+    public static void suspend() {
+        ALC10.alcSuspendContext(context);
+    }
+    
+    public static void process() {
+        ALC10.alcProcessContext(context);
+    }
+    
     public static void close() {
         ALC10.alcDestroyContext(context);
         ALC10.alcCloseDevice(device);

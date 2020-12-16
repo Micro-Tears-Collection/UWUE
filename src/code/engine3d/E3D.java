@@ -84,6 +84,7 @@ public class E3D {
         
         GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
         GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
         maxLights = GL11.glGetInteger(GL11.GL_MAX_LIGHTS);
     }
     
@@ -94,6 +95,8 @@ public class E3D {
         GL15.glDeleteBuffers(rectNormals);
         GL15.glDeleteBuffers(windowColVBO);
         GL15.glDeleteBuffers(arrowVBO);
+        
+        LightGroup.clear(false);
     }
     
     public Matrix4f cam = new Matrix4f(), invCam = new Matrix4f(), proj = new Matrix4f();

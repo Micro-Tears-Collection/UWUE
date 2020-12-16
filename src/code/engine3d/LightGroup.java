@@ -1,7 +1,9 @@
 package code.engine3d;
 
+import java.nio.FloatBuffer;
 import java.util.Vector;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 
 /**
  *
@@ -17,23 +19,54 @@ public class LightGroup {
     
     public String name;
     public Vector<Light> lights;
-    public float[] ambient = new float[] {0, 0, 0, 1};
+    private FloatBuffer ambient;
+    
+    public static void clear(boolean recreate) {
+        for(LightGroup group : lightgroups) {
+            group.destroy();
+        }
+        lightgroups.removeAllElements();
+        defaultGroup = null;
+        
+        for(Light light : allLights) {
+            light.destroy();
+        }
+        allLights.removeAllElements();
+        
+        if(recreate) {
+            defaultGroup = new LightGroup("default");
+            lightgroups.add(defaultGroup);
+        }
+    }
     
     public LightGroup(String name) {
         this.name = name;
         lights = new Vector();
+        
+        ambient = MemoryUtil.memAllocFloat(4);
+        ambient.put(new float[] {0, 0, 0, 1});
+        ambient.rewind();
+    }
+    
+    public void destroy() {
+        MemoryUtil.memFree(ambient);
     }
     
     public void setAmbient(float[] ambient) {
+        float[] arr = new float[] {0, 0, 0, 1};
         if(ambient.length == 1) {
-            this.ambient[0] = ambient[0]/255f;
-            this.ambient[0] = ambient[0]/255f;
-            this.ambient[0] = ambient[0]/255f;
+            arr[0] = ambient[0]/255f;
+            arr[0] = ambient[0]/255f;
+            arr[0] = ambient[0]/255f;
         } else if(ambient.length == 3) {
-            this.ambient[0] = ambient[0]/255f;
-            this.ambient[1] = ambient[1]/255f;
-            this.ambient[2] = ambient[2]/255f;
+            arr[0] = ambient[0]/255f;
+            arr[1] = ambient[1]/255f;
+            arr[2] = ambient[2]/255f;
         }
+        
+        this.ambient.clear();
+        this.ambient.put(arr);
+        this.ambient.rewind();
     }
     
     public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
@@ -43,25 +76,20 @@ public class LightGroup {
             
         int i = 0;
         for(Light light : lights) {
-            if(light.posOrDir[3] == 1) {
+            if(light.point) {
                 //point source
                 //calculate distance square
-                float d = Math.max(Math.abs(x - light.posOrDir[0]) - xs, 0);
+                float d = Math.max(Math.abs(x - light.posOrDir.get(0)) - xs, 0);
                 d *= d;
-                float t = Math.max(Math.abs(y - light.posOrDir[1]) - ys, 0);
+                float t = Math.max(Math.abs(y - light.posOrDir.get(1)) - ys, 0);
                 d += t*t;
-                t = Math.max(Math.abs(z - light.posOrDir[2]) - zs, 0);
+                t = Math.max(Math.abs(z - light.posOrDir.get(2)) - zs, 0);
                 d += t*t;
                 
-                if(d != 0) {
-                    light.influence = Math.abs(light.color[0]) 
-                            + Math.abs(light.color[1]) 
-                            + Math.abs(light.color[2]);
-                    
-                    light.influence = light.influence * 10000 * 10 / d;
-                } else light.influence = Float.MAX_VALUE;
+                if(d != 0) light.influence = light.absLit * 10000 * 10 / d;
+                else light.influence = Float.MAX_VALUE;
                 
-                if(light.influence <= 3f/255f) continue;
+                if(light.influence <= 1f/255f) continue;
             } else {
                 //directional source
                 light.influence = Float.MAX_VALUE;
@@ -103,7 +131,6 @@ public class LightGroup {
         prevLightsCount = lc;
         
         GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_AMBIENT, ambient);
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
         /*GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_SPECULAR, new float[]{0.3f,0.3f,0.3f,1});
         GL11.glMateriali(GL11.GL_FRONT, GL11.GL_SHININESS, 16);*/
 
@@ -146,7 +173,7 @@ public class LightGroup {
     
     public static Light findLight(String find) {
         for(Light light : allLights) {
-            if(light.name.equals(find)) return light;
+            if(find.equals(light.name)) return light;
         }
         
         return null;

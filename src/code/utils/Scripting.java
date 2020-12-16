@@ -2,6 +2,7 @@ package code.utils;
 
 import code.Engine;
 import code.Screen;
+import code.audio.AudioEngine;
 import code.engine3d.Light;
 import code.engine3d.LightGroup;
 import code.game.DialogScreen;
@@ -141,6 +142,19 @@ public class Scripting {
                 return LuaValue.NIL;
             }
         });
+        lua.set("audioSuspend", new ZeroArgFunction() {
+            public LuaValue call()  {
+                AudioEngine.suspend();
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("audioProcess", new ZeroArgFunction() {
+            public LuaValue call()  {
+                AudioEngine.process();
+                return LuaValue.NIL;
+            }
+        });
         
         lua.set("fade", new ThreeArgFunction() {
             public LuaValue call(LuaValue fadeIn, final LuaValue func, LuaValue data)  {
@@ -257,9 +271,9 @@ public class Scripting {
                         }
 
                         return LuaTable.listOf(new LuaValue[]{
-                            LuaValue.valueOf(light.color[0]*255),
-                            LuaValue.valueOf(light.color[1]*255),
-                            LuaValue.valueOf(light.color[2]*255)
+                            LuaValue.valueOf(light.color.get(0)*255),
+                            LuaValue.valueOf(light.color.get(1)*255),
+                            LuaValue.valueOf(light.color.get(2)*255)
                         });
                     }
                     
