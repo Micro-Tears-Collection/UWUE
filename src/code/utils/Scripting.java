@@ -205,11 +205,18 @@ public class Scripting {
         lua.set("playSource", new OneArgFunction() {
             public LuaValue call(LuaValue obj)  {
                 Game game = main.getGame();
-                Entity found = game != null?game.world.findObject(obj.toString()):null;
-                SoundSourceEntity snd = 
-                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
                 
-                if(snd != null) snd.source.play();
+                if(obj.isstring()) {
+                    Entity found = game!=null?game.world.findObject(obj.toString()):null;
+                    SoundSourceEntity snd
+                            = (found!=null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+
+                    if(snd != null) snd.source.play();
+                } else if(obj.istable()) {
+                    int[] list = buildSourcesArray(game, obj);
+                    if(list.length > 0) AudioEngine.playMultiple(list);
+                }
+                
                 return LuaValue.NIL;
             }
         });
@@ -217,11 +224,19 @@ public class Scripting {
         lua.set("stopSource", new OneArgFunction() {
             public LuaValue call(LuaValue obj)  {
                 Game game = main.getGame();
-                Entity found = game != null?game.world.findObject(obj.toString()):null;
-                SoundSourceEntity snd = 
-                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+                System.out.println(obj.isstring()+" "+obj.istable());
                 
-                if(snd != null) snd.source.stop();
+                if(obj.isstring()) {
+                    Entity found = game!=null?game.world.findObject(obj.toString()):null;
+                    SoundSourceEntity snd
+                            = (found!=null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+
+                    if(snd != null) snd.source.stop();
+                } else if(obj.istable()) {
+                    int[] list = buildSourcesArray(game, obj);
+                    if(list.length > 0) AudioEngine.stopMultiple(list);
+                }
+                
                 return LuaValue.NIL;
             }
         });
@@ -229,11 +244,18 @@ public class Scripting {
         lua.set("rewindSource", new OneArgFunction() {
             public LuaValue call(LuaValue obj)  {
                 Game game = main.getGame();
-                Entity found = game != null?game.world.findObject(obj.toString()):null;
-                SoundSourceEntity snd = 
-                        (found != null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
                 
-                if(snd != null) snd.source.rewind();
+                if(obj.isstring()) {
+                    Entity found = game!=null?game.world.findObject(obj.toString()):null;
+                    SoundSourceEntity snd
+                            = (found!=null && found instanceof SoundSourceEntity)?(SoundSourceEntity)found:null;
+
+                    if(snd != null) snd.source.rewind();
+                } else if(obj.istable()) {
+                    int[] list = buildSourcesArray(game, obj);
+                    if(list.length > 0) AudioEngine.rewindMultiple(list);
+                }
+                
                 return LuaValue.NIL;
             }
         });
@@ -415,6 +437,25 @@ public class Scripting {
             }
         });
         
+    }
+    
+    public static int[] buildSourcesArray(Game game, LuaValue list) {
+        Vector<Integer> sourcesV = new Vector();
+        
+        for(int i=0; i<list.narg(); i++) {
+            Entity found = game!=null?game.world.findObject(list.arg(i+1).toString()):null;
+            SoundSourceEntity snd
+                    = (found != null && found instanceof SoundSourceEntity) ? (SoundSourceEntity) found : null;
+            
+            if(snd != null) sourcesV.add(snd.source.getID());
+        }
+        int[] sources = new int[sourcesV.size()];
+
+        for(int i=0; i<sources.length; i++) {
+            sources[i] = sourcesV.elementAt(i);
+        }
+        
+        return sources;
     }
     
     public static void save(LuaValue save) {

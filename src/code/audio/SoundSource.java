@@ -141,4 +141,8 @@ public class SoundSource extends DisposableContent {
         AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
         buffer = null;
     }
+
+    public Integer getID() {
+        return soundSource;
+    }
 }

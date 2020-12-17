@@ -165,7 +165,7 @@ public class Asset {
             fis.read(data);
             fis.close();
             
-            return new String(data);
+            return new String(data, "UTF-8");
         } catch(Exception e) {
             System.out.println("Can't load "+f.getAbsolutePath());
             Engine.printError(e);

@@ -98,15 +98,8 @@ public class Game extends Screen {
         toActivate = null;
         long loadtime = System.currentTimeMillis();
         
-        WorldLoader.loadWorld(this, nextMap);
+        WorldLoader.loadWorld(this, nextMap, newPlayerPos, nextRotX, nextRotY);
         currentMap = nextMap;
-        
-        if(newPlayerPos != null) player.pos.set(newPlayerPos);
-        if(nextRotY != Float.MAX_VALUE) {
-            player.rotX = 0;
-            player.rotY = nextRotY;
-        }
-        if(nextRotX != Float.MAX_VALUE) player.rotX = nextRotX;
         
         nextMap = null;
         newPlayerPos = null;

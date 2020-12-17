@@ -33,6 +33,7 @@ public class About extends Screen {
     void setText() {
         text = new TextView(null, getWidth(), getHeight(), main.font);
         text.setCenter(true);
+        text.setVCenter(true);
         text.setString(loadedText, '\n');
     }
     

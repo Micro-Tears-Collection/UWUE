@@ -86,6 +86,11 @@ public class E3D {
         GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
         GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
         maxLights = GL11.glGetInteger(GL11.GL_MAX_LIGHTS);
+        
+        for(int i=0; i<maxLights; i++) {
+            GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_CONSTANT_ATTENUATION, 0);
+            GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
+        }
     }
     
     public void destroy() {

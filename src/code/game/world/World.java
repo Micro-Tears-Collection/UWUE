@@ -111,6 +111,10 @@ public class World {
         
         for(Entity object : objects) object.physicsUpdate(this);
         
+        updateListener(player);
+    }
+    
+    public static void updateListener(Player player) {
         player.pos.add(0, player.eyeHeight, 0);
         player.speed.add(0, 8F * FPS.frameTime / 50, 0);
         AudioEngine.setListener(player.pos, player.speed, player.rotY);

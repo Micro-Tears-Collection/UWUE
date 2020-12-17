@@ -82,7 +82,7 @@ public class TextView {
         lines.removeAllElements();
         createLines(str, lines, lineDivider);
         int textHeight = getTextHeight();
-        yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
+        yOffset = (vCenter&&h>textHeight)?(h-textHeight)/2:0;
     }
     
     public void removeText() {
@@ -128,7 +128,7 @@ public class TextView {
                 yOffset = h - textHeight;
             }
         } else {
-            yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
+            yOffset = (vCenter&&h>textHeight)?(h-textHeight)/2:0;
         }
     }
 

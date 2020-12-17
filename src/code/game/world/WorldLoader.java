@@ -29,7 +29,8 @@ import java.util.Vector;
  */
 public class WorldLoader {
 
-    public static void loadWorld(Game game, String folder) {
+    public static void loadWorld(Game game, String folder, 
+            Vector3D newPlayerPos, float nextRotX, float nextRotY) {
         Asset.destroyThings(Asset.DISPOSABLE);
         Asset.free();
         AudioEngine.suspend();
@@ -58,6 +59,14 @@ public class WorldLoader {
             
             game.player.rotY = lvl.getFloat("player", "rot_y", 0);
         }
+        
+        if(newPlayerPos != null) game.player.pos.set(newPlayerPos);
+        if(nextRotY != Float.MAX_VALUE) {
+            game.player.rotX = 0;
+            game.player.rotY = nextRotY;
+        }
+        if(nextRotX != Float.MAX_VALUE) game.player.rotX = nextRotX;
+        World.updateListener(game.player);
         
         Mesh[] skybox = null;
         int skyColor = 0;
@@ -114,8 +123,9 @@ public class WorldLoader {
             }
         }
         
+        Vector<Integer> sourcesToPlay = new Vector();
         Object[] objGroups = IniFile.createGroups(lines);
-        loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world);
+        loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world, sourcesToPlay);
         if(LightGroup.allLights.isEmpty()) {
             LightGroup.defaultGroup = null;
             LightGroup.lightgroups.removeAllElements();
@@ -143,7 +153,7 @@ public class WorldLoader {
                 if(player.buffer != null) player.free();
                 if(!pitchWasSet) player.setPitch(1);
                 player.loadFile(tmp);
-                player.play();
+                sourcesToPlay.add(player.getID());
             }
             if(lvl.getInt("music", "stop", 0) == 1) {
                 player.stop();
@@ -156,9 +166,19 @@ public class WorldLoader {
         
         Asset.destroyThings(Asset.REUSABLE);
         AudioEngine.process();
+        
+        if(!sourcesToPlay.isEmpty()) {
+            int[] sources = new int[sourcesToPlay.size()];
+            
+            for(int i=0; i<sources.length; i++) {
+                sources[i] = sourcesToPlay.elementAt(i);
+            }
+        
+            AudioEngine.playMultiple(sources);
+        }
     }
     
-    public static void loadObjects(String[] names, IniFile[] objs, Game game, World world) {
+    public static void loadObjects(String[] names, IniFile[] objs, Game game, World world, Vector<Integer> sourcesToPlay) {
         Vector lightgroupdata = new Vector();
         boolean defaultWas = false;
         
@@ -192,7 +212,7 @@ public class WorldLoader {
                     }
                     
                     defaultWas |= data[1].equals("lightgroup") && "default".equals(name);
-                    loadObject(game, world, data[1], thisName, obj, pos, lightgroupdata);
+                    loadObject(game, world, data[1], thisName, obj, pos, lightgroupdata, sourcesToPlay);
                 }
             }
         }
@@ -234,7 +254,7 @@ public class WorldLoader {
     }
 
     private static void loadObject(Game game, World world, String objType, String name, IniFile ini, 
-            float[] pos, Vector lightgroupdata) {
+            float[] pos, Vector lightgroupdata, Vector<Integer> sourcesToPlay) {
         //yeah...
         
         Entity obj = null;
@@ -245,7 +265,7 @@ public class WorldLoader {
         } else if(objType.equals("mesh")) {
             obj = loadMesh(name, pos, game, world, ini);
         } else if(objType.equals("sound")) {
-            obj = loadSoundSourceEntity(name, pos, game, world, ini);
+            obj = loadSoundSourceEntity(name, pos, game, world, ini, sourcesToPlay);
         } else if(objType.equals("entity")) {
             obj = new Entity();
             loadDefEntity(obj, pos, name, game, world, ini);
@@ -305,7 +325,7 @@ public class WorldLoader {
     }
 
     private static SoundSourceEntity loadSoundSourceEntity(String name, float[] pos,
-            Game game, World world, IniFile ini) {
+            Game game, World world, IniFile ini, Vector<Integer> sourcesToPlay) {
         SoundSource source = Asset.getSoundSource(ini.get("sound"));
         
         source.setVolume(ini.getFloat("volume", 1));
@@ -321,7 +341,10 @@ public class WorldLoader {
         loadDefEntity(sound, pos, name, game, world, ini);
         
         source.setPosition(sound.pos);
-        if(ini.getInt("playing_from_start", 1) == 1) source.play();
+        if(ini.getInt("playing_from_start", 1) == 1) {
+            if(sourcesToPlay == null) source.play();
+            else sourcesToPlay.add(source.getID());
+        }
         
         return sound;
     }

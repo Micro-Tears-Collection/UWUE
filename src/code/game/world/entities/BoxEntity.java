@@ -19,7 +19,7 @@ public class BoxEntity extends Entity {
     }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
-        if(onlyMeshes) return false;
+        if(onlyMeshes || !activable) return false;
         
         return RayCast.cubeRayCast(ray, 
                 pos.x-size.x/2, pos.y-size.y/2, pos.z-size.z/2, 

@@ -68,4 +68,16 @@ public class AudioEngine {
         ALC10.alcDestroyContext(context);
         ALC10.alcCloseDevice(device);
     }
+    
+    public static void playMultiple(int[] sources) {
+        AL10.alSourcePlayv(sources);
+    }
+    
+    public static void stopMultiple(int[] sources) {
+        AL10.alSourceStopv(sources);
+    }
+    
+    public static void rewindMultiple(int[] sources) {
+        AL10.alSourceRewindv(sources);
+    }
 }
