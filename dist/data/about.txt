@@ -1,8 +1,10 @@
-LSD Dream Emulator jam fan game by arki and romochka
+LSD Dream Emulator jam fan game
+Special for LSDJAM-2020
 
-
-Special for LSDJAM2020
-
+Made by:
+Roman Lahin (samael-kethill.itch.io)
+and
+Moonisland (moonisland.itch.io)
 
 Controls:
 WASD - walk
