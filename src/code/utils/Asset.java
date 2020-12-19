@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Scanner;
 import java.util.Vector;
 import org.lwjgl.opengl.GL15;
 

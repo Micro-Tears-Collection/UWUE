@@ -67,7 +67,8 @@ public class Engine {
         Keys.OK = Keys.addKeyToBinding(Keys.OK, GLFW.GLFW_KEY_ENTER);
         Keys.ESC = Keys.addKeyToBinding(Keys.ESC, GLFW.GLFW_KEY_ESCAPE);
         
-        Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, GLFW.GLFW_KEY_SPACE);
+        Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, 
+                GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_LEFT_SHIFT);
         Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
         Main.ERASE = Keys.addKeyToBinding(Main.ERASE, GLFW.GLFW_KEY_BACKSPACE);
         
@@ -85,15 +86,19 @@ public class Engine {
         scrollCallback = new ScrollCallback(main);
         resizeCallback = new ResizeCallback(main);
         
-        initGL(main.conf.startInFullscr);
+        initGL(main.conf.startInFullscr, main.conf.vsync);
         AudioEngine.init();
         
         main.init();
     }
     
-    static void initGL(boolean fullscr) {
+    static void initGL(boolean fullscr, boolean vsync) {
+        GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        int rate = vidmode.refreshRate();
+        
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 1);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 5);
+        GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, rate);
         
         window = GLFW.glfwCreateWindow(w, h,
                 "UWUE", fullscr?GLFW.glfwGetPrimaryMonitor():NULL, NULL);
@@ -107,7 +112,7 @@ public class Engine {
         I have weird issues with vsync in windowed mode. 
         For some reason fps drops to 30 frames, so i disabled vsync
         */
-        GLFW.glfwSwapInterval(0); //vsync
+        GLFW.glfwSwapInterval(vsync?1:0); //vsync on
         GLFW.glfwShowWindow(window);
 
         GL.createCapabilities();
@@ -137,6 +142,7 @@ public class Engine {
                     (vidmode.width() - conf.ww) / 2, (vidmode.height() - conf.wh) / 2,
                     conf.ww, conf.wh, vidmode.refreshRate());
         }
+        GLFW.glfwSwapInterval(conf.vsync?1:0); //vsync on
         
         return w == ww && h == hh;
     }

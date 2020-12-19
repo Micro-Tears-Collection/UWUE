@@ -8,6 +8,7 @@ Moonisland (moonisland.itch.io)
 
 Controls:
 WASD - walk
+Shift - run
 Space - jump
 LMB - interact
 ESC - back

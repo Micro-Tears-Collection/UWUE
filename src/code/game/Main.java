@@ -177,9 +177,9 @@ public class Main {
             
             e3d.flush();
 
-            try {
+            if(!conf.vsync) try {
                 Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
-                //max 125 fps
+                //max 125 fps (todo: add support of 144hz monitors??)
             } catch (Exception e) {}
             FPS.frameEnd();
             

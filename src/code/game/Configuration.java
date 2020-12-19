@@ -14,7 +14,7 @@ import java.util.Hashtable;
  */
 public class Configuration {
     
-    public boolean startInFullscr = true;
+    public boolean startInFullscr = true, vsync = false;
     public int fw, fh;
     public int ww = 800, wh = 600;
     public int aa = 4;
@@ -32,12 +32,14 @@ public class Configuration {
         fw = conf.fw; fh = conf.fh;
         ww = conf.ww; wh = conf.wh;
         aa = conf.aa;
+        vsync = conf.vsync;
     }
     
     public void load(int fwd, int fhd) {
         IniFile conf = Asset.loadIni("config.ini", true);
         
         startInFullscr = conf.getInt("screen", "start_in_fullscreen", startInFullscr?1:0) == 1;
+        vsync = conf.getInt("screen", "vsync", vsync?1:0) == 1;
         
         fw = conf.getInt("screen", "fullscr_width", fwd);
         fh = conf.getInt("screen", "fullscr_height", fhd);
@@ -52,6 +54,7 @@ public class Configuration {
         IniFile conf = new IniFile(new Hashtable());
         
         conf.put("screen", "start_in_fullscreen", String.valueOf(startInFullscr?1:0));
+        conf.put("screen", "vsync", String.valueOf(vsync?1:0));
         
         conf.put("screen", "fullscr_width", String.valueOf(fw));
         conf.put("screen", "fullscr_height", String.valueOf(fh));

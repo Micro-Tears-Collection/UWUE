@@ -9,7 +9,7 @@ import code.utils.Keys;
  */
 public class Player extends PhysEntity {
     
-    static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP;
+    static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP, RUN;
     
     public float eyeHeight;
     public float rotX;
@@ -21,7 +21,8 @@ public class Player extends PhysEntity {
     }
     
     public void update(World world) {
-        float speed = 35;
+        float speed = Keys.isPressed(RUN) ? 40 : 30;
+        //35
         
         walk(
             ((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed,
@@ -34,12 +35,13 @@ public class Player extends PhysEntity {
         super.update(world);
     }
     
-    public static void initKeys(int w, int s, int a, int d, int space) {
+    public static void initKeys(int w, int s, int a, int d, int space, int shift) {
         WALK_FORWARD = Keys.addKeyToBinding(WALK_FORWARD, w);
         WALK_BACKWARD = Keys.addKeyToBinding(WALK_BACKWARD, s);
         STRAFE_LEFT = Keys.addKeyToBinding(STRAFE_LEFT, a);
         STRAFE_RIGHT = Keys.addKeyToBinding(STRAFE_RIGHT, d);
         JUMP = Keys.addKeyToBinding(JUMP, space);
+        RUN = Keys.addKeyToBinding(RUN, shift);
     }
 
 }

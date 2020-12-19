@@ -119,6 +119,7 @@ public class Settings extends Screen {
             "Fullscreen size: ",
             "Windowed size: ",
             "Antialiasing: "+mconf.aa+"x",
+            "Vsync: "+checkBox(mconf.vsync),
             "Game settings:",
             "Remove progress",
             "",
@@ -129,8 +130,8 @@ public class Settings extends Screen {
         boolean[] ms = new boolean[list.getItems().length];
         ms[0] = true;
         ms[2] = true;
-        ms[6] = true;
-        ms[8] = true;
+        ms[7] = true;
+        ms[9] = true;
         list.setMS(ms);
     }
     
@@ -157,9 +158,11 @@ public class Settings extends Screen {
                 else if(index == 5) {
                     mconf.aa <<= 1;
                     if(mconf.aa > maxAA) mconf.aa = 1;
-                } else if(index == 7) {
+                } else if(index == 6) { 
+                    mconf.vsync ^= true;
+                } else if(index == 8) {
                     currentList = 2;
-                } else if(index == 9) {
+                } else if(index == 10) {
                     mconf.fw = Integer.valueOf(boxes.elementAt(0).text);
                     mconf.fh = Integer.valueOf(boxes.elementAt(1).text);
                     mconf.ww = Integer.valueOf(boxes.elementAt(2).text);
@@ -179,7 +182,7 @@ public class Settings extends Screen {
                         }
                     }
                     
-                } else if(index == 10) {
+                } else if(index == 11) {
                     exit();
                 }
 
