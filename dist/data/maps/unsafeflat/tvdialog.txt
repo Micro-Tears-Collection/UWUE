@@ -1,5 +1,5 @@
 TV:*??? <??> >> ?? ?? ???&????
-TV:*We're out of range here, I already like this flat... You look tired, I think you should go sleep.
+TV:*We're out of range here and I already like this place... You look tired, I think you should go to bed.
 $question nocap 3
 Are you sure we out of range?
 I don't want to sleep
@@ -9,7 +9,7 @@ $go 4
 $go 5
 $3:
 You:*I don't think we're out of radius. I saw the map and we are on the wrong side of the border. Look
-TV:*It's terrible, we need to go to another building as soon as possible, but on the other hand, it’s only an hour before the emission and border line is too far... I don’t know. Maybe we can get out of range if we will run... Pack your things.
+TV:*It's terrible, we need to move to another building which are out of range as soon as possible, but on the other hand, it’s only an hour before the emission and border line is too far... I don’t know. Maybe we can get out of range if we will run... Pack your things.
 $cmd goOut=true
 $end
 $4:
