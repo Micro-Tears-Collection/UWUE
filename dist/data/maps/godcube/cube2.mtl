@@ -1,5 +1,26 @@
 # Blender MTL File: 'aaaa.blend'
-# Material Count: 15
+# Material Count: 17
+
+newmtl characters/crescent;alpha_test=1;scroll_y=0.1
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /home/bigpeka/Git/UWUE/dist/data/textures/characters/crescent.png
+
+newmtl characters/crescent;alpha_test=1;scroll_y=0.5
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
 
 newmtl colors/black
 Ns 0.000000
