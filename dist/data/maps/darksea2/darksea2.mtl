@@ -1,5 +1,5 @@
 # Blender MTL File: 'sea.blend'
-# Material Count: 2
+# Material Count: 7
 
 newmtl None
 Ns 500
@@ -9,7 +9,57 @@ Ks 0.8 0.8 0.8
 d 1
 illum 2
 
-newmtl textures/ds/s.png;blend=blend;scroll_x=0.2;scroll_y=0.5
+newmtl skybox/earth.png;scroll_x=0.01;scroll_y=0.01
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl textures/darksea/1.png;scroll_x=0.1;scroll_y=0.5
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl textures/darksea/3.png
+Ns 323.999994
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl textures/ds/s.png;blend=blend;scroll_x=0.1;scroll_y=0.25
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl textures/forest/20.png
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl textures/stone/beton.png
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
