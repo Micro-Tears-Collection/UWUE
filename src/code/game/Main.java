@@ -88,11 +88,13 @@ public class Main {
                 super.enter();
 
                 LuaValue val = runScript(text);
-                System.out.println("bool " + val.toboolean());
-                System.out.println("int " + val.toint());
-                System.out.println("num " + val.todouble());
-                System.out.println("str " + val.tojstring());
-                
+                if(!val.isnil()) {
+                    System.out.println("bool " + val.toboolean());
+                    System.out.println("int " + val.toint());
+                    System.out.println("num " + val.todouble());
+                    System.out.println("str " + val.tojstring());
+                }
+
                 text = "";
             }
         }.setXYW(0, 0, Engine.w);

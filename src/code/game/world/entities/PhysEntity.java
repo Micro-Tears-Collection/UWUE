@@ -139,7 +139,8 @@ public class PhysEntity extends Entity {
 
             int dis = (int) (rSum - r);
             Vector3D dir = new Vector3D(dx, dy, dz);
-            dir.setLength(dis / 2);
+            int div = (c1.pushable && c2.pushable) ? 2 : 1;
+            dir.setLength(dis / div);
             
             if(c1.pushable && c2.canPush) c1.speed.add(dir.x, dir.y, dir.z);
             if(c2.pushable && c1.canPush) c2.speed.add(-dir.x, -dir.y, -dir.z);
