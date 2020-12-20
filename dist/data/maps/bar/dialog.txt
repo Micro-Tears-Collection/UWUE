@@ -1,3 +1,4 @@
+Welcome to debug bar!!!
 Школьник:*Привет!!!*Чего ты хочешь???
 
 $main part:

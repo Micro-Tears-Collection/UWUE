@@ -1,0 +1,28 @@
+Placeholder boy from 2015:*Sorry but this part of a game isn't ready yet :(*Please return later
+$2:
+$question nocap 5
+Okay
+Who said that?
+When will it be ready?
+I went here in vain?
+Can I noclip out of here?
+$go 3
+$go 4
+$go 6
+$go 8
+$go 10
+$3:
+$end
+$4:
+You:*Who said that this map isn't ready?
+Placeholder boy:*So said one of the developers.
+$go 2
+$6:
+Placeholder boy:*Honestly idk :(*I hope soon
+$go 2
+$8:
+Placeholder boy:*Well I don't think so, because you can hear very nice ambient here and also see some buildings.*It's quite silly, I know...*Did you go up to the top floor in this house?
+$go 2
+$10:
+Placeholder boy:*Unfortunately not.*The engine developer still hasn't added a noclip mode ж(
+$go 2
