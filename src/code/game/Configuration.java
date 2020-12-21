@@ -14,10 +14,13 @@ import java.util.Hashtable;
  */
 public class Configuration {
     
+    public boolean debug = false;
     public boolean startInFullscr = true, vsync = false;
     public int fw, fh;
     public int ww = 800, wh = 600;
     public int aa = 4;
+    
+    public float fov = 70;
     
     public Configuration(int fwd, int fhd) {
         load(fwd, fhd);
@@ -33,6 +36,7 @@ public class Configuration {
         ww = conf.ww; wh = conf.wh;
         aa = conf.aa;
         vsync = conf.vsync;
+        debug = conf.debug;
     }
     
     public void load(int fwd, int fhd) {
@@ -48,6 +52,8 @@ public class Configuration {
         wh = conf.getInt("screen", "window_height", wh);
         
         aa = conf.getInt("screen", "antialiasing", aa);
+        
+        debug = conf.getInt("game", "debug", debug?1:0) == 1;
     }
     
     public void save() {
@@ -63,6 +69,8 @@ public class Configuration {
         conf.put("screen", "window_height", String.valueOf(wh));
 
         conf.put("screen", "antialiasing", String.valueOf(aa));
+        
+        conf.put("game", "debug", String.valueOf(debug?1:0));
         
         FileOutputStream fos = null;
         try {

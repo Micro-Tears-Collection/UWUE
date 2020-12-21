@@ -196,6 +196,14 @@ public class Scripting {
             }
         });
         
+        lua.set("fov", new OneArgFunction() {
+            public LuaValue call(LuaValue fov)  {
+                if(fov.isnumber()) main.conf.fov = fov.tofloat();
+                
+                return LuaValue.valueOf(main.conf.fov);
+            }
+        });
+        
         addEntitiesScripts(main, lua);
         
     }

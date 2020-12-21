@@ -90,7 +90,7 @@ public class WorldLoader {
             worldMeshes = MeshLoader.loadObj(lvl.get("world", "model"), true, prefix, postfix);
         }
         
-        World world = new World(worldMeshes, skyColor, skybox);
+        World world = new World(worldMeshes, skyColor, skybox, game.main.conf.debug);
         
         world.fallDeath = lvl.getInt("world", "fall_death", world.fallDeath?1:0) == 1;
         

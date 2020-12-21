@@ -37,7 +37,7 @@ public class World {
     long renderTime;
     SpriteObject sobj;
     
-    public World(Mesh[] meshes, int skyColor, Mesh[] skybox) {
+    public World(Mesh[] meshes, int skyColor, Mesh[] skybox, boolean debug) {
         allMeshes = meshes;
         makeNodes();
         this.skybox = skybox;
@@ -45,8 +45,12 @@ public class World {
         this.skyColor = skyColor;
         
         objects = new Vector();
-        sobj = new SpriteObject();
-        sobj.spr = new Sprite(Asset.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), false, 20, 20, Sprite.CENTER);
+        
+        if(debug) {
+            sobj = new SpriteObject();
+            sobj.spr = new Sprite(Asset.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), 
+                    false, 20, 20, Sprite.CENTER);
+        }
     }
     
     void makeNodes() {
@@ -198,7 +202,7 @@ public class World {
         
         //Check objects
         for(Entity object : objects) object.render(e3d, this);
-        sobj.render(e3d, this);
+        if(sobj != null) sobj.render(e3d, this);
         
         e3d.renderVectors();
         renderTime += FPS.frameTime;

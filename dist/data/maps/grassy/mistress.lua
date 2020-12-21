@@ -15,6 +15,6 @@ else
 	if catch then 
 		catchF()
 	else
-		showDialog("Mistress:*Do you need help?")
+		showDialog("Mistress:*Do you need my help?")
 	end
 end

@@ -206,7 +206,7 @@ public class Game extends Screen {
     void render() {
         float py = player.pos.y;
         player.pos.y += player.eyeHeight;
-        e3d.setCam(player.pos, player.rotX, player.rotY, 70, w, h);
+        e3d.setCam(player.pos, player.rotX, player.rotY, main.conf.fov, w, h);
         player.pos.y = py;
         
         world.render(e3d, w, h);
@@ -228,10 +228,12 @@ public class Game extends Screen {
             pauseScreen.draw(main.e3d, 0, 0, main.fontColor, main.fontSelColor, false);
         }
         
-        main.font.drawString("FPS: "+FPS.fps, 10, 10, 1, main.fontColor);
-        main.font.drawString(
-                Math.round(player.pos.x)+", "+Math.round(player.pos.y)+", "+Math.round(player.pos.z),
-                10, 10+main.font.getHeight(), 1, main.fontColor);
+        if(main.conf.debug) {
+            main.font.drawString("FPS: " + FPS.fps, 10, 10, 1, main.fontColor);
+            main.font.drawString(
+                    Math.round(player.pos.x) + ", " + Math.round(player.pos.y) + ", " + Math.round(player.pos.z),
+                    10, 10 + main.font.getHeight(), 1, main.fontColor);
+        }
         
         if(fade != null && (!inPauseScreen || isWakingUp())) {
             float intensity = fade.step(e3d, w, h);
@@ -305,7 +307,7 @@ public class Game extends Screen {
                 if(pauseScreen.isInBox(0, 0, getMouseX(), getMouseY())) pauseClicked();
             }
         } else if(!pressed && button == MOUSE_RIGHT) {
-            if(!isPaused()) world.debugPos(player);
+            if(!isPaused() && main.conf.debug) world.debugPos(player);
         }
     }
     
