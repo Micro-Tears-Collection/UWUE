@@ -1,0 +1,35 @@
+$if grassyEyeQuest==0
+$go thanks
+Eye:*Are you looking for grandma too?
+$cmd grassyEyeQuest=(grassyEyeQuest==nil) and 1 or grassyEyeQuest
+$question gen nocap 4
+Yes
+No
+Why do you ask?
+Mistress said where she is
+true
+true
+true
+grassyEyeQuest==2
+$go 4
+$go 5
+$go 6
+$go 7
+$end
+$4:
+Eye:*That's nice, please tell me if you find out where my grandma is! :(
+$end
+$5:
+Eye:*Oh. I see.
+$end
+$6:
+Eye:*I just can't find her anywhere since the morning, I woke up, and she was no longer at home.*Where could she have disappeared? I'm so worried about her...
+$end
+$7:
+You:*Mistress said that your grandmother is at the fair from the morning, so don't worry, she'll probably come back when she buys everything she need.
+$cmd playSource("eye_laugh")
+Eye:*Oh thank you!*Hope she will return home soon and we will watch cartoons together.
+$cmd grassyEyeQuest=0
+$end
+$thanks:
+Eye:*Thank you!

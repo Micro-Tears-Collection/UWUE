@@ -1,4 +1,5 @@
-local catch = objVar("mistress", "x") > -2600
+local catch = grassyFall == true
+grassyFall = nil
 local fall = {"Mistress:*I caught you when you fell off the roof, thankfully you weren't hurt.*Be more careful in the future, okay?"}
 
 local catchF = function ()
@@ -15,6 +16,6 @@ else
 	if catch then 
 		catchF()
 	else
-		showDialog("Mistress:*Do you need my help?")
+		loadDialog("/maps/grassy/mistress-help.txt")
 	end
 end
