@@ -130,6 +130,7 @@ public class SoundSource extends DisposableContent {
     
     public void rewind() {
         AL10.alSourceRewind(soundSource);
+        AL10.alSourcePlay(soundSource);
     }
     
     public void destroy() {

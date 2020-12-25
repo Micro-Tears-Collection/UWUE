@@ -79,5 +79,6 @@ public class AudioEngine {
     
     public static void rewindMultiple(int[] sources) {
         AL10.alSourceRewindv(sources);
+        AL10.alSourcePlayv(sources);
     }
 }

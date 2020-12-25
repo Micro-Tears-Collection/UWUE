@@ -1,0 +1,25 @@
+$cmd stopMusic();stopSource("wind");setMusicPitch(0.53);playMusic("/music/moonworld/coolsound.ogg")
+Moon:*Why am I here?
+You:*I don't know
+Moon:*What chained me here?
+You:*I don't know
+Moon:*What kind of power is this?
+You:*I don't know
+Moon:*Why am I here?
+You:*I don't know
+Moon:*What chained me here?
+You:*I don't know
+Moon:*What is holding me here?
+You:*I don't know
+Moon:*Is it night now?
+You:*No
+Moon:*What is holding me here?
+You:*...
+Moon:*What chained me here?
+Moon:*Why am I here?
+Moon:*What is holding me here?
+Moon:*Why is it so bright?
+You:*Я не знаю
+$cmd objVar("player", "x", -7105.775-(objVar("player", "x")+7105.775)); objVar("player", "z", -407.5-(objVar("player", "z")+407.5)); objVar("player", "rotY", objVar("player", "rotY")+180)
+$cmd setMusicPitch(0.3);rewindMusic();objVar("moon_fall", "activable", true);objVar("moon", "activable", false)
+Moon:*Leave me

@@ -124,6 +124,13 @@ public class Scripting {
             }
         });
         
+        lua.set("rewindMusic", new ZeroArgFunction() {
+            public LuaValue call()  {
+                main.musPlayer.rewind();
+                return LuaValue.NIL;
+            }
+        });
+        
         lua.set("stopMusic", new ZeroArgFunction() {
             public LuaValue call()  {
                 main.musPlayer.stop();
