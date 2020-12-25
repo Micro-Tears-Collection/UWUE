@@ -1,0 +1,33 @@
+What music do you want to play?
+$question nocap 6
+Don't change music
+unreverted verted kids
+air smell
+main tune for untuned mune
+music
+sounds of humanes
+$end
+$go 1
+$go crows
+$go 2
+$go static
+$go 5
+$1:
+$cmd playMusic("/music/rmsh/bb.ogg")
+$end
+
+$2:
+$cmd playMusic("/music/rmsh/lsd city.ogg")
+$end
+
+$5:
+$cmd playMusic("/sounds/neighbors.ogg")
+$end
+
+$crows:
+$cmd playMusic("/sounds/crows-stereo.ogg")
+$end
+
+$static:
+$cmd playMusic("/sounds/haha.ogg")
+$end
