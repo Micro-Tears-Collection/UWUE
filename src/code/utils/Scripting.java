@@ -204,6 +204,32 @@ public class Scripting {
             }
         });
         
+        lua.set("atan2", new TwoArgFunction() {
+            public LuaValue call(LuaValue p1, LuaValue p2)  {
+                if(p1.istable() && p2.istable()) {
+                    return LuaValue.valueOf(Math.toDegrees(
+                            Math.atan2(
+                                    p1.get(1).todouble()-p2.get(1).todouble(), 
+                                    p1.get(3).todouble()-p2.get(3).todouble())
+                    ));
+                }
+                
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("lookAt", new TwoArgFunction() {
+            public LuaValue call(LuaValue p1, LuaValue p2)  {
+                String o1 = '\"'+p1.toString()+'\"', o2 = '\"'+p2.toString()+'\"';
+                
+                main.runScript("objVar("+o1+",\"rotY\",atan2("
+                    +"objVar("+o1+",\"pos\"),"
+                    +"objVar("+o2+",\"pos\")))");
+                
+                return LuaValue.NIL;
+            }
+        });
+        
         addEntitiesScripts(main, lua);
         
     }

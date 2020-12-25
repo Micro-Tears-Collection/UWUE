@@ -31,8 +31,6 @@ public class MeshObject extends PhysEntity {
     
     public void physicsUpdate(World world) {
         super.physicsUpdate(world);
-        
-        Renderable.buildMatrix(pos, new Vector3D(0, rotY, 0), Renderable.tmpMat.identity()).get(mesh.modelMatrix);
     }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
@@ -73,6 +71,9 @@ public class MeshObject extends PhysEntity {
     
     public void render(E3D e3d, World world) {
         if(visible) {
+            Renderable.buildMatrix(pos, 
+                    new Vector3D(0, rotY, 0), 
+                    Renderable.tmpMat.identity()).get(mesh.modelMatrix);
             mesh.setMatrix(mesh.modelMatrix, world.m, e3d.invCam);
             mesh.prepareRender(e3d);
         }
