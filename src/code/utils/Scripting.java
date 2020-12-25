@@ -13,6 +13,7 @@ import code.game.Pause;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
+import code.game.world.entities.Player;
 import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
 import code.math.Vector3D;
@@ -258,7 +259,6 @@ public class Scripting {
         lua.set("stopSource", new OneArgFunction() {
             public LuaValue call(LuaValue obj)  {
                 Game game = main.getGame();
-                System.out.println(obj.isstring()+" "+obj.istable());
                 
                 if(obj.isstring()) {
                     Entity found = game!=null?game.world.findObject(obj.toString()):null;
@@ -306,6 +306,8 @@ public class Scripting {
                         (entity != null && entity instanceof SpriteObject)?(SpriteObject)entity:null;
                 SoundSourceEntity sndObj = 
                         (entity != null && entity instanceof SoundSourceEntity)?(SoundSourceEntity)entity:null;
+                Player player = 
+                        (entity != null && entity instanceof Player)?(Player)entity:null;
                 
                 String varName = var.toString();
                 
@@ -414,8 +416,16 @@ public class Scripting {
                     if(!val.isnil() && val.isnumber()) physEntity.rotY = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.rotY);
+                   
+                } 
+                //Player vars
+                else if(varName.equals("rotX") && player != null) {
+                    if(!val.isnil() && val.isnumber()) player.rotX = val.tofloat();
                     
-                } else if(varName.equals("radius") && physEntity != null) {
+                    return LuaValue.valueOf(player.rotX);
+                } 
+                //Physics entities again
+                else if(varName.equals("radius") && physEntity != null) {
                     if(!val.isnil() && val.isnumber()) physEntity.radius = val.tofloat();
                     
                     return LuaValue.valueOf(physEntity.radius);
@@ -476,8 +486,8 @@ public class Scripting {
     public static int[] buildSourcesArray(Game game, LuaValue list) {
         Vector<Integer> sourcesV = new Vector();
         
-        for(int i=0; i<list.narg(); i++) {
-            Entity found = game!=null?game.world.findObject(list.arg(i+1).toString()):null;
+        for(int i=0; i<list.length(); i++) {
+            Entity found = game!=null?game.world.findObject(list.get(i+1).toString()):null;
             SoundSourceEntity snd
                     = (found != null && found instanceof SoundSourceEntity) ? (SoundSourceEntity) found : null;
             
