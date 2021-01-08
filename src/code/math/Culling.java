@@ -6,6 +6,8 @@ package code.math;
  */
 public class Culling {
     
+    public static final int INVISIBLE = 0, VISIBLE = 1, FULLY_VISIBLE = 2;
+    
     static float[] invCam = new float[16];
     static float zNearClip, zFarClip;
     static float xLine, yLine;
@@ -78,7 +80,7 @@ public class Culling {
         }
     }
     
-    public boolean visible() {
+    public int visible() {
         int zNear = 0, zFar = 0, xLeft = 0, xRight = 0, yTop = 0, yDown = 0;
         
         for(int i=0; i<8; i++) {
@@ -96,7 +98,8 @@ public class Culling {
             else if(v.y > downBorderY) yTop++;
         }
         
-        return zNear != 8 && zFar != 8 && xLeft != 8 && xRight != 8 && yTop != 8 && yDown != 8;
+        if(zNear == 0 && zFar == 0 && xLeft == 0 && xRight == 0 && yTop == 0 && yDown == 0) return FULLY_VISIBLE;
+        return (zNear != 8 && zFar != 8 && xLeft != 8 && xRight != 8 && yTop != 8 && yDown != 8) ? VISIBLE : INVISIBLE;
     }
     
 }

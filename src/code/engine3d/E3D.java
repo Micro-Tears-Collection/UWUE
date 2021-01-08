@@ -1,7 +1,7 @@
 package code.engine3d;
 
 import code.Engine;
-import code.math.MathUtils;
+import static code.engine3d.Renderable.NORMALDRAW;
 import code.math.Vector3D;
 import code.utils.font.BMFont;
 import java.util.Vector;
@@ -20,16 +20,21 @@ public class E3D {
     public float fovX, fovY;
     public int w, h;
     
-    public Vector<Renderable> toRender, preDraw, postDraw;
+    Vector<Renderable> postDraw;
     
-    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, rectNormals;
+    Vector<Vector<Renderable>>[] toDraw;
+    Vector<Integer>[] toDrawOffset;
+    int[] toDrawUsed;
+    
+    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, cubeVBO, rectNormals;
     
     public boolean mode2D;
     public int maxLights;
     
     public E3D() {
-        toRender = new Vector();
-        preDraw = new Vector();
+        toDraw = new Vector[]{new Vector(), new Vector()};
+        toDrawOffset = new Vector[]{new Vector(), new Vector()};
+        toDrawUsed = new int[2];
         postDraw = new Vector();
         
         rectCoordVBO = GL15.glGenBuffers(); //Creates a VBO ID
@@ -80,6 +85,28 @@ public class E3D {
                     0, 0, 0, 0, 0, 0, 0, 0
                 }, GL15.GL_STATIC_DRAW);
         
+        cubeVBO = GL15.glGenBuffers(); //Creates a VBO ID
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cubeVBO); //Loads the current VBO to store the data
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+                new short[]{
+                    0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 1, 0,
+                    0, 0, 0, 1, 0, 0,
+                    
+                    1, 1, 1, 1, 1, 0,
+                    1, 1, 1, 1, 0, 1,
+                    1, 1, 1, 0, 1, 1,
+                    
+                    1, 0, 1, 1, 0, 0,
+                    1, 0, 1, 0, 0, 1,
+                    
+                    0, 1, 0, 1, 1, 0,
+                    0, 1, 0, 0, 1, 1,
+                    
+                    0, 0, 1, 0, 1, 1,
+                    1, 0, 0, 1, 1, 0,
+                }, GL15.GL_STATIC_DRAW);
+        
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
         
         GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
@@ -91,6 +118,8 @@ public class E3D {
             GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_CONSTANT_ATTENUATION, 0);
             GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
         }
+        
+        Shader shader = new Shader("/shaders/dither");
     }
     
     public void destroy() {
@@ -100,6 +129,7 @@ public class E3D {
         GL15.glDeleteBuffers(rectNormals);
         GL15.glDeleteBuffers(windowColVBO);
         GL15.glDeleteBuffers(arrowVBO);
+        GL15.glDeleteBuffers(cubeVBO);
         
         LightGroup.clear(false);
     }
@@ -126,7 +156,7 @@ public class E3D {
         proj.perspective((float) Math.toRadians(fov), (float) w / h, 1f, 40000.0f);
         
         fovY = fov;
-        fovX = (float)Math.toDegrees(2*MathUtils.atan((float) (Math.tan(Math.toRadians(fovY)/2) * w / h)));
+        fovX = (float)Math.toDegrees(2f*Math.atan((float) (Math.tan(Math.toRadians(fovY/2f)) * w / h)));
     }
     
     public void disableFog() {
@@ -179,7 +209,6 @@ public class E3D {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glDisable(GL11.GL_FOG);
-        GL11.glDisable(GL11.GL_LIGHTING);
         
         ortho(ww, hh);
         
@@ -192,23 +221,55 @@ public class E3D {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glCullFace(GL11.GL_BACK);
         GL11.glDisable(GL11.GL_FOG);
+        GL11.glCullFace(GL11.GL_BACK);
+    }
+    
+    public void add(Renderable obj) {
+        if(obj.drawOrder <= NORMALDRAW) {
+            Vector<Vector<Renderable>> toDraw = this.toDraw[obj.drawOrder];
+            Vector<Integer> toDrawOffset = this.toDrawOffset[obj.drawOrder];
+            int usedLists = toDrawUsed[obj.drawOrder];
+            int orderOffset = obj.orderOffset;
+            
+            int vec = 0;
+            for(; vec<usedLists; vec++) {
+                if(toDrawOffset.elementAt(vec).intValue() == orderOffset) break;
+            }
+            
+            if(vec == usedLists) {
+                if(usedLists == toDraw.size()) {
+                    toDraw.add(new Vector());
+                    toDrawOffset.add(orderOffset);
+                }
+                toDrawUsed[obj.drawOrder]++;
+            }
+            
+            toDraw.elementAt(vec).add(obj);
+        } else postDraw.add(obj);
     }
     
     public void renderVectors() {
         //Finally draw 3d
-        sort(preDraw);
-        for(Renderable object : preDraw) object.render(this);
-        
-        sort(toRender);
-        for(Renderable object : toRender) object.render(this);
+        for(int i=0; i<=NORMALDRAW; i++) {
+            Vector<Vector<Renderable>> toDraw = this.toDraw[i];
+            int usedLists = toDrawUsed[i];
+            sort(toDraw, toDrawOffset[i], usedLists);
+            
+            for(int x=0; x<usedLists; x++) {
+                Vector<Renderable> toRender = toDraw.elementAt(x);
+                
+                for(Renderable object : toRender) object.render(this);
+                
+                toRender.removeAllElements();
+            }
+            
+            toDrawUsed[i] = 0;
+        }
         
         sort(postDraw);
         for(Renderable object : postDraw) object.render(this);
         
-        preDraw.removeAllElements();
-        toRender.removeAllElements();
         postDraw.removeAllElements();
     }
     
@@ -219,6 +280,15 @@ public class E3D {
     
     public void drawRect(Material mat, float x, float y, float w, float h, 
             int color, float a) {
+        drawRect(mat, x, y, w, h, 
+                ((color>>16)&255) / 255f,
+                ((color>>8)&255) / 255f,
+                (color&255) / 255f,
+                a);
+    }
+    
+    public void drawRect(Material mat, float x, float y, float w, float h, 
+            float r, float g, float b, float a) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -227,40 +297,69 @@ public class E3D {
         
         if(mat != null) GL15.glActiveTexture(GL15.GL_TEXTURE0);
         
-        if(color != 0xffffff || a != 1) GL11.glColor4f(((color>>16)&255) / 255f, 
-                ((color>>8)&255) / 255f, 
-                (color&255) / 255f, a);
+        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(r, g, b, a);
         
         if(mat != null) mat.bind();
         else {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
             GL11.glEnable(GL11.GL_BLEND);
             GL14.glBlendEquation(GL14.GL_FUNC_ADD);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         }
         
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        if(mat != null) GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO);
-        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
-
+        GL11.glVertexPointer(3, GL11.GL_SHORT, 0, 0);
+        
         if(mat != null) {
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvVBO);
-            GL15.glTexCoordPointer(2, GL15.GL_SHORT, 0, 0);
+            GL11.glTexCoordPointer(2, GL11.GL_SHORT, 0, 0);
         }
         
         GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
         
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        if(mat != null) GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
+        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        if(mat != null) GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-        else {
+        if(mat != null) {
+            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            mat.unbind();
+        } else {
             GL11.glDisable(GL11.GL_BLEND);
         }
         
-        if(color != 0xffffff || a != 1) GL11.glColor4f(1, 1, 1, 1);
+        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(1, 1, 1, 1);
+        
+        GL11.glPopMatrix();
+    }
+    
+    public void drawDitheredSurface(Texture frameBuffer, Texture dither, float x, float y, float w, float h,
+            Shader ditherShader, int ditherW, int ditherH) {
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(x, y, 0);
+        GL11.glScalef(w, h, 0);
+        
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        
+        frameBuffer.bind(false, false, true, 0);
+        if(ditherShader.isCompiled()) dither.bind(false, false, false, 1);
+        ditherShader.bind();
+        ditherShader.setUniformf(ditherW, frameBuffer.w/dither.w);
+        ditherShader.setUniformf(ditherH, frameBuffer.h/dither.h);
+        
+        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO);
+        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
+        
+        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
+        
+        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        
+        frameBuffer.unbind(0);
+        dither.unbind(1);
+        ditherShader.unbind();
         
         GL11.glPopMatrix();
     }
@@ -272,7 +371,6 @@ public class E3D {
         GL11.glEnable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
         
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glEnableClientState(GL15.GL_COLOR_ARRAY);
@@ -310,6 +408,42 @@ public class E3D {
         GL11.glPopMatrix();
     }
     
+    public void drawCube(Vector3D min, Vector3D max, int color, float a) {
+        m.identity();
+        m.translate(min.x, min.y, min.z);
+        m.scale(max.x-min.x, max.y-min.y, max.z-min.z);
+        invCam.mul(m);
+        
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadMatrixf(invCam.get(tmp));
+        invCam.set(invCamf);
+        
+        float r = ((color>>16)&255) / 255f;
+        float g = ((color>>8)&255) / 255f;
+        float b = (color&255) / 255f;
+        
+        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(r, g, b, a);
+        
+        GL11.glEnable(GL11.GL_BLEND);
+        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cubeVBO);
+        GL11.glVertexPointer(3, GL11.GL_SHORT, 0, 0);
+        
+        GL11.glDrawArrays(GL11.GL_LINES, 0, 24);
+        
+        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL11.glDisable(GL11.GL_BLEND);
+        
+        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(1, 1, 1, 1);
+        
+        GL11.glPopMatrix();
+    }
+    
     public static int getWindowYBorder() {
         return 15;
     }
@@ -332,7 +466,6 @@ public class E3D {
         GL11.glEnable(GL11.GL_BLEND);
         GL14.glBlendEquation(GL14.GL_FUNC_ADD);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
             
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         
@@ -369,6 +502,30 @@ public class E3D {
             
             list.setElementAt(list.elementAt(i), pos);
             list.setElementAt(nearest, i);
+        }
+    }
+    
+    private static void sort(Vector<Vector<Renderable>> list, Vector<Integer> offset, int length) {
+        for(int i=length-1; i>=1; i--) {
+            Vector<Renderable> max = null;
+            int maximumOffset = Integer.MIN_VALUE;
+            int maximumIndex = 0;
+            
+            for(int x=0; x<=i; x++) {
+                int tmpOffset = offset.elementAt(x);
+                
+                if(tmpOffset > maximumOffset) {
+                    max = list.elementAt(x);
+                    maximumOffset = tmpOffset;
+                    maximumIndex = x;
+                }
+            }
+            
+            list.setElementAt(list.elementAt(i), maximumIndex);
+            list.setElementAt(max, i);
+            
+            offset.setElementAt(offset.elementAt(i), maximumIndex);
+            offset.setElementAt(maximumOffset, i);
         }
     }
     

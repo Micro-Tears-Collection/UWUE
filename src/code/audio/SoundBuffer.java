@@ -45,7 +45,7 @@ public class SoundBuffer extends ReusableContent {
             bruh.put(data);
             bruh.rewind();
         } catch (Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
             AL10.alDeleteBuffers(soundBuffer);
             if(bruh != null) MemoryUtil.memFree(bruh);
             return null;
@@ -60,6 +60,8 @@ public class SoundBuffer extends ReusableContent {
         AL10.alBufferData(soundBuffer, 
                 channels.get(0)==1?AL10.AL_FORMAT_MONO16:AL10.AL_FORMAT_STEREO16, 
                 decoded, sampleRate.get(0));
+        MemoryUtil.memFree(sampleRate);
+        MemoryUtil.memFree(channels);
         MemoryUtil.memFree(decoded);
         
         return new SoundBuffer(soundBuffer);

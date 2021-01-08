@@ -15,7 +15,7 @@ public class LightGroup {
     public static LightGroup defaultGroup;
     
     private static Vector<Light> renderLights = new Vector();
-    private static int prevLightsCount = 0;
+    private static int activeLightsCount = 0;
     
     public String name;
     public Vector<Light> lights;
@@ -73,8 +73,10 @@ public class LightGroup {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadMatrixf(e3d.invCamf);
+        
+        GL11.glEnable(GL11.GL_LIGHTING);
             
-        int i = 0;
+        activeLightsCount = 0;
         for(Light light : lights) {
             if(light.point) {
                 //point source
@@ -96,14 +98,14 @@ public class LightGroup {
             }
             
             renderLights.add(light);
-            i++;
+            activeLightsCount++;
         }
         
         if(renderLights.size() > e3d.maxLights) sort(renderLights);
         
-        i = Math.min(i, e3d.maxLights);
+        activeLightsCount = Math.min(activeLightsCount, e3d.maxLights);
         
-        for(int ii=0; ii<i; ii++) {
+        for(int ii=0; ii<activeLightsCount; ii++) {
             Light light = renderLights.elementAt(ii);
             
             GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_DIFFUSE, light.color);
@@ -121,17 +123,17 @@ public class LightGroup {
         }
         renderLights.removeAllElements();
         
-        int lc = i;
-        for(;i<prevLightsCount; i++) {
-            GL11.glDisable(GL11.GL_LIGHT0+i);
-        }
-        prevLightsCount = lc;
-        
         GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_AMBIENT, ambient);
-        /*GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_SPECULAR, new float[]{0.3f,0.3f,0.3f,1});
-        GL11.glMateriali(GL11.GL_FRONT, GL11.GL_SHININESS, 16);*/
 
         GL11.glPopMatrix();
+    }
+    
+    public void unbind() {
+        GL11.glDisable(GL11.GL_LIGHTING);
+        
+        for(int i=0; i<activeLightsCount; i++) {
+            GL11.glDisable(GL11.GL_LIGHT0+i);
+        }
     }
     
     private static void sort(Vector<Light> list) {
@@ -147,13 +149,9 @@ public class LightGroup {
         //Разделить на подмассивы, который больше и меньше опорного элемента
         int first = low, second = high;
         while(first <= second) {
-            while(list.elementAt(first).influence > influence) {
-                first++;
-            }
+            while(list.elementAt(first).influence > influence) first++;
 
-            while(list.elementAt(second).influence < influence) {
-                second--;
-            }
+            while(list.elementAt(second).influence < influence) second--;
 
             if(first <= second) { //Меняем местами
                 Light tmp = list.elementAt(first);

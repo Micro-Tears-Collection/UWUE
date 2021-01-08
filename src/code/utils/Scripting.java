@@ -527,7 +527,7 @@ public class Scripting {
             if(fos != null) try {
                 fos.close();
             } catch(Exception ee) {}
-            Engine.printError(e);
+            e.printStackTrace();
         }
     }
     
@@ -593,7 +593,7 @@ public class Scripting {
             if(fis != null) try {
                 fis.close();
             } catch(Exception ee) {}
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return save;

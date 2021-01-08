@@ -5,6 +5,7 @@ import code.Engine;
 import code.Screen;
 import code.audio.SoundSource;
 import code.engine3d.E3D;
+import code.engine3d.Texture;
 import code.math.Vector3D;
 import code.ui.TextBox;
 import code.utils.Asset;
@@ -53,10 +54,13 @@ public class Main {
         gamecfg = Asset.loadIni("game.ini", true);
         conf = new Configuration(w, h);
     }
+    
+    int frameBufferName, renderedTexture, depthrenderbuffer;
+    Texture frameBufferTex, dither;
 
     public void init() {
         Engine.setTitle(gamecfg.get("game", "name"));
-        
+
         musPlayer = ((SoundSource) Asset.getSoundSource().lock()).beMusicPlayer();
         selectedS = (SoundSource) Asset.getSoundSource("/sounds/select.ogg").lock();
         selectedS.buffer.neverUnload = true;
@@ -177,6 +181,10 @@ public class Main {
                 console.draw(e3d);
             }
             
+            /*e3d.prepare2D(0, 0, Engine.w, Engine.h);
+            e3d.drawDitheredSurface(frameBufferTex, dither,
+                    (Engine.w - Engine.h*320/240)/2, Engine.h, Engine.h*320/240, -Engine.h);*/
+            
             e3d.flush();
 
             if(!conf.vsync) try {
@@ -262,7 +270,7 @@ public class Main {
         try {
             return lua.load(script);
         } catch (Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;
@@ -293,7 +301,7 @@ public class Main {
                     dis.close();
                 } catch(Exception ee) {}
             }
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;
@@ -309,7 +317,7 @@ public class Main {
             LuaValue chunk = lua.load(script);
             return chunk.call();
         } catch (Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return LuaValue.NIL;
@@ -319,7 +327,7 @@ public class Main {
         try {
             return chunk.call();
         } catch (Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return LuaValue.NIL;

@@ -85,12 +85,12 @@ public class Configuration {
             if(fos != null) try {
                 fos.close();
             } catch(Exception ee) {}
-            Engine.printError(e);
+            e.printStackTrace();
         }
     }
     
     public boolean isNeedToConfirm(Configuration other) {
-        return other.fw != fw || other.fh != fh;
+        return other.fw != fw || other.fh != fh || other.aa != aa;
     }
     
     public boolean isValid() {

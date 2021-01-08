@@ -32,6 +32,7 @@ public class Game extends Screen {
     
     public E3D e3d;
     public DialogScreen dialog;
+    public WorldDebugger debugger;
     boolean inPauseScreen;
     ItemList pauseScreen;
     
@@ -62,6 +63,7 @@ public class Game extends Screen {
         
         e3d = main.e3d;
         dialog = new DialogScreen();
+        if(main.conf.debug) debugger = new WorldDebugger(this);
         createPauseScreen();
         
         Engine.hideCursor(true);
@@ -103,6 +105,7 @@ public class Game extends Screen {
         
         nextMap = null;
         newPlayerPos = null;
+        if(debugger != null) debugger.reload();
         FPS.previousFrame += System.currentTimeMillis() - loadtime;
     }
     
@@ -210,6 +213,7 @@ public class Game extends Screen {
         player.pos.y = py;
         
         world.render(e3d, w, h);
+        if(debugger != null) debugger.draw3D();
         
         e3d.prepare2D(0, 0, w, h);
         
@@ -227,6 +231,8 @@ public class Game extends Screen {
                     Math.round(player.pos.x) + ", " + Math.round(player.pos.y) + ", " + Math.round(player.pos.z),
                     10, 10 + main.font.getHeight(), 1, main.fontColor);
         }
+        
+        if(debugger != null) debugger.draw2D();
         
         if(inPauseScreen) {
             e3d.drawRect(null, 0, 0, w, h, 0, 0.5f);
@@ -291,6 +297,8 @@ public class Game extends Screen {
                 pauseClicked();
             }
         }
+        
+        if(debugger != null) if(debugger.keyReleased(key)) return;
     }
     
     public void mouseAction(int button, boolean pressed) {
@@ -324,6 +332,7 @@ public class Game extends Screen {
         this.w = w; this.h = h;
         createPauseScreen();
         if(from != dialog && dialog != null) dialog.sizeChanged(w, h, this);
+        if(debugger != null) debugger.sizeChanged();
     }
     
     public void wakeUp() {

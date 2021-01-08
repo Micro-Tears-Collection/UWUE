@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
@@ -50,10 +49,6 @@ public class Engine {
         if(!GLFW.glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
-
-        GLFW.glfwDefaultWindowHints();
-        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
         
         System.out.println("ultra wacky\n"
                 + "UHHHHHHHHHHHHHHHHHHHHHHH.....\n"
@@ -75,30 +70,32 @@ public class Engine {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         main = new Main(vidmode.width(), vidmode.height());
         
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, main.conf.aa);
-        
-        w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
-        h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
-        
         keyInputCallback = new KeyInput(main);
         textCallback = new TextCallback(main);
         mouseCallback = new MouseCallback(main);
         scrollCallback = new ScrollCallback(main);
         resizeCallback = new ResizeCallback(main);
         
-        initGL(main.conf.startInFullscr, main.conf.vsync);
+        w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
+        h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
+        
+        createGLWindow(main.conf.startInFullscr, main.conf.vsync, main.conf.aa);
         AudioEngine.init();
         
         main.init();
     }
     
-    static void initGL(boolean fullscr, boolean vsync) {
+    static void createGLWindow(boolean fullscr, boolean vsync, int aa) {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         int rate = vidmode.refreshRate();
         
+        GLFW.glfwDefaultWindowHints();
+        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 1);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 5);
         GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, rate);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, aa);
         
         window = GLFW.glfwCreateWindow(w, h,
                 "UWUE", fullscr?GLFW.glfwGetPrimaryMonitor():NULL, NULL);
@@ -108,13 +105,8 @@ public class Engine {
         }
 
         GLFW.glfwMakeContextCurrent(window);
-        /*
-        I have weird issues with vsync in windowed mode. 
-        For some reason fps drops to 30 frames, so i disabled vsync
-        */
         GLFW.glfwSwapInterval(vsync?1:0); //vsync on
         GLFW.glfwShowWindow(window);
-
         GL.createCapabilities();
         
         GLFW.glfwSetKeyCallback(window, keyInputCallback);
@@ -124,27 +116,20 @@ public class Engine {
         GLFW.glfwSetScrollCallback(window, scrollCallback);
     }
     
-    public static boolean setWindow(Configuration conf, boolean fullscr) {
+    public static void setWindow(Configuration conf, boolean fullscr) {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         
-        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, conf.aa);
-
-        int ww, hh;
-        
         if(fullscr) {
-            ww = conf.fw; hh = conf.fh;
             GLFW.glfwSetWindowMonitor(Engine.window,
                     GLFW.glfwGetPrimaryMonitor(),
                     0, 0, conf.fw, conf.fh, vidmode.refreshRate());
         } else {
-            ww = conf.ww; hh = conf.wh;
             GLFW.glfwSetWindowMonitor(Engine.window, MemoryUtil.NULL,
                     (vidmode.width() - conf.ww) / 2, (vidmode.height() - conf.wh) / 2,
                     conf.ww, conf.wh, vidmode.refreshRate());
         }
-        GLFW.glfwSwapInterval(conf.vsync?1:0); //vsync on
-        
-        return w == ww && h == hh;
+
+        GLFW.glfwSwapInterval(conf.vsync ? 1 : 0); //vsync
     }
     
     public static void setTitle(String title) {
@@ -164,6 +149,16 @@ public class Engine {
     
     public static boolean isFullscr() {
         return GLFW.glfwGetWindowMonitor(Engine.window) != MemoryUtil.NULL;
+    }
+    
+    public static void destroy() {
+        Callbacks.glfwFreeCallbacks(window);
+        GLFW.glfwDestroyWindow(window);
+
+        GLFW.glfwTerminate();
+        GLFW.glfwSetErrorCallback(null).free();
+
+        AudioEngine.close();
     }
 
     public static boolean isResolutionValid(int w, int h) {
@@ -186,16 +181,6 @@ public class Engine {
         }
         
         return samples;
-    }
-    
-    public static void destroy() {
-        Callbacks.glfwFreeCallbacks(window);
-        GLFW.glfwDestroyWindow(window);
-
-        GLFW.glfwTerminate();
-        GLFW.glfwSetErrorCallback(null).free();
-
-        AudioEngine.close();
     }
     
     public static void takeScreenshot() {
@@ -229,14 +214,9 @@ public class Engine {
 
             ImageIO.write(image, "PNG", file);
         } catch (Exception e) {
-            printError(e);
+            e.printStackTrace();
         }
     }
-    
-    public static void printError(Throwable t) {
-        t.printStackTrace(System.out);
-    }
-
 }
 
 class Log extends PrintStream {

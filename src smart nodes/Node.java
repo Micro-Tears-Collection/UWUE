@@ -17,10 +17,20 @@ import java.util.Vector;
 public class Node {
     
     public Mesh mesh;
+    public Vector3D min, max;
     public Vector<Node> childs;
     
-    public Node(Mesh mesh) {
+    /**
+     * Node creation
+     * @param mesh Nullable
+     * @param min Minimal bounding box xyz
+     * @param max Maximum bounding box xyz
+     */
+    public Node(Mesh mesh, Vector3D min, Vector3D max) {
         this.mesh = mesh;
+        this.min = min;
+        this.max = max;
+        
         childs = new Vector();
     }
     
@@ -37,43 +47,28 @@ public class Node {
     static final Culling cul = new Culling();
     
     public void render(E3D e3d, float[] invCam, World world, long renderTime) {
-        mesh.setMatrix(invCam);
-        cul.setBox(mesh.min, mesh.max);
-        int visible = cul.visible();
+        if(mesh != null) mesh.setMatrix(invCam);
+        cul.setBox(min, max);
         
-        if(visible >= Culling.VISIBLE) {
-            mesh.animate(renderTime, true);
-            mesh.prepareRender(e3d);
-            
-            if(visible == Culling.FULLY_VISIBLE) {
-                for(int i=0; i<childs.size(); i++) {
-                    childs.elementAt(i).renderFully(e3d, invCam, world, renderTime);
-                }
-            } else {
-                for(int i=0; i<childs.size(); i++) {
-                    childs.elementAt(i).render(e3d, invCam, world, renderTime);
-                }
+        if(cul.visible()) {
+            if(mesh != null) {
+                mesh.animate(renderTime, true);
+                mesh.prepareRender(e3d);
             }
-        }
-    }
-    
-    public void renderFully(E3D e3d, float[] invCam, World world, long renderTime) {
-        mesh.setMatrix(invCam);
-        mesh.animate(renderTime, true);
-        mesh.prepareRender(e3d);
-
-        for(int i=0; i<childs.size(); i++) {
-            childs.elementAt(i).renderFully(e3d, invCam, world, renderTime);
+            
+            for(int i=0; i<childs.size(); i++) {
+                childs.elementAt(i).render(e3d, invCam, world, renderTime);
+            }
         }
     }
     
     public void sphereCast(Sphere sphere) {
         if(SphereCast.isSphereAABBCollision(
                 sphere,
-                mesh.min.x, mesh.min.y, mesh.min.z,
-                mesh.max.x, mesh.max.y, mesh.max.z)) {
+                min.x, min.y, min.z,
+                max.x, max.y, max.z)) {
             
-            if(mesh.physicsVerts != null) SphereCast.sphereCast(mesh, sphere);
+            if(mesh != null && mesh.physicsVerts != null) SphereCast.sphereCast(mesh, sphere);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).sphereCast(sphere);
@@ -84,15 +79,19 @@ public class Node {
     public void rayCast(Ray ray) {
         if(RayCast.isRayAABBCollision(
                 ray,
-                mesh.min.x, mesh.min.y, mesh.min.z,
-                mesh.max.x, mesh.max.y, mesh.max.z)) {
+                min.x, min.y, min.z,
+                max.x, max.y, max.z)) {
             
-            if(mesh.physicsVerts != null) RayCast.rayCast(mesh, ray);
+            if(mesh != null && mesh.physicsVerts != null) RayCast.rayCast(mesh, ray);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).rayCast(ray);
             }
         }
+    }
+    
+    public String toString() {
+        return mesh==null?super.toString().substring(21):mesh.name;
     }
 
 }

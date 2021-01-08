@@ -15,6 +15,9 @@ public class Renderable {
     public int drawOrder = NORMALDRAW, orderOffset;
     public float sortZ;
     
+    public String lightGroupName = null;
+    public LightGroup lightGroup = null;
+    
     public long time;
     
     public void load(IniFile ini) {
@@ -29,22 +32,49 @@ public class Renderable {
                 if(tmp.length() > 4) orderOffset = Integer.valueOf(tmp.substring(4));
             } else orderOffset = Integer.valueOf(tmp);
         }
+        
+        tmp = ini.getDef("lightgroup", "default");
+        if(!tmp.equals("0")) lightGroupName = tmp;
     }
 
     public void setMatrix(float[] put) {}
     public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {}
     
-    public void prepareRender(E3D e3d) {
-        if(drawOrder == NORMALDRAW) e3d.toRender.add(this);
-        else if(drawOrder == PREDRAW) e3d.preDraw.add(this);
-        else e3d.postDraw.add(this);
-    }
-    
     public void animate(long time, boolean set) {
         if(set) this.time = time;
         else this.time += time;
     }
+    
+    public void prepareRender(E3D e3d) {
+        e3d.add(this);
+    }
+    
     public void render(E3D e3d) {}
+    
+    public void bindLight(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
+        if(!LightGroup.lightgroups.isEmpty() && lightGroupName != null) {
+            
+            if(lightGroup == null) {
+                for(LightGroup lightGroup2 : LightGroup.lightgroups) {
+                    if(lightGroup2.name.equals(lightGroupName)) {
+                        lightGroup = lightGroup2;
+                        break;
+                    }
+                }
+
+                if(lightGroup == null) {
+                    lightGroupName = null;
+                    return;
+                }
+            }
+            
+            lightGroup.bind(e3d, x, y, z, xs, ys, zs);
+        }
+    }
+    
+    public void unbindLight() {
+        if(lightGroup != null) lightGroup.unbind();
+    }
     
     public static final Matrix4f tmpMat = new Matrix4f();
     
@@ -62,5 +92,4 @@ public class Renderable {
         
         return tmp;
     }
-    
 }

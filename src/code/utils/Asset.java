@@ -167,7 +167,7 @@ public class Asset {
             return new String(data, "UTF-8");
         } catch(Exception e) {
             System.out.println("Can't load "+f.getAbsolutePath());
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;

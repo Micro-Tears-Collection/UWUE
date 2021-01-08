@@ -75,7 +75,6 @@ public class Sprite extends Renderable {
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
         GL15.glEnableClientState(GL15.GL_NORMAL_ARRAY);
-        GL15.glActiveTexture(GL15.GL_TEXTURE0);
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectCoordVBO);
         GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
@@ -86,15 +85,19 @@ public class Sprite extends Renderable {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectuvMVBO);
         GL15.glTexCoordPointer(2, GL15.GL_SHORT, 0, 0);
 
+        bindLight(e3d, xx, yy, zz, 0, 0, 0);
         mat.animate(time);
-        mat.bind(e3d, xx, yy, zz, 0, 0, 0);
+        mat.bind();
+        
         GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
 
+        mat.unbind();
+        unbindLight();
+        
         GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
         GL15.glDisableClientState(GL15.GL_NORMAL_ARRAY);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
         GL11.glDisable(GL11.GL_NORMALIZE);
     }
 

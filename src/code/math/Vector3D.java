@@ -58,6 +58,26 @@ public class Vector3D {
         this.x /= x; this.y /= y; this.z /= z;
     }
     
+    public void max(Vector3D vec) {
+        max(vec.x, vec.y, vec.z);
+    }
+    
+    public void max(float x, float y, float z) {
+        this.x = Math.max(this.x, x);
+        this.y = Math.max(this.y, y);
+        this.z = Math.max(this.z, z);
+    }
+    
+    public void min(Vector3D vec) {
+        min(vec.x, vec.y, vec.z);
+    }
+    
+    public void min(float x, float y, float z) {
+        this.x = Math.min(this.x, x);
+        this.y = Math.min(this.y, y);
+        this.z = Math.min(this.z, z);
+    }
+    
     public void abs() {
         if(this.x < 0) this.x = -this.x;
         if(this.y < 0) this.y = -this.y;

@@ -216,7 +216,7 @@ public class Settings extends Screen {
                             if(file.exists()) file.delete();
                         }
                     } catch (Exception e) {
-                        Engine.printError(e);
+                        e.printStackTrace();
                     }
 
                     main.luasave = null;

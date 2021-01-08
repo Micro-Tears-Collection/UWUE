@@ -152,7 +152,7 @@ public class BMFont {
             
             return font;
         } catch(Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;
@@ -212,7 +212,6 @@ public class BMFont {
         
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        GL15.glActiveTexture(GL15.GL_TEXTURE0);
         
         GL11.glColor4f(((color>>16)&255) / 255f, 
                 ((color>>8)&255) / 255f, 
@@ -251,10 +250,11 @@ public class BMFont {
             prevCP = c.cp;
         }
         
+        mat.unbind();
+        
         GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
         GL11.glColor4f(1, 1, 1, 1);
         
         GL11.glPopMatrix();

@@ -1,12 +1,12 @@
 package code.engine3d;
 
-import code.Engine;
 import code.utils.ReusableContent;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryUtil;
@@ -17,11 +17,42 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Texture extends ReusableContent {
     
+    public static int oldLevel = 0;
+    
     public int w = 1, h = 1;
     public int id;
     
     public Texture(int id) {
         this.id = id;
+    }
+    
+    public void bind(boolean linearInterpolation, boolean mipMapping, boolean wrapClamp, int level) {
+        if(level != oldLevel) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0+level);
+            oldLevel = level;
+        }
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+        
+        int mag = linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST;
+        int interp = mipMapping ?
+                (linearInterpolation ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_NEAREST_MIPMAP_LINEAR)
+                : mag;
+        int wrap = wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT;
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, interp);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mag);
+        
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrap);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrap);
+    }
+    
+    public void unbind(int level) {
+        if(level != oldLevel) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0+level);
+            oldLevel = level;
+        }
+        
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
     
     public static Texture createTexture(String name) {
@@ -63,10 +94,20 @@ public class Texture extends ReusableContent {
             
             return tex;
         } catch (Exception e) {
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;
+    }
+    
+    public static Texture createTexture(int w, int h) {
+        int tex = GL11.glGenTextures();
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_RGB8, 320, 240, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, 0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        
+        return new Texture(tex);
     }
 
     public void destroy() {

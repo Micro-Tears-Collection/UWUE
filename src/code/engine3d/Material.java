@@ -12,17 +12,14 @@ public class Material {
     
     public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5;
     public static final int UNDEFINED = -2, DEFAULT = -1;
+    static boolean lightingWasEnabled;
     
     public Texture tex;
     
-    public boolean mipMapping;
-    public boolean linearInterpolation;
-    public boolean alphaTest;
-    public boolean wrapClamp;
+    public boolean mipMapping, linearInterpolation,
+            alphaTest, wrapClamp, glow;
     
     public int blendMode = OFF;
-    public String lightGroupName;
-    public LightGroup lightGroup = null;
     
     public float scrollXSpeed, scrollYSpeed;
     public float scrollX, scrollY;
@@ -54,48 +51,41 @@ public class Material {
         else if(tmp.equals("max")) blendMode = MAX;
         else blendMode = OFF;
         
-        tmp = ini.getDef("lightgroup", "default");
-        if(tmp.equals("0")) lightGroupName = null;
-        else lightGroupName = tmp;
-        
         wrapClamp = ini.getDef("wrap", "repeat").equals("clamp");
         
         scrollXSpeed = ini.getFloat("scroll_x", 0);
         scrollYSpeed = ini.getFloat("scroll_y", 0);
+        
+        glow = ini.getInt("glow", 0) == 1;
     }
     
-    private void bindImpl() {
-        int id = tex.id;
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+    public void animate(long time) {
+        scrollX = time * scrollXSpeed / 1000;
+        scrollY = time * scrollYSpeed / 1000;
+    }
+    
+    public void bind() {
+        if(tex != null) tex.bind(linearInterpolation, mipMapping, wrapClamp, 0);
         
-        int matMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
-        GL11.glMatrixMode(GL11.GL_TEXTURE);
-        GL11.glLoadIdentity();
-        if(scrollX != 0 || scrollY != 0) GL11.glTranslatef(scrollX, -scrollY, 0);
-        GL11.glMatrixMode(matMode);
-        
-        int mag = linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST;
-        int interp = mipMapping ?
-                (linearInterpolation ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_NEAREST_MIPMAP_LINEAR)
-                : mag;
-
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, interp);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mag);
-        
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT);
+        if(scrollX != 0 || scrollY != 0) {
+            int matMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(scrollX, -scrollY, 0);
+            GL11.glMatrixMode(matMode);
+        }
         
         if(alphaTest) {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glAlphaFunc(GL11.GL_GREATER, blendMode == OFF?0.5f:0);
-        } else {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-            GL11.glAlphaFunc(GL11.GL_ALWAYS, 0);
         }
         
-        if(blendMode == OFF) {
-            GL11.glDisable(GL11.GL_BLEND);
-        } else { 
+        if(glow) {
+            lightingWasEnabled = GL11.glGetInteger(GL11.GL_LIGHTING) == GL11.GL_TRUE;
+            if(lightingWasEnabled) GL11.glDisable(GL11.GL_LIGHTING);
+        }
+        
+        if(blendMode != OFF) { 
             GL11.glEnable(GL11.GL_BLEND);
             GL14.glBlendEquation(GL14.GL_FUNC_ADD);
             
@@ -111,42 +101,26 @@ public class Material {
         }
     }
     
-    public void bind() {
-        bindImpl();
-        GL11.glDisable(GL11.GL_LIGHTING);
-    }
-    
-    public void animate(long time) {
-        scrollX = time * scrollXSpeed / 1000;
-        scrollY = time * scrollYSpeed / 1000;
-    }
-    
-    public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
-        bindImpl();
+    public void unbind() {
+        if(tex != null) tex.unbind(0);
         
-        if(!LightGroup.lightgroups.isEmpty() && lightGroupName != null) {
-            GL11.glEnable(GL11.GL_LIGHTING);
-            
-            if(lightGroup == null) {
-                for(LightGroup lightGroup2 : LightGroup.lightgroups) {
-                    if(lightGroup2.name.equals(lightGroupName)) {
-                        lightGroup = lightGroup2;
-                        break;
-                    }
-                }
-
-                if(lightGroup == null) {
-                    lightGroupName = null;
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    return;
-                }
-            }
-            
-            lightGroup.bind(e3d, x, y, z, xs, ys, zs);
-        } else {
-            GL11.glDisable(GL11.GL_LIGHTING);
+        if(scrollX != 0 || scrollY != 0) {
+            int matMode = GL11.glGetInteger(GL11.GL_MATRIX_MODE);
+            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(matMode);
         }
         
+        if(alphaTest) {
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_ALWAYS, 0);
+        }
+        
+        if(glow && lightingWasEnabled) GL11.glEnable(GL11.GL_LIGHTING);
+        
+        if(blendMode != OFF) {
+            GL11.glDisable(GL11.GL_BLEND);
+        }
     }
 
 }

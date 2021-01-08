@@ -15,7 +15,7 @@ public class Mesh extends Renderable {
     public String name;
     public float[] modelMatrix = new float[16], drawMatrix = new float[16];
 
-    private Vector3D omin, omax;
+    private Vector3D origMin, origMax;
     public Vector3D min, max;
     public Vector3D middle = new Vector3D();
     
@@ -41,8 +41,8 @@ public class Mesh extends Renderable {
         this.vertsCount = vertex;
         this.mats = mats;
         
-        this.omin = new Vector3D(min);
-        this.omax = new Vector3D(max);
+        this.origMin = new Vector3D(min);
+        this.origMax = new Vector3D(max);
         this.min = min;
         this.max = max;
     }
@@ -89,7 +89,7 @@ public class Mesh extends Renderable {
         }
         modelMatrix[0] = modelMatrix[5] = modelMatrix[10] = modelMatrix[14] = 1;
         
-        min.set(omin); max.set(omax);
+        min.set(origMin); max.set(origMax);
         
         updateZ();
     }
@@ -114,15 +114,15 @@ public class Mesh extends Renderable {
     
     private void updateBB(float[] mat) {
         //todo rewrite
-        Vector3D v000 = new Vector3D(omin.x, omin.y, omin.z);
-        Vector3D v001 = new Vector3D(omin.x, omin.y, omax.z);
-        Vector3D v010 = new Vector3D(omin.x, omax.y, omin.z);
-        Vector3D v011 = new Vector3D(omin.x, omax.y, omax.z);
+        Vector3D v000 = new Vector3D(origMin.x, origMin.y, origMin.z);
+        Vector3D v001 = new Vector3D(origMin.x, origMin.y, origMax.z);
+        Vector3D v010 = new Vector3D(origMin.x, origMax.y, origMin.z);
+        Vector3D v011 = new Vector3D(origMin.x, origMax.y, origMax.z);
         
-        Vector3D v100 = new Vector3D(omax.x, omin.y, omin.z);
-        Vector3D v101 = new Vector3D(omax.x, omin.y, omax.z);
-        Vector3D v110 = new Vector3D(omax.x, omax.y, omin.z);
-        Vector3D v111 = new Vector3D(omax.x, omax.y, omax.z);
+        Vector3D v100 = new Vector3D(origMax.x, origMin.y, origMin.z);
+        Vector3D v101 = new Vector3D(origMax.x, origMin.y, origMax.z);
+        Vector3D v110 = new Vector3D(origMax.x, origMax.y, origMin.z);
+        Vector3D v111 = new Vector3D(origMax.x, origMax.y, origMax.z);
         
         v000.transform(mat); v001.transform(mat); v010.transform(mat); v011.transform(mat);
         v100.transform(mat); v101.transform(mat); v110.transform(mat); v111.transform(mat);
@@ -182,7 +182,10 @@ public class Mesh extends Renderable {
         GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
         GL15.glEnableClientState(GL15.GL_NORMAL_ARRAY);
-        GL15.glActiveTexture(GL15.GL_TEXTURE0);
+        
+        bindLight(e3d, 
+                    (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
+                    (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2f);
 
         for(int submesh = 0; submesh < mats.length; submesh++) {
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertsID[submesh]);
@@ -194,17 +197,19 @@ public class Mesh extends Renderable {
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, normals[submesh]);
             GL15.glNormalPointer(GL15.GL_FLOAT, 0, 0);
 
-            mats[submesh].animate(time);
-            mats[submesh].bind(e3d, 
-                    (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
-                    (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2);
+            Material mat = mats[submesh];
+            
+            mat.animate(time);
+            mat.bind();
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertsCount[submesh]);
+            mat.unbind();
         }
+        
+        unbindLight();
 
         GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
         GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
         GL15.glDisableClientState(GL15.GL_NORMAL_ARRAY);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 }

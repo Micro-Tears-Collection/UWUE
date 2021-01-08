@@ -6,10 +6,8 @@ import code.engine3d.Mesh;
 import code.math.Vector3D;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
 import org.lwjgl.opengl.GL15;
@@ -32,27 +30,6 @@ public class MeshLoader {
         
         return vbo;
     }
-
-    /*public static Mesh createMesh(float[] positions, float[] UVs, Material tex) {
-        int verts = storeData(positions);
-        int uvs = storeData(UVs);
-        
-        Vector3D min = new Vector3D(), max = new Vector3D();
-        calcMaxMin(positions, min, max);
-        
-        return new Mesh(new int[]{verts}, new int[]{uvs}, new int[]{UVs.length >> 1}, new Material[]{tex}, min, max);
-    }
-    
-    public static Mesh createMesh(float[][] positions, float[][] UVs, Material[] tex) {
-        Mesh mesh = new Mesh();
-        
-        Vector3D min = new Vector3D(), max = new Vector3D();
-        calcMaxMin(positions, min, max);
-        
-        createMesh(mesh, positions, UVs, tex, min, max);
-
-        return mesh;
-    }*/
     
     public static void createMesh(Mesh mesh, float[][] positions, float[][] UVs, float[][] normals,
             Material[] tex, 
@@ -70,40 +47,6 @@ public class MeshLoader {
         }
 
         mesh.set(vout, uvout, normalsout, lensout, tex, min, max);
-    }
-    
-    private static void calcMaxMin(float[] positions, Vector3D min, Vector3D max) {
-        min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
-
-        for(int i=0; i<positions.length; i+=3) {
-            
-            if(positions[i] > max.x) max.x = positions[i];
-            if(positions[i] < min.x) min.x = positions[i];
-
-            if(positions[i+1] > max.y) max.y = positions[i+1];
-            if(positions[i+1] < min.y) min.y = positions[i+1];
-
-            if(positions[i+2] > max.z) max.z = positions[i+2];
-            if(positions[i+2] < min.z) min.z = positions[i+2];
-        }
-    }
-    private static void calcMaxMin(float[][] opositions, Vector3D min, Vector3D max) {
-        min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
-
-        for(float[] positions : opositions)
-            for(int i=0; i<positions.length; i+=3) {
-
-                if(positions[i] > max.x) max.x = positions[i];
-                if(positions[i] < min.x) min.x = positions[i];
-
-                if(positions[i + 1] > max.y) max.y = positions[i + 1];
-                if(positions[i + 1] < min.y) min.y = positions[i + 1];
-
-                if(positions[i + 2] > max.z) max.z = positions[i + 2];
-                if(positions[i + 2] < min.z) min.z = positions[i + 2];
-            }
     }
     
     public static Mesh[] loadObj(String name) {
@@ -277,7 +220,7 @@ public class MeshLoader {
             return meshes.toArray(new Mesh[meshes.size()]);
         } catch (Exception e) {
             System.out.println(line);
-            Engine.printError(e);
+            e.printStackTrace();
         }
         
         return null;
