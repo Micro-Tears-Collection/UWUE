@@ -37,8 +37,8 @@ public class Renderable {
         if(!tmp.equals("0")) lightGroupName = tmp;
     }
 
-    public void setMatrix(float[] put) {}
-    public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {}
+    public void setTransformation(Vector3D pos, Vector3D rot) {}
+    public void setCamera(Matrix4f tmp, Matrix4f invCam) {}
     
     public void animate(long time, boolean set) {
         if(set) this.time = time;

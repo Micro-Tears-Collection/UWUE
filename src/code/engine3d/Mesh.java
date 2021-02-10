@@ -84,9 +84,7 @@ public class Mesh extends Renderable {
     public void setMatrix(float[] invcam) {
         System.arraycopy(invcam, 0, drawMatrix, 0, 16);
         
-        for(int i=0; i<16; i++) {
-            modelMatrix[i] = 0;
-        }
+        for(int i=0; i<16; i++) modelMatrix[i] = 0;
         modelMatrix[0] = modelMatrix[5] = modelMatrix[10] = modelMatrix[14] = 1;
         
         min.set(origMin); max.set(origMax);
@@ -94,77 +92,40 @@ public class Mesh extends Renderable {
         updateZ();
     }
     
-    public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
-        tmp.identity();
-        buildMatrix(pos, rot, tmp);
-        setMatrix(tmp.get(modelMatrix), tmp, invCam);
+    public void setTransformation(Vector3D pos, Vector3D rot) {
+        tmpMat.identity();
+        buildMatrix(pos, rot, tmpMat);
+        tmpMat.get(modelMatrix);
+        updateBB(modelMatrix);
     }
     
-    public void setMatrix(float[] modelView, Matrix4f tmp, Matrix4f invCam) {
-        modelMatrix = modelView;
-        updateBB(modelMatrix);
-        
+    public void setCamera(Matrix4f tmp, Matrix4f invCam) {
         tmpMat.set(invCam);
-        tmp.set(modelView);
+        tmp.set(modelMatrix);
         tmpMat.mul(tmp);
         tmpMat.get(drawMatrix);
-        
         updateZ();
     }
     
     private void updateBB(float[] mat) {
-        //todo rewrite
-        Vector3D v000 = new Vector3D(origMin.x, origMin.y, origMin.z);
-        Vector3D v001 = new Vector3D(origMin.x, origMin.y, origMax.z);
-        Vector3D v010 = new Vector3D(origMin.x, origMax.y, origMin.z);
-        Vector3D v011 = new Vector3D(origMin.x, origMax.y, origMax.z);
+        Vector3D tmp = new Vector3D();
+        min.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+        max.set(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
         
-        Vector3D v100 = new Vector3D(origMax.x, origMin.y, origMin.z);
-        Vector3D v101 = new Vector3D(origMax.x, origMin.y, origMax.z);
-        Vector3D v110 = new Vector3D(origMax.x, origMax.y, origMin.z);
-        Vector3D v111 = new Vector3D(origMax.x, origMax.y, origMax.z);
-        
-        v000.transform(mat); v001.transform(mat); v010.transform(mat); v011.transform(mat);
-        v100.transform(mat); v101.transform(mat); v110.transform(mat); v111.transform(mat);
-        
-        float mx = Math.min(v000.x, v001.x);
-        mx = Math.min(mx, Math.min(v010.x, v011.x));
-        mx = Math.min(mx, Math.min(v100.x, v101.x));
-        mx = Math.min(mx, Math.min(v110.x, v111.x));
-        
-        float my = Math.min(v000.y, v001.y);
-        my = Math.min(my, Math.min(v010.y, v011.y));
-        my = Math.min(my, Math.min(v100.y, v101.y));
-        my = Math.min(my, Math.min(v110.y, v111.y));
-        
-        float mz = Math.min(v000.z, v001.z);
-        mz = Math.min(mz, Math.min(v010.z, v011.z));
-        mz = Math.min(mz, Math.min(v100.z, v101.z));
-        mz = Math.min(mz, Math.min(v110.z, v111.z));
-        
-        min.set(mx, my, mz);
-        
-        mx = Math.max(v000.x, v001.x);
-        mx = Math.max(mx, Math.max(v010.x, v011.x));
-        mx = Math.max(mx, Math.max(v100.x, v101.x));
-        mx = Math.max(mx, Math.max(v110.x, v111.x));
-        
-        my = Math.max(v000.y, v001.y);
-        my = Math.max(my, Math.max(v010.y, v011.y));
-        my = Math.max(my, Math.max(v100.y, v101.y));
-        my = Math.max(my, Math.max(v110.y, v111.y));
-        
-        mz = Math.max(v000.z, v001.z);
-        mz = Math.max(mz, Math.max(v010.z, v011.z));
-        mz = Math.max(mz, Math.max(v100.z, v101.z));
-        mz = Math.max(mz, Math.max(v110.z, v111.z));
-        
-        max.set(mx, my, mz);
+        for(int i=0; i<8; i++) {
+            tmp.set(i>=4?origMax.x:origMin.x, 
+                    ((i/2)&1)==1?origMax.y:origMin.y, 
+                    (i&1)==1?origMax.z:origMin.z);
+            tmp.transform(mat);
+            
+            min.min(tmp);
+            max.max(tmp);
+        }
     }
     
     private void updateZ() {
-        middle.set(min);
-        middle.add(max.x, max.y, max.z);
+        middle.set(origMin);
+        middle.add(origMax.x, origMax.y, origMax.z);
         middle.mul(0.5f, 0.5f, 0.5f);
         middle.transform(drawMatrix);
         

@@ -185,9 +185,10 @@ public class Engine {
     
     public static void takeScreenshot() {
         GL11.glReadBuffer(GL11.GL_FRONT);
-        int bpp = 4; // rgba
-        ByteBuffer buffer = MemoryUtil.memAlloc(w * h * bpp);
+        ByteBuffer buffer = MemoryUtil.memAlloc(w * h * 4);
         GL11.glReadPixels(0, 0, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        int error = GL11.glGetError();
+        if(error != 0) System.out.println("takeScreenshot GL error: "+error);
         
         try {
             File file = new File("screenshots/");
@@ -200,10 +201,10 @@ public class Engine {
             file = new File("screenshots/"+data+".png");
             
             BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-
+                    
             for(int x = 0; x < w; x++) {
                 for(int y = 0; y < h; y++) {
-                    int i = (x + (w * y)) * bpp;
+                    int i = (x + (w * y)) * 4;
                     int r = buffer.get(i) & 0xFF;
                     int g = buffer.get(i + 1) & 0xFF;
                     int b = buffer.get(i + 2) & 0xFF;

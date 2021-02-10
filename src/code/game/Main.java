@@ -170,7 +170,7 @@ public class Main {
                 screen.show();
             }
             
-            FPS.frameBegin();
+            FPS.frame();
 
             if(screen != null/* && screen.isRunning()*/) {
                 screen.tick();
@@ -191,7 +191,6 @@ public class Main {
                 Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
                 //max 125 fps (todo: add support of 144hz monitors??)
             } catch (Exception e) {}
-            FPS.frameEnd();
             
             if(screen != null && screen.userTryingToCloseApp()) {
                 stop();

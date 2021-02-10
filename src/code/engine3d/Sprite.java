@@ -20,7 +20,7 @@ public class Sprite extends Renderable {
     public int align;
     public boolean billboard;
     
-    float xx, yy, zz;
+    private float xx, yy, zz;
     
     public Sprite(Material mat, boolean billboard, float w, float h, int align) {
         this.mat = mat;
@@ -30,23 +30,14 @@ public class Sprite extends Renderable {
         this.align = align;
     }
 
-    public void setMatrix(float[] put) {
-        set(null, new Matrix4f(), tmpMat.set(put));
+    public void setTransformation(Vector3D pos, Vector3D rot) {
+        xx = pos.x;
+        yy = pos.y;
+        zz = pos.z;
     }
     
-    public void setMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp, Matrix4f invCam) {
-        tmp.identity();
-        set(pos, tmp, tmpMat.set(invCam));
-    }
-    
-    private void set(Vector3D pos, Matrix4f tmp, Matrix4f invCam) {
-        if(tmp != null) {
-            tmp.setTranslation(pos.x, pos.y, pos.z);
-            xx = pos.x; yy = pos.y + h/2f; zz = pos.z;
-        } else {
-            xx = yy = zz = 0;
-        }
-        if(billboard) tmp.translate(0, h*align/2f, 0);
+    public void setCamera(Matrix4f tmp, Matrix4f invCam) {
+        tmp.setTranslation(xx, yy+(billboard?h*align/2f:0), zz);
         
         invCam.mul(tmp);
         invCam.set(0, 0, 1); invCam.set(2, 0, 0);

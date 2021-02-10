@@ -2,7 +2,6 @@ package code.game.world.entities;
 
 import code.engine3d.E3D;
 import code.engine3d.Mesh;
-import code.engine3d.Renderable;
 import code.game.world.World;
 import code.math.Ray;
 import code.math.RayCast;
@@ -36,6 +35,7 @@ public class MeshObject extends PhysEntity {
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(!meshCollision) return super.rayCast(ray, onlyMeshes);
         
+        mesh.setTransformation(pos, new Vector3D(0, rotY, 0));
         if(RayCast.isRayAABBCollision(ray, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
@@ -50,6 +50,7 @@ public class MeshObject extends PhysEntity {
     public boolean meshSphereCast(Sphere sphere) {
         if(!meshCollision) return false;
         
+        mesh.setTransformation(pos, new Vector3D(0, rotY, 0));
         if(SphereCast.isSphereAABBCollision(sphere, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
@@ -71,10 +72,7 @@ public class MeshObject extends PhysEntity {
     
     public void render(E3D e3d, World world) {
         if(visible) {
-            Renderable.buildMatrix(pos, 
-                    new Vector3D(0, rotY, 0), 
-                    Renderable.tmpMat.identity()).get(mesh.modelMatrix);
-            mesh.setMatrix(mesh.modelMatrix, world.m, e3d.invCam);
+            mesh.setCamera(world.m, e3d.invCam);
             mesh.prepareRender(e3d);
         }
     }

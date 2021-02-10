@@ -3,7 +3,6 @@ package code.game.world.entities;
 import code.engine3d.E3D;
 import code.engine3d.Sprite;
 import code.game.world.World;
-import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Vector3D;
 import code.utils.FPS;
@@ -36,7 +35,8 @@ public class SpriteObject extends Entity {
     
     public void render(E3D e3d, World world) {
         if(visible) {
-            spr.setMatrix(pos, null, world.m, e3d.invCam);
+            spr.setTransformation(pos, null);
+            spr.setCamera(world.m, e3d.invCam);
             spr.prepareRender(e3d);
         }
     }
