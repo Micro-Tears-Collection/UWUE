@@ -37,21 +37,23 @@ public class Sprite extends Renderable {
     }
     
     public void setCamera(Matrix4f tmp, Matrix4f invCam) {
+        tmp.identity();
         tmp.setTranslation(xx, yy+(billboard?h*align/2f:0), zz);
         
-        invCam.mul(tmp);
-        invCam.set(0, 0, 1); invCam.set(2, 0, 0);
-        invCam.set(0, 1, 0); invCam.set(2, 1, 0);
-        invCam.set(0, 2, 0); invCam.set(2, 2, 1);
+        tmpMat.set(invCam);
+        tmpMat.mul(tmp);
+        tmpMat.set(0, 0, 1); tmpMat.set(2, 0, 0);
+        tmpMat.set(0, 1, 0); tmpMat.set(2, 1, 0);
+        tmpMat.set(0, 2, 0); tmpMat.set(2, 2, 1);
         
         if(!billboard) {
-            invCam.set(1, 0, 0);
-            invCam.set(1, 1, 1);
-            invCam.set(1, 2, 0);
+            tmpMat.set(1, 0, 0);
+            tmpMat.set(1, 1, 1);
+            tmpMat.set(1, 2, 0);
         }
         
-        invCam.scale(w, h, w);
-        invCam.get(drawMatrix);
+        tmpMat.scale(w, h, w);
+        tmpMat.get(drawMatrix);
         drawMatrix[12] -= w/2;
         if(!billboard) drawMatrix[13] += h*align/2f;
         
