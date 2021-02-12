@@ -242,6 +242,7 @@ public class E3D {
                     toDraw.add(new Vector());
                     toDrawOffset.add(orderOffset);
                 } else toDrawOffset.set(vec, orderOffset);
+                
                 toDrawUsed[obj.drawOrder]++;
             }
             

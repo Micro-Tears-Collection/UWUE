@@ -183,7 +183,7 @@ public class World {
             m.get(tmp);
 
             for(Mesh mesh : skybox) {
-                mesh.setMatrix(tmp);
+                mesh.fastIdentityCamera(tmp);
                 mesh.animate(renderTime, true);
                 mesh.render(e3d);
             }

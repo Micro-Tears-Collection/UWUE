@@ -37,7 +37,7 @@ public class Node {
     static final Culling cul = new Culling();
     
     public void render(E3D e3d, float[] invCam, World world, long renderTime) {
-        mesh.setMatrix(invCam);
+        mesh.fastIdentityCamera(invCam);
         cul.setBox(mesh.min, mesh.max);
         int visible = cul.visible();
         
@@ -58,7 +58,7 @@ public class Node {
     }
     
     public void renderFully(E3D e3d, float[] invCam, World world, long renderTime) {
-        mesh.setMatrix(invCam);
+        mesh.fastIdentityCamera(invCam);
         mesh.animate(renderTime, true);
         mesh.prepareRender(e3d);
 

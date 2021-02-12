@@ -8,6 +8,7 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.SOFTHRTF;
 
 /**
  *
@@ -30,8 +31,28 @@ public class AudioEngine {
         alCapabilities = AL.createCapabilities(alcCapabilities);
         AL10.alGetError();
         
+        if(alcCapabilities.ALC_SOFT_HRTF) enableHRTF();
+        else System.out.println("HRTF support doesnt found");
+        
         AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
         AL11.alSpeedOfSound(34300f);
+    }
+    
+    private static void enableHRTF() {
+        int num_hrtf = ALC10.alcGetInteger(device, SOFTHRTF.ALC_NUM_HRTF_SPECIFIERS_SOFT);
+        if(num_hrtf == 0) {
+            System.out.println("No HRTFs found");
+        } else {
+            if(!SOFTHRTF.alcResetDeviceSOFT(device, new int[]{SOFTHRTF.ALC_HRTF_SOFT, ALC10.ALC_TRUE, 0})) {
+                System.out.format("Failed to reset device: %s\n", 
+                        ALC10.alcGetString(device, ALC10.alcGetError(device)));
+            }
+
+            int hrtf_state = ALC10.alcGetInteger(device, SOFTHRTF.ALC_HRTF_SOFT);
+            if(hrtf_state == 0) {
+                System.out.format("HRTF not enabled!\n");
+            }
+        }
     }
 
     static float[] listenerPos = new float[]{0.0f, 0.0f, 0.0f};
@@ -45,11 +66,11 @@ public class AudioEngine {
         listenerSpeed[1] = speed.y * 1000 / 50;
         listenerSpeed[2] = speed.z * 1000 / 50;
         
-        float yaYDSin = (float) -Math.sin(Math.toRadians(rotY));
-        float yaYDCos = (float) -Math.cos(Math.toRadians(rotY));
+        float orientationX = (float) -Math.sin(Math.toRadians(rotY));
+        float orientationZ = (float) -Math.cos(Math.toRadians(rotY));
 
-        listenerOri[0] = yaYDSin;
-        listenerOri[2] = yaYDCos;
+        listenerOri[0] = orientationX;
+        listenerOri[2] = orientationZ;
         
         AL10.alListenerfv(AL10.AL_POSITION, listenerPos);
         AL10.alListenerfv(AL10.AL_VELOCITY, listenerSpeed);

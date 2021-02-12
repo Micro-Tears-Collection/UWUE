@@ -81,7 +81,7 @@ public class Mesh extends Renderable {
         }
     }
     
-    public void setMatrix(float[] invcam) {
+    public void fastIdentityCamera(float[] invcam) {
         System.arraycopy(invcam, 0, drawMatrix, 0, 16);
         
         for(int i=0; i<16; i++) modelMatrix[i] = 0;
@@ -125,7 +125,7 @@ public class Mesh extends Renderable {
     
     private void updateZ() {
         middle.set(origMin);
-        middle.add(origMax.x, origMax.y, origMax.z);
+        middle.add(origMax);
         middle.mul(0.5f, 0.5f, 0.5f);
         middle.transform(drawMatrix);
         
