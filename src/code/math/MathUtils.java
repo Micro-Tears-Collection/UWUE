@@ -54,6 +54,82 @@ public class MathUtils {
 	return d.lengthSquared();
     }
     
+    public static float min(float x1, float x2, float x3) {
+        return Math.min(Math.min(x1, x2), x3);
+    }
+    
+    public static float max(float x1, float x2, float x3) {
+        return Math.max(Math.max(x1, x2), x3);
+    }
+    
+    private static final Vector3D temp = new Vector3D();
+
+    public static float distanceSphereToPolygon(Vector3D a, Vector3D b, Vector3D c, 
+            Vector3D nor, Vector3D point, float rad) {
+        
+        temp.set(point.x-a.x, point.y-a.y, point.z-a.z);
+        float dist = temp.dot(nor); //Расстояние
+        if(dist > 0) return Float.MAX_VALUE;
+        
+        //Проекция на плоскость
+        temp.set(point.x-(nor.x*dist), point.y-(nor.y*dist), point.z-(nor.z*dist));
+        if(MathUtils.isPointOnPolygon(temp, a, b, c, nor)) {
+            return rad - Math.abs(dist);
+        }
+
+        final float len1 = MathUtils.distanceToLine(point, a, b);
+        final float len2 = MathUtils.distanceToLine(point, b, c);
+        final float len3 = MathUtils.distanceToLine(point, c, a);
+
+        float min = min(len1, len2, len3);
+        if(min == len1) {
+            nor.set(closestPointOnLineSegment(a, b, point));
+        } else if(min == len2) {
+            nor.set(closestPointOnLineSegment(b, c, point));
+        } else if(min == len3) {
+            nor.set(closestPointOnLineSegment(c, a, point));
+        }
+        nor.sub(point);
+        nor.setLength(1);
+        
+        if(min <= rad*rad) return rad - (float)Math.sqrt(min);
+        
+        return Float.MAX_VALUE;
+    }
+    
+    public static Vector3D closestPointOnLineSegment(Vector3D a, Vector3D b, Vector3D point) {
+        Vector3D ab = new Vector3D(b);
+        ab.sub(a);
+        temp.set(point);
+        temp.sub(a);
+        float t = temp.dot(ab) / ab.lengthSquared();
+        t = Math.min(Math.max(t, 0), 1);
+        
+        temp.set(ab);
+        temp.mul(t, t, t);
+        temp.add(a);
+        return temp;
+    }
+
+    public static float rayCast(Vector3D a, Vector3D b, Vector3D c, Vector3D nor, 
+            Vector3D start, Vector3D dir, Vector3D pos) {
+        
+        pos.set(start.x-a.x, start.y-a.y, start.z-a.z);
+        float dot = dir.dot(nor);
+        
+        if(dot <= 0) return Float.MAX_VALUE;
+        dot = -pos.dot(nor) / dot;
+        if(dot < 0 || dot > 1) return Float.MAX_VALUE;
+        
+        pos.set(start.x + (dir.x * dot),
+                start.y + (dir.y * dot),
+                start.z + (dir.z * dot));
+        
+        if(MathUtils.isPointOnPolygon(pos, a, b, c, nor)) return dot;
+        
+        return Float.MAX_VALUE;
+    }
+    
     public static boolean isPointOnPolygon(Vector3D point, Vector3D a, Vector3D b, Vector3D c, Vector3D normal) {
         final float nx = normal.x>0 ? normal.x : -normal.x;
         final float ny = normal.y>0 ? normal.y : -normal.y;

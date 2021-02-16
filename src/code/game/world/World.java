@@ -12,9 +12,9 @@ import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 import code.game.world.entities.SpriteObject;
 
+import code.engine3d.collision.Ray;
+import code.engine3d.collision.Sphere;
 import code.math.Culling;
-import code.math.Ray;
-import code.math.Sphere;
 
 import code.utils.FPS;
 

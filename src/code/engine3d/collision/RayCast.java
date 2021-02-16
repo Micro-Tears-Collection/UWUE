@@ -1,6 +1,8 @@
-package code.math;
+package code.engine3d.collision;
 
 import code.engine3d.Mesh;
+import code.math.MathUtils;
+import code.math.Vector3D;
 
 /**
  *
@@ -133,16 +135,16 @@ public class RayCast {
                     v3.transform(mat);
                 }
 
-                if(SphereCast.max(v1.x, v2.x, v3.x) < x1) continue;
-                if(SphereCast.min(v1.x, v2.x, v3.x) > x2) continue;
-                if(SphereCast.max(v1.y, v2.y, v3.y) < y1) continue;
-                if(SphereCast.min(v1.y, v2.y, v3.y) > y2) continue;
-                if(SphereCast.max(v1.z, v2.z, v3.z) < z1) continue;
-                if(SphereCast.min(v1.z, v2.z, v3.z) > z2) continue;
+                if(MathUtils.max(v1.x, v2.x, v3.x) < x1) continue;
+                if(MathUtils.min(v1.x, v2.x, v3.x) > x2) continue;
+                if(MathUtils.max(v1.y, v2.y, v3.y) < y1) continue;
+                if(MathUtils.min(v1.y, v2.y, v3.y) > y2) continue;
+                if(MathUtils.max(v1.z, v2.z, v3.z) < z1) continue;
+                if(MathUtils.min(v1.z, v2.z, v3.z) > z2) continue;
 
                 normal.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
                 if(mat != null) normal.transformNoOffset(mat);
-                float dis = rayCast(v1, v2, v3, normal, start, dir, colPoint);
+                float dis = MathUtils.rayCast(v1, v2, v3, normal, start, dir, colPoint);
 
                 if(dis != Float.MAX_VALUE) {
                     float distance = dirLen * dis;
@@ -152,26 +154,6 @@ public class RayCast {
                 }
             }
         }
-    }
-
-
-    private static float rayCast(Vector3D a, Vector3D b, Vector3D c, Vector3D nor, 
-            Vector3D start, Vector3D dir, Vector3D pos) {
-        
-        pos.set(start.x-a.x, start.y-a.y, start.z-a.z);
-        float dot = dir.dot(nor);
-        
-        if(dot <= 0) return Float.MAX_VALUE;
-        dot = -pos.dot(nor) / dot;
-        if(dot < 0 || dot > 1) return Float.MAX_VALUE;
-        
-        pos.set(start.x + (dir.x * dot),
-                start.y + (dir.y * dot),
-                start.z + (dir.z * dot));
-        
-        if(MathUtils.isPointOnPolygon(pos, a, b, c, nor)) return dot;
-        
-        return Float.MAX_VALUE;
     }
 
 }

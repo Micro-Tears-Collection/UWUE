@@ -72,7 +72,7 @@ public class ItemList extends TextView {
     
     public void draw(E3D e3d, int x, int y, 
             int color, int selColor, boolean drawBck) {
-        if(drawBck) e3d.drawWindow(x, y, w, h, font);
+        if(drawBck) e3d.drawWindow(x, y, w, h);
         
         e3d.pushClip();
         e3d.clip(x, y, w, h);

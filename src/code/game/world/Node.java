@@ -3,11 +3,12 @@ package code.game.world;
 import code.engine3d.E3D;
 import code.engine3d.Mesh;
 
+import code.engine3d.collision.Ray;
+import code.engine3d.collision.RayCast;
+import code.engine3d.collision.Sphere;
+import code.engine3d.collision.SphereCast;
+
 import code.math.Culling;
-import code.math.Ray;
-import code.math.RayCast;
-import code.math.Sphere;
-import code.math.SphereCast;
 
 import java.util.Vector;
 

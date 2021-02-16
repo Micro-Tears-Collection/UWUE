@@ -2,7 +2,6 @@ package code.engine3d;
 
 import code.engine3d.Lighting.LightGroup;
 import code.math.Vector3D;
-import code.utils.font.BMFont;
 import java.util.Vector;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -358,7 +357,7 @@ public class E3D {
         GL11.glPopMatrix();
     }
     
-    public void drawWindow(float x, float y, float w, float h, BMFont font) {
+    public void drawWindow(float x, float y, float w, float h) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         

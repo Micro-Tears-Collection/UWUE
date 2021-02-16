@@ -1,7 +1,7 @@
 package code.game.world.entities;
 
-import code.math.Ray;
-import code.math.RayCast;
+import code.engine3d.collision.Ray;
+import code.engine3d.collision.RayCast;
 import code.math.Vector3D;
 
 /**

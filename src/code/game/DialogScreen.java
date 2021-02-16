@@ -251,7 +251,7 @@ public class DialogScreen extends Screen {
 
         int x = getDialogX();
         int y = getDialogY();
-        game.e3d.drawWindow(0, y, w, textView.getHeight(), font);
+        game.e3d.drawWindow(0, y, w, textView.getHeight());
         
         //Draw dialog
         int textBegin, textEnd;

@@ -5,10 +5,10 @@ import code.engine3d.Mesh;
 
 import code.game.world.World;
 
-import code.math.Ray;
-import code.math.RayCast;
-import code.math.Sphere;
-import code.math.SphereCast;
+import code.engine3d.collision.Ray;
+import code.engine3d.collision.RayCast;
+import code.engine3d.collision.Sphere;
+import code.engine3d.collision.SphereCast;
 import code.math.Vector3D;
 
 import code.utils.FPS;

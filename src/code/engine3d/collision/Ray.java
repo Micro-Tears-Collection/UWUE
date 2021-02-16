@@ -1,9 +1,12 @@
-package code.math;
+package code.engine3d.collision;
+
+import code.engine3d.Mesh;
+import code.math.Vector3D;
 
 public class Ray {
     public boolean collision = false;
     public float distance;
-    public Object mesh;
+    public Mesh mesh;
     public int submesh, polID;
 
     public final Vector3D collisionPoint = new Vector3D();
@@ -13,7 +16,7 @@ public class Ray {
         reset();
     }
 
-    public void set(Object mesh, int submesh, int polID, float distance, Vector3D colPoint) {
+    public void set(Mesh mesh, int submesh, int polID, float distance, Vector3D colPoint) {
         this.collision = true;
         this.submesh = submesh;
         this.mesh = mesh;

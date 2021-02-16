@@ -17135,8 +17135,8 @@ vt 0.5 0.94074076414108 0
 vt 0.05925925821066 0.50000005960464 0
 # 17 texture coordinates
 
-o Объект_Плоскость.17
-usemtl /textures/grassy/grasstile.png;lightgroup=green roof
+o Объект_Плоскость.17;lightgroup=green roof
+usemtl /textures/grassy/grasstile.png
 f 6901/858/547 7322/857/546 6898/856/545 6474/855/544
 f 7322/857/546 6899/860/549 6475/859/548 6898/856/545
 f 6900/862/551 6476/861/550 6899/860/549 7322/857/546

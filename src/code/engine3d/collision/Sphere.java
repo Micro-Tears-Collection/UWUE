@@ -1,4 +1,7 @@
-package code.math;
+package code.engine3d.collision;
+
+import code.engine3d.Mesh;
+import code.math.Vector3D;
 
 /**
  *
@@ -10,14 +13,14 @@ public class Sphere {
     public final Vector3D pos = new Vector3D();
     
     public boolean collision, onFloor;
-    public Object mesh;
+    public Mesh mesh;
     public int submesh, polID;
     
     public Sphere() {
         reset();
     }
 
-    public void set(Object mesh, int submesh, int polID) {
+    public void set(Mesh mesh, int submesh, int polID) {
         this.collision = true;
         this.submesh = submesh;
         this.mesh = mesh;
