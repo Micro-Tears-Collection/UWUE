@@ -9,7 +9,7 @@ import code.utils.FPS;
  */
 public class Fade {
     
-    boolean in;
+    public boolean in;
     public int len, max;
     public int color;
     

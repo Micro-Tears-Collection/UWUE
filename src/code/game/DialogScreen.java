@@ -1,11 +1,15 @@
 package code.game;
 
-import code.Engine;
-import code.Screen;
+import code.engine.Engine;
+import code.engine.Screen;
+
 import code.engine3d.E3D;
+import code.game.scripting.Scripting;
+
 import code.ui.ItemList;
 import code.ui.TextView;
-import code.utils.Asset;
+
+import code.utils.assetManager.AssetManager;
 import code.utils.Keys;
 import code.utils.StringTools;
 import code.utils.font.BMFont;
@@ -53,7 +57,7 @@ public class DialogScreen extends Screen {
     }
     
     public void load(String path, Game game, BMFont font) {
-        set(Asset.loadLines(path), game, font);
+        set(AssetManager.loadLines(path), game, font);
         dialogPath = path;
     }
     
@@ -87,12 +91,12 @@ public class DialogScreen extends Screen {
         int h2 = (int) (h / 3.5f);
         if(h2 < font.getHeight() * 3) h2 = font.getHeight() * 3;
         
-        textView = new TextView(null, w - 20, h2, font);
+        textView = new TextView(w - 20, h2, font);
     }
     
     public void open() {
         game.main.setScreen(this);
-        Engine.hideCursor(false);
+        Engine.showCursor(true);
     }
     
     public void show() {
@@ -109,7 +113,7 @@ public class DialogScreen extends Screen {
             if(itemList.getIndex() == -1) return true;
             
             if(answersGoIndex == null) 
-                index += itemList.getItems().length+itemList.getIndex()-(itemListHasCaption?1:0); // Additional move
+                index += itemList.getItemsCount()+itemList.getIndex()-(itemListHasCaption?1:0); // Additional move
             else index = answersGoIndex[itemList.getIndex()-(itemListHasCaption?1:0)]-1;
             
             itemList = null; answersGoIndex = null;
@@ -120,8 +124,8 @@ public class DialogScreen extends Screen {
             index++;
             
             if(dialog[index].charAt(0)!='$') {
-                textView.setString(dialog[index]);
-                textView.setY(0);
+                textView.setText(dialog[index]);
+                textView.setYScroll(0);
                 return true;
             } else {
                 String text = dialog[index];
@@ -140,19 +144,19 @@ public class DialogScreen extends Screen {
                 if(script.equals("exec")) {
                     //execute script
                     
-                    game.main.runScriptFromFile(option);
+                    Scripting.runScriptFromFile(game.main, option);
                     
                     return nextText();
                 } else if(script.equals("if")) {
                     //condition check
                     
-                    if(!game.main.runScript("return "+option).toboolean()) index++;
+                    if(!Scripting.runScript(game.main, "return "+option).toboolean()) index++;
                     
                     return nextText();
                 } else if(script.equals("cmd")) {
                     //run one script line
                     
-                    game.main.runScript(option);
+                    Scripting.runScript(game.main, option);
                     
                     return nextText();
                 } else if(script.equals("go")) {
@@ -179,7 +183,7 @@ public class DialogScreen extends Screen {
                             String answer = dialog[index+1+capLen+i];
                             String condition = dialog[index+1+capLen+i+answers];
                             
-                            if(game.main.runScript("return "+condition).toboolean()) {
+                            if(Scripting.runScript(game.main, "return "+condition).toboolean()) {
                                 allItems[newAnswers] = answer;
                                 answersGoIndex[newAnswers] = index+1+capLen+i+answers*2;
                                 newAnswers++;
@@ -201,12 +205,13 @@ public class DialogScreen extends Screen {
                     
                     if(itemListHasCaption) items[0] = dialog[index+1]; //Caption
                     
-                    itemList = new ItemList(items, textView.getWidth(), textView.getHeight(), font) {
+                    itemList = new ItemList(textView.getWidth(), textView.getHeight(), font) {
                         public void itemSelected() {
                             if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.play();
                         }
                     };
-                    itemList.setCenter(false);
+                    itemList.setItems(items);
+                    itemList.setHCenter(false);
                     itemList.setIndexLimited(capLen);
                     
                     return true;
@@ -222,7 +227,6 @@ public class DialogScreen extends Screen {
         }
         return false;
     }
-    
     
     private boolean goToLabel(String option) {
         for (int lineId = 0; lineId < dialog.length; lineId++) {
@@ -252,12 +256,12 @@ public class DialogScreen extends Screen {
         //Draw dialog
         int textBegin, textEnd;
         if(itemList == null) {
-            textBegin = y+textView.getY();
+            textBegin = y+textView.getYScroll();
             textEnd = textBegin + textView.getTextHeight();
             textView.paint(game.e3d, x, y, game.main.fontColor);
         } else { //Draw question
-            textBegin = y+itemList.getY();
-            textEnd = textBegin + itemList.getHeight();
+            textBegin = y+itemList.getYScroll();
+            textEnd = textBegin + itemList.getTextHeight();
             
             itemList.mouseUpdate(x, y, getMouseX(), getMouseY());
             if(itemList.getIndex() == 0 && itemListHasCaption) itemList.setIndex(-1);
@@ -266,7 +270,7 @@ public class DialogScreen extends Screen {
         }
         
         if((textView.getTextHeight() > textView.getHeight() && itemList == null)
-                || (itemList != null && itemList.getHeight() > textView.getHeight())) {
+                || (itemList != null && itemList.getTextHeight() > textView.getHeight())) {
 
             //Down arrow
             if(textEnd > y + textView.getHeight()) game.e3d.drawArrow(
@@ -292,13 +296,13 @@ public class DialogScreen extends Screen {
             if(Keys.isPressed(Keys.UP)) textView.scroll(3);
         } else {
             if(Keys.isPressed(Keys.DOWN)) {
-                itemList.scrollDown();
-                if(itemList.getIndex()==0 && itemListHasCaption) itemList.scrollDown();
+                itemList.down();
+                if(itemList.getIndex()==0 && itemListHasCaption) itemList.down();
                 Keys.reset();
             }
             if(Keys.isPressed(Keys.UP)) {
-                itemList.scrollUp();
-                if(itemList.getIndex()==0 && itemListHasCaption) itemList.scrollUp();
+                itemList.up();
+                if(itemList.getIndex()==0 && itemListHasCaption) itemList.up();
                 Keys.reset();
             }
         }
@@ -318,7 +322,7 @@ public class DialogScreen extends Screen {
                 itemList = null;
                 dialog = null;
 
-                Engine.hideCursor(true);
+                Engine.showCursor(false);
                 game.main.setScreen(game);
                 return;
             }
@@ -346,7 +350,7 @@ public class DialogScreen extends Screen {
         int scroll = (int) (yy*game.main.scrollSpeed());
         
         if(itemList == null) textView.scroll(scroll);
-        else itemList.scrollY(scroll);
+        else itemList.scroll(scroll);
     }
     
     public void mouseAction(int button, boolean pressed) {

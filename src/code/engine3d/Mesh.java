@@ -1,7 +1,9 @@
 package code.engine3d;
 
 import code.math.Vector3D;
+
 import code.utils.IniFile;
+
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -13,14 +15,14 @@ import org.lwjgl.opengl.GL15;
 public class Mesh extends Renderable {
     
     public String name;
-    public float[] modelMatrix = new float[16], drawMatrix = new float[16];
+    public final float[] modelMatrix = new float[16], drawMatrix = new float[16];
 
     private Vector3D origMin, origMax;
     public Vector3D min, max;
     public Vector3D middle = new Vector3D();
     
-    public int[] vertsID, uvsID, normals, vertsCount;
-    public Material[] mats;
+    private int[] vertsID, uvsID, normals, vertsCount;
+    private Material[] mats;
     public boolean collision = true, visible = true;
     
     public float[][] physicsVerts;

@@ -1,8 +1,7 @@
 package code.game;
 
-import code.Screen;
+import code.engine.Screen;
 import code.utils.FPS;
-
 
 /**
  *
@@ -10,11 +9,11 @@ import code.utils.FPS;
  */
 public class BlankScreen extends Screen {
     
-    Main main;
-    long waitEndTime;
-    int color;
+    private Main main;
+    private long waitEndTime;
+    private int color;
     
-    public BlankScreen(Main main, long waitTime, int color) {
+    BlankScreen(Main main, long waitTime, int color) {
         this.main = main;
         this.color = color;
         this.waitEndTime = FPS.currentTime + waitTime;
@@ -26,6 +25,6 @@ public class BlankScreen extends Screen {
         if(FPS.currentTime > waitEndTime) action();
     }
     
-    public void action() {};
+    public void action() {}
 
 }

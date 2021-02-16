@@ -1,20 +1,17 @@
-package code;
+package code.engine;
 
-import code.game.Main;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 class MouseCallback extends GLFWMouseButtonCallback {
 
-    Main main;
-
-    public MouseCallback(Main main) {
-        this.main = main;
-    }
+    Screen scr;
 
     public void invoke(long window, int button, int action, int mods) {
+        if(scr == null) return;
+        
         if(action == GLFW.GLFW_PRESS || action == GLFW.GLFW_RELEASE)
-            main.mouseAction(button, action == GLFW.GLFW_PRESS);
+            scr.mouseAction(button, action == GLFW.GLFW_PRESS);
     }
 
     public void close() {

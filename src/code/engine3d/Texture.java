@@ -1,10 +1,13 @@
 package code.engine3d;
 
-import code.utils.ReusableContent;
+import code.utils.assetManager.AssetManager;
+import code.utils.assetManager.ReusableContent;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
@@ -22,7 +25,7 @@ public class Texture extends ReusableContent {
     public int w = 1, h = 1;
     public int id;
     
-    public Texture(int id) {
+    private Texture(int id) {
         this.id = id;
     }
     
@@ -54,10 +57,42 @@ public class Texture extends ReusableContent {
         
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
+
+    public void destroy() {
+        GL11.glDeleteTextures(id);
+    }
     
-    public static Texture createTexture(String name) {
+    public static Texture get(String name) {
+        Texture tex = (Texture) AssetManager.get("TEX_" + name);
+        if(tex != null) {
+            tex.use();
+            return tex;
+        }
+        
+        if(name.equals("null")) {
+            tex = new Texture(0);
+            tex.lock();
+        } else {
+            tex = loadTexture(name);
+        }
+        
+        if(tex != null) {
+            AssetManager.addReusable("TEX_" + name, tex);
+            return tex;
+        }
+        
+        return get("null");
+    }
+    
+    
+    /**
+     * Should be destroyed after using!
+     * @param path Path to texture
+     * @return Texture or null
+     */
+    public static Texture loadTexture(String path) {
         try {
-            File file = new File("data", name);
+            File file = new File("data", path);
             
             if(!file.exists()) {
                 System.out.println("No such file "+file.getAbsolutePath());
@@ -109,8 +144,5 @@ public class Texture extends ReusableContent {
         
         return new Texture(tex);
     }
-
-    public void destroy() {
-        GL11.glDeleteTextures(id);
-    }
+    
 }

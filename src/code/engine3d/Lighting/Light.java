@@ -1,4 +1,4 @@
-package code.engine3d;
+package code.engine3d.Lighting;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.system.MemoryUtil;
@@ -15,13 +15,13 @@ public class Light {
     public FloatBuffer spotDir;
     public FloatBuffer color;
     
-    public boolean point;
-    public float absLit;
+    boolean point;
+    float absLit;
     
     public float cutoff = 45;
     
     //rendering stuff
-    public float influence;
+    float influence;
     
     public Light(String name, float[] pod, float[] color, float[] spotDir) {
         this.name = name;

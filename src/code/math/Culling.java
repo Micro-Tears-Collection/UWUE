@@ -8,9 +8,9 @@ public class Culling {
     
     public static final int INVISIBLE = 0, VISIBLE = 1, FULLY_VISIBLE = 2;
     
-    static float[] invCam = new float[16];
-    static float zNearClip, zFarClip;
-    static float xLine, yLine;
+    private static final float[] invCam = new float[16];
+    private static float zNearClip, zFarClip;
+    private static float xLine, yLine;
     /*
     
     \  ^ yY
@@ -25,7 +25,7 @@ public class Culling {
       \  /
        \/ <- xX
     */
-    public Vector3D[] verts;
+    private final Vector3D[] verts;
     
     public static void set(float[] invertedCameraMatrix, float fovx, float fovy, float zNear, float zFar) {
         float xX = (float)Math.sin(Math.toRadians(fovx)/2);

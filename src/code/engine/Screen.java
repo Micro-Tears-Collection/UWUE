@@ -1,4 +1,4 @@
-package code;
+package code.engine;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -13,12 +13,17 @@ public class Screen {
             MOUSE_RIGHT = GLFW.GLFW_MOUSE_BUTTON_RIGHT;
     
     public void show() {}
-    //public boolean isRunning() {return true;}
     public void destroy() {}
     public void tick() {}
     
     public void keyPressed(int key) {}
+    public void keyRepeated(int key) {}
     public void keyReleased(int key) {}
+    public void charInput(int cp) {}
+    
+    public void openTextBox(Object textBox) {}
+    public void closeTextBox() {}
+    
     public void mouseAction(int button, boolean pressed) {}
     public void mouseScroll(double xoffset, double yoffset) {}
     
@@ -46,6 +51,10 @@ public class Screen {
     
     public final boolean isFocused() {
         return GLFW.glfwGetWindowAttrib(Engine.window, GLFW.GLFW_FOCUSED) == GLFW.GLFW_TRUE;
+    }
+    
+    public final boolean showCursor() {
+        return Engine.showCursor;
     }
     
     public final void setCursorPos(int x, int y) {

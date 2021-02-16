@@ -1,10 +1,5 @@
-package code;
+package code.engine;
 
-import code.game.Main;
-import code.audio.AudioEngine;
-import code.game.Configuration;
-import code.game.world.entities.Player;
-import code.utils.Keys;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +7,7 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import javax.imageio.ImageIO;
+
 import org.lwjgl.opengl.GL;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -29,19 +25,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class Engine {
     
-    public static Main main;
-    public static long window;
-    public static boolean hideCursor;
+    static long window;
+    static boolean showCursor;
     
-    public static int w, h;
+    static int w, h;
 
-    public static KeyInput keyInputCallback;
-    public static TextCallback textCallback;
-    public static MouseCallback mouseCallback;
-    public static ScrollCallback scrollCallback;
-    public static ResizeCallback resizeCallback;
+    private static KeyInput keyInputCallback;
+    private static TextCallback textCallback;
+    private static MouseCallback mouseCallback;
+    private static ScrollCallback scrollCallback;
+    private static ResizeCallback resizeCallback;
     
-    public static void main(String[] args) {
+    public static int[] init() {
         System.setOut(new Log(System.out));
         System.setErr(System.out);
         GLFWErrorCallback.createPrint(System.err).set();
@@ -55,37 +50,25 @@ public class Engine {
                 + "engine\n\n"
                 + "(UWUE 0.0)");
         
-        Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
-        Keys.DOWN = Keys.addKeyToBinding(Keys.DOWN, GLFW.GLFW_KEY_DOWN);
-        Keys.LEFT = Keys.addKeyToBinding(Keys.LEFT, GLFW.GLFW_KEY_LEFT);
-        Keys.RIGHT = Keys.addKeyToBinding(Keys.RIGHT, GLFW.GLFW_KEY_RIGHT);
-        Keys.OK = Keys.addKeyToBinding(Keys.OK, GLFW.GLFW_KEY_ENTER);
-        Keys.ESC = Keys.addKeyToBinding(Keys.ESC, GLFW.GLFW_KEY_ESCAPE);
-        
-        Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, 
-                GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_LEFT_SHIFT);
-        Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
-        Main.ERASE = Keys.addKeyToBinding(Main.ERASE, GLFW.GLFW_KEY_BACKSPACE);
+        keyInputCallback = new KeyInput();
+        textCallback = new TextCallback();
+        mouseCallback = new MouseCallback();
+        scrollCallback = new ScrollCallback();
+        resizeCallback = new ResizeCallback();
         
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        main = new Main(vidmode.width(), vidmode.height());
-        
-        keyInputCallback = new KeyInput(main);
-        textCallback = new TextCallback(main);
-        mouseCallback = new MouseCallback(main);
-        scrollCallback = new ScrollCallback(main);
-        resizeCallback = new ResizeCallback(main);
-        
-        w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
-        h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
-        
-        createGLWindow(main.conf.startInFullscr, main.conf.vsync, main.conf.aa);
-        AudioEngine.init();
-        
-        main.init();
+        return new int[]{vidmode.width(), vidmode.height()};
     }
     
-    static void createGLWindow(boolean fullscr, boolean vsync, int aa) {
+    public static void setListener(Screen scr) {
+        keyInputCallback.scr = scr;
+        textCallback.scr = scr;
+        mouseCallback.scr = scr;
+        scrollCallback.scr = scr;
+        resizeCallback.scr = scr;
+    }
+    
+    public static void createGLWindow(boolean fullscr, int w, int h, boolean vsync, int aa) {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         int rate = vidmode.refreshRate();
         
@@ -97,6 +80,8 @@ public class Engine {
         GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, rate);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, aa);
         
+        Engine.w = w;
+        Engine.h = h;
         window = GLFW.glfwCreateWindow(w, h,
                 "UWUE", fullscr?GLFW.glfwGetPrimaryMonitor():NULL, NULL);
         
@@ -116,35 +101,40 @@ public class Engine {
         GLFW.glfwSetScrollCallback(window, scrollCallback);
     }
     
-    public static void setWindow(Configuration conf, boolean fullscr) {
+    public static void flush() {
+        GLFW.glfwSwapBuffers(Engine.window);
+        GLFW.glfwPollEvents();
+    }
+    
+    public static void setWindow(boolean fullscr, int w, int h, boolean vsync) {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         
         if(fullscr) {
             GLFW.glfwSetWindowMonitor(Engine.window,
                     GLFW.glfwGetPrimaryMonitor(),
-                    0, 0, conf.fw, conf.fh, vidmode.refreshRate());
+                    0, 0, w, h, vidmode.refreshRate());
         } else {
             GLFW.glfwSetWindowMonitor(Engine.window, MemoryUtil.NULL,
-                    (vidmode.width() - conf.ww) / 2, (vidmode.height() - conf.wh) / 2,
-                    conf.ww, conf.wh, vidmode.refreshRate());
+                    (vidmode.width() - w) / 2, (vidmode.height() - h) / 2,
+                    w, h, vidmode.refreshRate());
         }
 
-        GLFW.glfwSwapInterval(conf.vsync ? 1 : 0); //vsync
+        GLFW.glfwSwapInterval(vsync ? 1 : 0); //vsync
     }
     
     public static void setTitle(String title) {
         if(title != null) GLFW.glfwSetWindowTitle(window, title);
     }
 
-    public static void hideCursor(boolean hide) {
-        if(!hide) {
+    public static void showCursor(boolean show) {
+        if(show) {
             GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
         } else {
             GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
             GLFW.glfwSetCursorPos(window, w >> 1, h >> 1);
         }
 
-        hideCursor = hide;
+        showCursor = show;
     }
     
     public static boolean isFullscr() {
@@ -157,8 +147,6 @@ public class Engine {
 
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
-
-        AudioEngine.close();
     }
 
     public static boolean isResolutionValid(int w, int h) {

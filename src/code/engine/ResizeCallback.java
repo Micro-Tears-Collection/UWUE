@@ -1,21 +1,17 @@
-package code;
+package code.engine;
 
-import code.game.Main;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 public class ResizeCallback extends GLFWWindowSizeCallback {
 
-    Main main;
-
-    public ResizeCallback(Main main) {
-        this.main = main;
-    }
+    Screen scr;
 
     public void invoke(long window, int w, int h) {
         if(w == 0 || h == 0) return;
         Engine.w = w;
         Engine.h = h;
-        main.sizeChanged(w, h, null);
+        
+        if(scr != null) scr.sizeChanged(w, h, null);
     }
 
     public void close() {

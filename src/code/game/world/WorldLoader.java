@@ -2,14 +2,18 @@ package code.game.world;
 
 import code.audio.AudioEngine;
 import code.audio.SoundSource;
-import code.engine3d.Light;
-import code.engine3d.LightGroup;
+
+import code.engine3d.Lighting.Light;
+import code.engine3d.Lighting.LightGroup;
 import code.engine3d.Material;
-import code.utils.Asset;
 import code.engine3d.Mesh;
 import code.engine3d.Sprite;
-import code.utils.MeshLoader;
+import code.engine3d.MeshLoader;
+
+import code.utils.assetManager.AssetManager;
+
 import code.game.Game;
+import code.game.scripting.Scripting;
 import code.game.world.entities.BoxEntity;
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
@@ -17,9 +21,12 @@ import code.game.world.entities.PhysEntity;
 import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
 import code.game.world.entities.Teleport;
+
 import code.math.Vector3D;
+
 import code.utils.IniFile;
 import code.utils.StringTools;
+
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -29,21 +36,15 @@ import java.util.Vector;
  */
 public class WorldLoader {
 
-    public static void loadWorld(Game game, String folder, 
+    public static void loadWorld(Game game, String map, 
             Vector3D newPlayerPos, float nextRotX, float nextRotY) {
-        Asset.destroyThings(Asset.DISPOSABLE);
-        Asset.free();
+        AssetManager.destroyThings(AssetManager.DISPOSABLE);
+        AssetManager.free();
         AudioEngine.suspend();
         
         LightGroup.clear(true);
         
-        String path = folder;
-        if(!folder.toLowerCase().endsWith(".ini")) {
-            if(folder.endsWith("/")) path += "map.ini";
-            else path = "/maps/"+path+"/map.ini";
-        }
-        
-        String[] lines = Asset.loadLines(path);
+        String[] lines = AssetManager.loadLines("/maps/"+map+"/map.ini");
         IniFile lvl = new IniFile(new Hashtable());
         lvl.set(lines, true);
         
@@ -164,7 +165,7 @@ public class WorldLoader {
         }
         if(game.main.musPlayer.buffer != null) game.main.musPlayer.buffer.using = true;
         
-        Asset.destroyThings(Asset.REUSABLE);
+        AssetManager.destroyThings(AssetManager.REUSABLE);
         AudioEngine.process();
         
         if(!sourcesToPlay.isEmpty()) {
@@ -178,7 +179,7 @@ public class WorldLoader {
         }
     }
     
-    public static void loadObjects(String[] names, IniFile[] objs, Game game, World world, Vector<Integer> sourcesToPlay) {
+    static void loadObjects(String[] names, IniFile[] objs, Game game, World world, Vector<Integer> sourcesToPlay) {
         Vector lightgroupdata = new Vector();
         boolean defaultWas = false;
         
@@ -189,6 +190,7 @@ public class WorldLoader {
             if(section.startsWith("obj ")) {
                 String[] data = StringTools.cutOnStrings(section, ' ');
                 
+                String type = data[1];
                 String name = null;
                 if(data.length >= 3) {
                     StringBuffer sb = new StringBuffer();
@@ -211,7 +213,7 @@ public class WorldLoader {
                         if(poses.length > 1 && thisName != null) thisName += + '_' + (x+1);
                     }
                     
-                    defaultWas |= data[1].equals("lightgroup") && "default".equals(name);
+                    defaultWas |= type.equals("lightgroup") && "default".equals(name);
                     loadObject(game, world, data[1], thisName, obj, pos, lightgroupdata, sourcesToPlay);
                 }
             }
@@ -326,7 +328,7 @@ public class WorldLoader {
 
     private static SoundSourceEntity loadSoundSourceEntity(String name, float[] pos,
             Game game, World world, IniFile ini, Vector<Integer> sourcesToPlay) {
-        SoundSource source = Asset.getSoundSource(ini.get("sound"));
+        SoundSource source = SoundSource.get(ini.get("sound"));
         
         source.setVolume(ini.getFloat("volume", 1));
         source.setPitch(ini.getFloat("pitch", 1));
@@ -400,7 +402,7 @@ public class WorldLoader {
     private static SpriteObject loadSprite(String name, float[] pos, Game game, World world, IniFile ini, boolean billboard) {
         SpriteObject spr = new SpriteObject();
         
-        Material mat = Asset.getMaterial(ini.get("tex"));
+        Material mat = Material.get(ini.get("tex"));
         float w = 100, h = 100;
         
         float ww = ini.getFloat("width", Float.MAX_VALUE);
@@ -460,19 +462,19 @@ public class WorldLoader {
         obj.animateWhenPaused = ini.getFloat("animate_when_paused", obj.animateWhenPaused?1:0) == 1;
         
         String tmp = ini.get("activate_if");
-        if(tmp != null) obj.activateWhen = game.main.loadScript("return "+tmp);
+        if(tmp != null) obj.activateWhen = Scripting.loadScript(game.main, "return "+tmp);
         
         tmp = ini.get("on_activate");
-        if(tmp != null) obj.onActivate = game.main.loadScript(tmp);
+        if(tmp != null) obj.onActivate = Scripting.loadScript(game.main, tmp);
         
         tmp = ini.get("script_on_activate");
-        if(tmp != null) obj.onActivate = game.main.loadScriptFromFile(tmp);
+        if(tmp != null) obj.onActivate = Scripting.loadScriptFromFile(game.main, tmp);
         
         tmp = ini.get("on_fail");
-        if(tmp != null) obj.onFail = game.main.loadScript(tmp);
+        if(tmp != null) obj.onFail = Scripting.loadScript(game.main, tmp);
         
         tmp = ini.get("script_on_fail");
-        if(tmp != null) obj.onFail = game.main.loadScriptFromFile(tmp);
+        if(tmp != null) obj.onFail = Scripting.loadScriptFromFile(game.main, tmp);
     }
 
 }

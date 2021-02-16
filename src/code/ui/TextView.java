@@ -6,20 +6,26 @@ import java.util.Vector;
 
 public class TextView {
 
-    private final Vector lines = new Vector();
-    private BMFont font;
-    private int w, h;
-    private boolean center = false, vCenter;
-    private int yOffset = 0;
+    protected BMFont font;
+    protected int w, h;
+    
+    protected final Vector lines = new Vector();
+    protected boolean hCenter = false, vCenter = false;
+    protected int yScroll = 0;
 
-    public TextView(String str, int w, int h, BMFont font) {
+    public TextView(int w, int h, BMFont font) {
         this.font = font;
         this.w = w;
         this.h = h;
-        if(str != null) setString(str);
+    }
+    
+    public void setSize(int w, int h) {
+        this.w = w;
+        this.h = h;
+        limitY();
     }
 
-    private void createLines(String txt, Vector lines, char lineDivider) {
+    public static void createLines(String txt, Vector lines, char lineDivider, BMFont font, int w) {
         int lineWidth = 0;
         int wordStart = 0;
         int lastSpace = -1;
@@ -35,7 +41,7 @@ public class TextView {
             if(cp == lineDivider) { //символ переноса строки
                 wordEnd = i;
                 i++; //пропускаем символ переноса
-            } else if(lineWidth + charWidth > w) { //следующий символ не умещается
+            } else if(lineWidth + charWidth > w) { //следующий символ не помещается
                 if(lastSpace != -1) { //обрезаем по последнему пробелу
                     i = lastSpace + 1; //+1 - пропускаем последний пробел
                     wordEnd = lastSpace;
@@ -44,6 +50,7 @@ public class TextView {
 
             if(wordEnd != -1) {
                 if(wordEnd < wordStart) {
+                    //Мы не можем поместить ни одну букву... Поэтому помещаем одну
                     wordEnd = wordStart+1;
                     i = wordEnd+1;
                 }
@@ -62,27 +69,25 @@ public class TextView {
             lines.addElement(txt.substring(wordStart, txt.length()));
         }
 
+        if(txt.isEmpty()) lines.addElement("");
     }
     
-    public void addString(String str) {
-        addString(str, '*');
+    public void addText(String str) {
+        addText(str, '*');
     }
 
-    public void addString(String str, char lineDivider) {
-        createLines(str, lines, lineDivider);
-        int textHeight = getTextHeight();
-        yOffset = (vCenter||h>textHeight)?(h-textHeight)/2:0;
+    public void addText(String str, char lineDivider) {
+        createLines(str, lines, lineDivider, font, w);
+        centralize();
     }
     
-    public void setString(String str) {
-        setString(str, '*');
+    public void setText(String str) {
+        setText(str, '*');
     }
 
-    public void setString(String str, char lineDivider) {
-        lines.removeAllElements();
-        createLines(str, lines, lineDivider);
-        int textHeight = getTextHeight();
-        yOffset = (vCenter&&h>textHeight)?(h-textHeight)/2:0;
+    public void setText(String str, char lineDivider) {
+        removeText();
+        addText(str, lineDivider);
     }
     
     public void removeText() {
@@ -94,14 +99,13 @@ public class TextView {
         e3d.clip(x, y, w, h);
 
         final int stepY = font.getHeight();
-        int i = Math.max(0, -yOffset / stepY);
-        int posY = yOffset + i*stepY;
+        int i = Math.max(0, -yScroll / stepY);
+        int posY = yScroll + i*stepY;
         
-        for(; i < lines.size(); i++) {
-            if(posY > h) break;
+        for(; i < lines.size() && posY <= h; i++) {
             String str = (String) lines.elementAt(i);
             
-            int offsetX = center ? (w - font.stringWidth(str)) >> 1 : 0;
+            int offsetX = hCenter ? (w - font.stringWidth(str)) >> 1 : 0;
 
             font.drawString(str, x + offsetX, y + posY, 1, color);
             
@@ -112,52 +116,51 @@ public class TextView {
     }
     
     public boolean isInBox(int x, int y, int mx, int my) {
-        return mx>=x && my>=y && mx<x+w && my<y+h;
+        if(mx < x || mx >= x+w) return false;
+        
+        if(h > getTextHeight()) return my>=y+(h-getTextHeight())/2 && my<y+h-(h-getTextHeight())/2;
+        return my>=y && my<y+h;
     }
-
-    public void scroll(int dy) {
-        yOffset += dy;
-
+    
+    protected void centralize() {
+        if(vCenter && getTextHeight() < h) yScroll = (h - getTextHeight()) >> 1;
+        else yScroll = 0;
+    }
+    
+    protected void limitY() {
         final int textHeight = getTextHeight();
+        
         if(textHeight > h) {
             //Начало текста в начале окна
-            if(yOffset > 0) yOffset = 0;
+            if(yScroll > 0) yScroll = 0;
             
             //Нижний край в конце окна
-            if(yOffset < h - textHeight) {
-                yOffset = h - textHeight;
-            }
+            if(yScroll < h - textHeight) yScroll = h - textHeight;
         } else {
-            yOffset = (vCenter&&h>textHeight)?(h-textHeight)/2:0;
+            //Текст по середине
+            centralize();
         }
     }
 
-    public int getCountString() {
-        return lines.size();
+    public void scroll(int addY) {
+        yScroll += addY;
+        limitY();
     }
 
-    public int getTextHeight() {
-        return font.getHeight() * lines.size();
+    public void setYScroll(int y) {
+        yScroll = y;
     }
 
-    public void setY(int y) {
-        yOffset = y;
+    public int getYScroll() {
+        return yScroll;
     }
 
-    public int getY() {
-        return yOffset;
+    public boolean getHCenter() {
+        return hCenter;
     }
 
-    public void setYLimited(int y) {
-        scroll(y - yOffset);
-    }
-
-    public boolean getCenter() {
-        return center;
-    }
-
-    public void setCenter(boolean cen) {
-        center = cen;
+    public void setHCenter(boolean cen) {
+        hCenter = cen;
     }
 
     public boolean getVCenter() {
@@ -166,6 +169,10 @@ public class TextView {
 
     public void setVCenter(boolean cen) {
         vCenter = cen;
+    }
+
+    public int getTextHeight() {
+        return font.getHeight() * lines.size();
     }
 
     public int getWidth() {

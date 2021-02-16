@@ -1,12 +1,16 @@
 package code.game.world.entities;
 
 import code.engine3d.E3D;
+
 import code.game.Main;
+import code.game.scripting.Scripting;
 import code.game.world.World;
+
 import code.math.MathUtils;
 import code.math.Ray;
 import code.math.Sphere;
 import code.math.Vector3D;
+
 import org.luaj.vm2.LuaValue;
 
 /**
@@ -42,20 +46,20 @@ public class Entity {
     
     public boolean animateWhenPaused = false;
     
-    boolean inRadius = true;
+    protected boolean inRadius = true;
     
-    public boolean activateImpl(Main main) {
+    protected boolean activateImpl(Main main) {
         if(onActivate != null) {
-            main.runScript(onActivate);
+            Scripting.runScript(onActivate);
             return true;
         }
         
         return false;
     }
     
-    public boolean failImpl(Main main) {
+    protected boolean failImpl(Main main) {
         if(onFail != null) {
-            main.runScript(onFail);
+            Scripting.runScript(onFail);
             return true;
         }
         
@@ -76,19 +80,19 @@ public class Entity {
         
         return false;
     }
-    
-    public boolean inRadius(Vector3D start) {
-        return start.distanceSqr(pos) <= activateRadius*activateRadius;
-    }
 
     public boolean activate(Main main) {
-        boolean succesRun = activateWhen == null || main.runScript(activateWhen).toboolean();
+        boolean succesRun = activateWhen == null || Scripting.runScript(activateWhen).toboolean();
 
         if(succesRun) return activateImpl(main);
         else return failImpl(main);
     }
     
-    public static boolean rayCastSphere(Ray ray, Vector3D pos, float radius) {
+    protected boolean inRadius(Vector3D start) {
+        return start.distanceSqr(pos) <= activateRadius*activateRadius;
+    }
+    
+    protected static boolean rayCastSphere(Ray ray, Vector3D pos, float radius) {
         float dist = MathUtils.distanceToRay(pos, ray.start, ray.dir);
         if(dist > radius*radius) return false;
         

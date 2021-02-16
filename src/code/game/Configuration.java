@@ -1,8 +1,10 @@
 package code.game;
 
-import code.Engine;
-import code.utils.Asset;
+import code.engine.Engine;
+
+import code.utils.assetManager.AssetManager;
 import code.utils.IniFile;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -22,15 +24,15 @@ public class Configuration {
     
     public float fov = 70;
     
-    public Configuration(int fwd, int fhd) {
+    Configuration(int fwd, int fhd) {
         load(fwd, fhd);
     }
     
-    public Configuration(Configuration conf) {
+    Configuration(Configuration conf) {
         copy(conf);
     }
     
-    public void copy(Configuration conf) {
+    void copy(Configuration conf) {
         startInFullscr = conf.startInFullscr;
         fw = conf.fw; fh = conf.fh;
         ww = conf.ww; wh = conf.wh;
@@ -39,8 +41,8 @@ public class Configuration {
         debug = conf.debug;
     }
     
-    public void load(int fwd, int fhd) {
-        IniFile conf = Asset.loadIni("config.ini", true);
+    void load(int fwd, int fhd) {
+        IniFile conf = AssetManager.loadIni("config.ini", true);
         
         startInFullscr = conf.getInt("screen", "start_in_fullscreen", startInFullscr?1:0) == 1;
         vsync = conf.getInt("screen", "vsync", vsync?1:0) == 1;
@@ -56,7 +58,7 @@ public class Configuration {
         debug = conf.getInt("game", "debug", debug?1:0) == 1;
     }
     
-    public void save() {
+    void save() {
         IniFile conf = new IniFile(new Hashtable());
         
         conf.put("screen", "start_in_fullscreen", String.valueOf(startInFullscr?1:0));
@@ -89,16 +91,17 @@ public class Configuration {
         }
     }
     
-    public boolean isNeedToConfirm(Configuration other) {
+    boolean isNeedToConfirm(Configuration other) {
         return other.fw != fw || other.fh != fh || other.aa != aa;
     }
     
-    public boolean isValid() {
+    boolean isValid() {
         return Engine.isResolutionValid(fw, fh);
     }
     
-    public void apply() {
-        Engine.setWindow(this, Engine.isFullscr());
+    void apply() {
+        boolean fullscr = Engine.isFullscr();
+        Engine.setWindow(fullscr, fullscr?fw:ww, fullscr?fh:wh, vsync);
     }
 
 }

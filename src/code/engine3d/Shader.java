@@ -1,6 +1,7 @@
 package code.engine3d;
 
-import code.utils.Asset;
+import code.utils.assetManager.AssetManager;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -10,8 +11,8 @@ import org.lwjgl.opengl.GL20;
  */
 public class Shader {
     
-    int vertShader, fragShader;
-    int program;
+    private int vertShader, fragShader;
+    private int program;
 
     public Shader(String path) {
         GL11.glGetInteger(GL20.GL_FRAGMENT_SHADER_DERIVATIVE_HINT);
@@ -21,13 +22,13 @@ public class Shader {
         }
         
         vertShader = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
-        GL20.glShaderSource(vertShader, Asset.loadString(path+".vert"));
+        GL20.glShaderSource(vertShader, AssetManager.loadString(path+".vert"));
         GL20.glCompileShader(vertShader);
         if(compileCheck(vertShader)) return;
         System.out.println("vertex shader "+path+" created");
         
         fragShader = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-        GL20.glShaderSource(fragShader, Asset.loadString(path+".frag"));
+        GL20.glShaderSource(fragShader, AssetManager.loadString(path+".frag"));
         GL20.glCompileShader(fragShader);
         if(compileCheck(fragShader)) {
             GL20.glDeleteProgram(vertShader);

@@ -1,18 +1,13 @@
-package code;
+package code.engine;
 
-import code.game.Main;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
 public class ScrollCallback extends GLFWScrollCallback {
 
-    Main main;
-
-    public ScrollCallback(Main main) {
-        this.main = main;
-    }
+    Screen scr;
 
     public void invoke(long window, double xoffset, double yoffset) {
-        main.mouseScroll(xoffset, yoffset);
+        if(scr != null) scr.mouseScroll(xoffset, yoffset);
     }
 
     public void close() {

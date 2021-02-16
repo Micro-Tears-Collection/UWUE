@@ -8,7 +8,7 @@ import code.utils.FPS;
  */
 public class Pause {
     
-    int time;
+    private int time;
     
     public Pause(int time) {
         this.time = time;

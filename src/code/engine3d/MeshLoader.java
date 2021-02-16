@@ -1,15 +1,18 @@
-package code.utils;
+package code.engine3d;
 
-import code.Engine;
-import code.engine3d.Material;
-import code.engine3d.Mesh;
 import code.math.Vector3D;
+
+import code.utils.assetManager.AssetManager;
+import code.utils.IniFile;
+import code.utils.StringTools;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Vector;
+
 import org.lwjgl.opengl.GL15;
 
 /**
@@ -20,7 +23,7 @@ public class MeshLoader {
     
     private static int storeData(float[] data) {
         int vbo = GL15.glGenBuffers(); //Creates a VBO ID
-        Asset.vbos.add(vbo);
+        AssetManager.vbos.add(vbo);
         
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
         
@@ -145,7 +148,7 @@ public class MeshLoader {
                         float[][] normals = new float[keysArr.length][];
                         
                         for(int i=0; i<keysArr.length; i++) {
-                            texs[i] = Asset.getMaterial(keysArr[i], replace, prefix, postfix);
+                            texs[i] = Material.get(keysArr[i], replace, prefix, postfix);
                             Vector<Face> meshFaces = materials.get(keysArr[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];

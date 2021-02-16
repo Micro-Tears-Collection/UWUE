@@ -1,35 +1,41 @@
 package code.game;
 
-import code.utils.Scripting;
-import code.Engine;
-import code.Screen;
+import code.game.scripting.Scripting;
+import code.engine.Engine;
+import code.engine.Screen;
+
+import code.audio.AudioEngine;
 import code.audio.SoundSource;
+
 import code.engine3d.E3D;
-import code.engine3d.Texture;
-import code.math.Vector3D;
+
+import code.game.world.entities.Player;
+
 import code.ui.TextBox;
-import code.utils.Asset;
+
+import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.IniFile;
 import code.utils.Keys;
 import code.utils.StringTools;
 import code.utils.font.BMFont;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import org.lwjgl.glfw.GLFW;
+
 /**
  *
  * @author Roman Lahin
  */
-public class Main {
+public class Main extends Screen {
     
     //bilding
-    public static int TILDE, ERASE;
+    static int TILDE, ERASE;
+    private static Main main;
 
     public IniFile gamecfg;
     public Configuration conf;
@@ -39,39 +45,62 @@ public class Main {
     public Globals lua;
     public LuaTable luasave;
     
-    public BMFont font;
-    public int fontColor, fontSelColor;
-
-    boolean run = true;
-    public Screen screen, nextScreen;
-    boolean needToDestroyScreen;
+    BMFont font;
+    int fontColor, fontSelColor;
     SoundSource selectedS, clickedS, gameStartS;
-    
-    TextBox textBox;
-    TextBox console;
-    
-    public Main(int w, int h) {
-        gamecfg = Asset.loadIni("game.ini", true);
-        conf = new Configuration(w, h);
-    }
-    
-    int frameBufferName, renderedTexture, depthrenderbuffer;
-    Texture frameBufferTex, dither;
 
-    public void init() {
+    private boolean run = true;
+    private Screen screen, nextScreen;
+    private boolean needToDestroyScreen;
+    
+    private TextBox textBox;
+    private TextBox console;
+    
+    public static void main(String[] args) {
+        int sizes[] = Engine.init();
+        main = new Main();
+        Engine.setListener(main);
+        
+        main.gamecfg = AssetManager.loadIni("game.ini", true);
+        main.conf = new Configuration(sizes[0], sizes[1]);
+        
+        Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
+        Keys.DOWN = Keys.addKeyToBinding(Keys.DOWN, GLFW.GLFW_KEY_DOWN);
+        Keys.LEFT = Keys.addKeyToBinding(Keys.LEFT, GLFW.GLFW_KEY_LEFT);
+        Keys.RIGHT = Keys.addKeyToBinding(Keys.RIGHT, GLFW.GLFW_KEY_RIGHT);
+        Keys.OK = Keys.addKeyToBinding(Keys.OK, GLFW.GLFW_KEY_ENTER);
+        Keys.ESC = Keys.addKeyToBinding(Keys.ESC, GLFW.GLFW_KEY_ESCAPE);
+        
+        Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, 
+                GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_LEFT_SHIFT,
+                GLFW.GLFW_KEY_E);
+        
+        Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
+        Main.ERASE = Keys.addKeyToBinding(Main.ERASE, GLFW.GLFW_KEY_BACKSPACE);
+        
+        int w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
+        int h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
+        
+        Engine.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
+        AudioEngine.init();
+        
+        main.init();
+    }
+
+    private void init() {
         Engine.setTitle(gamecfg.get("game", "name"));
 
-        musPlayer = ((SoundSource) Asset.getSoundSource().lock()).beMusicPlayer();
-        selectedS = (SoundSource) Asset.getSoundSource("/sounds/select.ogg").lock();
+        musPlayer = ((SoundSource) SoundSource.get().lock()).beMusicPlayer();
+        selectedS = (SoundSource) SoundSource.get("/sounds/select.ogg").lock();
         selectedS.buffer.neverUnload = true;
-        clickedS = (SoundSource) Asset.getSoundSource("/sounds/click.ogg").lock();
+        clickedS = (SoundSource) SoundSource.get("/sounds/click.ogg").lock();
         clickedS.buffer.neverUnload = true;
-        gameStartS = (SoundSource) Asset.getSoundSource("/sounds/game start.ogg").lock();
+        gameStartS = (SoundSource) SoundSource.get("/sounds/game start.ogg").lock();
         gameStartS.buffer.neverUnload = true;
         
         font = BMFont.loadFont(gamecfg.get("hud", "font"));
         font.setInterpolation(false);
-        setFontScale(Engine.h);
+        setFontScale(getHeight());
         
         fontColor = StringTools.getRGB(gamecfg.getDef("hud", "font_color", "255,255,255"), ',');
         fontSelColor = StringTools.getRGB(gamecfg.getDef("hud", "font_selected_color", "221,136,149"), ',');
@@ -91,7 +120,7 @@ public class Main {
             public void enter() {
                 super.enter();
 
-                LuaValue val = runScript(text);
+                LuaValue val = Scripting.runScript(main, text);
                 if(!val.isnil()) {
                     System.out.println("bool " + val.toboolean());
                     System.out.println("int " + val.toint());
@@ -101,45 +130,12 @@ public class Main {
 
                 text = "";
             }
-        }.setXYW(0, 0, Engine.w);
+        }.setXYW(0, 0, getWidth());
 
         run();
     }
-    
-    public void openTextBox(TextBox textBox) {
-        this.textBox = textBox;
-    }
-    
-    public void closeTextBox() {
-        this.textBox = null;
-    }
-    
-    public void clearLua() {
-        lua = JsePlatform.standardGlobals();
-        lua.set("save", luasave==null?(luasave = Scripting.load(this)):luasave);
-        Scripting.initFunctions(this);
-    }
 
-    public Game getGame() {
-        if(screen instanceof Game) return (Game)screen;
-        else if(screen instanceof DialogScreen) return ((DialogScreen) screen).game;
-        else return null;
-    }
-
-    public Screen getScreen() {
-        return screen;
-    }
-
-    public void setScreen(Screen screen) {
-        setScreen(screen, false);
-    }
-
-    public void setScreen(Screen screen, boolean needToDestroy) {
-        nextScreen = screen;
-        needToDestroyScreen = needToDestroy;
-    }
-
-    private void destroy() {
+    public void destroy() {
         if(screen != null) screen.destroy();
         
         Scripting.save(luasave);
@@ -147,12 +143,19 @@ public class Main {
         e3d.destroy();
         font.destroy();
         
-        Asset.destroyThings(Asset.ALL);
+        AssetManager.destroyThings(AssetManager.ALL);
         
         Engine.destroy();
+        AudioEngine.close();
+    }
+    
+    void clearLua() {
+        lua = JsePlatform.standardGlobals();
+        lua.set("save", luasave==null?(luasave = Scripting.load(this)):luasave);
+        Scripting.initFunctions(this);
     }
 
-    public void stop() {
+    void stop() {
         run = false;
         nextScreen = null;
     }
@@ -172,12 +175,12 @@ public class Main {
             
             FPS.frame();
 
-            if(screen != null/* && screen.isRunning()*/) {
+            if(screen != null) {
                 screen.tick();
             }
             
             if(textBox == console) {
-                if(!e3d.mode2D) e3d.prepare2D(0, 0, Engine.w, Engine.h);
+                if(!e3d.mode2D) e3d.prepare2D(0, 0, getWidth(), getHeight());
                 console.draw(e3d);
             }
             
@@ -185,19 +188,46 @@ public class Main {
             e3d.drawDitheredSurface(frameBufferTex, dither,
                     (Engine.w - Engine.h*320/240)/2, Engine.h, Engine.h*320/240, -Engine.h);*/
             
-            e3d.flush();
+            Engine.flush();
 
             if(!conf.vsync) try {
                 Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
                 //max 125 fps (todo: add support of 144hz monitors??)
             } catch (Exception e) {}
             
-            if(screen != null && screen.userTryingToCloseApp()) {
+            if(userTryingToCloseApp()) {
                 stop();
             }
         }
 
         destroy();
+    }
+
+    public void setScreen(Screen screen) {
+        setScreen(screen, false);
+    }
+
+    public void setScreen(Screen screen, boolean needToDestroy) {
+        nextScreen = screen;
+        needToDestroyScreen = needToDestroy;
+    }
+
+    public Screen getScreen() {
+        return screen;
+    }
+
+    public Game getGame() {
+        if(screen instanceof Game) return (Game)screen;
+        else if(screen instanceof DialogScreen) return ((DialogScreen) screen).game;
+        else return null;
+    }
+    
+    public void openTextBox(TextBox textBox) {
+        this.textBox = textBox;
+    }
+    
+    public void closeTextBox() {
+        this.textBox = null;
     }
     
     public void charInput(int codepoint) {
@@ -229,21 +259,48 @@ public class Main {
     }
 
     public void keyPressed(int key) {
+        if(key == GLFW.GLFW_KEY_F11) {
+            boolean fullscr = !Engine.isFullscr();
+            Engine.setWindow(fullscr, fullscr ? conf.fw : conf.ww, fullscr ? conf.fh : conf.wh, conf.vsync);
+        } else if(key == GLFW.GLFW_KEY_F2) {
+            Engine.takeScreenshot();
+            return;
+        }
+            
         if(textBox != null) {
             if(Keys.isThatBinding(key, ERASE)) {
                 if(textBox.text.length() > 0)
                     textBox.text = textBox.text.substring(0, textBox.text.length() - 1);
             }
-
             return;
         }
         
         Keys.keyPressed(key);
         if(screen != null) screen.keyPressed(key);
     }
+    
+    public void keyRepeated(int key) {
+        if(textBox != null) {
+            if(Keys.isThatBinding(key, ERASE)) {
+                if(textBox.text.length() > 0)
+                    textBox.text = textBox.text.substring(0, textBox.text.length() - 1);
+            }
+            return;
+        }
+        
+        if(screen != null) screen.keyRepeated(key);
+    }
 
     public void mouseAction(int button, boolean pressed) {
         if(screen != null) screen.mouseAction(button, pressed);
+    }
+
+    public void mouseScroll(double xoffset, double yoffset) {
+        if(screen != null) screen.mouseScroll(xoffset, yoffset);
+    }
+    
+    float scrollSpeed() {
+        return font.getHeight()/2f;
     }
 
     public void sizeChanged(int w, int h, Screen scr) {
@@ -253,112 +310,8 @@ public class Main {
         if(screen != null) screen.sizeChanged(w, h, scr);
     }
     
-    void setFontScale(int h) {
+    private void setFontScale(int h) {
         font.baseScale = Math.max(1, Math.round(h * 2 / 768f));
-    }
-
-    public void mouseScroll(double xoffset, double yoffset) {
-        if(screen != null) screen.mouseScroll(xoffset, yoffset);
-    }
-    
-    public float scrollSpeed() {
-        return font.getHeight()/2f;
-    }
-    
-    public LuaValue loadScript(String script) {
-        try {
-            return lua.load(script);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-    
-    public LuaValue loadScriptFromFile(String path) {
-        File file = new File("data", path);
-        if(!file.exists()) {
-            System.out.println("No such file "+file.getAbsolutePath()+"!");
-            return null;
-        }
-        
-        DataInputStream dis = null;
-        try {
-            dis = new DataInputStream(new FileInputStream(file));
-            byte[] chars = new byte[dis.available()];
-            dis.readFully(chars);
-            dis.close();
-            dis = null;
-            
-            String script = new String(chars);
-            LuaValue chunk = lua.load(script);
-            return chunk;
-            
-        } catch(Exception e) {
-            if(dis != null) {
-                try{
-                    dis.close();
-                } catch(Exception ee) {}
-            }
-            e.printStackTrace();
-        }
-        
-        return null;
-    }
-    
-    public void runScriptFromFile(String path) {
-        LuaValue chunk = loadScriptFromFile(path);
-        if(chunk != null) chunk.call();
-    }
-
-    public LuaValue runScript(String script) {
-        try {
-            LuaValue chunk = lua.load(script);
-            return chunk.call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return LuaValue.NIL;
-    }
-
-    public LuaValue runScript(LuaValue chunk) {
-        try {
-            return chunk.call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return LuaValue.NIL;
-    }
-
-    public void loadMap(LuaValue mapArg, LuaValue data) {
-        String map = mapArg.toString();
-        Game game = getGame();
-
-        Vector3D newPlayerPos = null;
-        float rotX = Float.MAX_VALUE;
-        float rotY = Float.MAX_VALUE;
-        
-        if(!data.isnil() && data.istable()) {
-            LuaValue pos = data.get("pos");
-            
-            if(!pos.isnil() && pos.istable()) {
-                newPlayerPos = new Vector3D(
-                        pos.get(1).tofloat(),
-                        pos.get(2).tofloat(),
-                        pos.get(3).tofloat());
-            }
-            
-            if(!data.get("rotX").isnil()) rotY = data.get("rotX").tofloat();
-            if(!data.get("rotY").isnil()) rotY = data.get("rotY").tofloat();
-        }
-
-        if(game == null) {
-            game = new Game(this);
-            setScreen(game, true);
-        }
-        game.loadMap(map, newPlayerPos, rotX, rotY);
     }
 
 }

@@ -1,13 +1,15 @@
 package code.audio;
 
-import code.Engine;
-import code.utils.ReusableContent;
+import code.utils.assetManager.AssetManager;
+import code.utils.assetManager.ReusableContent;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
 import org.lwjgl.openal.AL10;
 import org.lwjgl.stb.STBVorbis;
 import org.lwjgl.system.MemoryUtil;
@@ -18,14 +20,45 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class SoundBuffer extends ReusableContent {
     
-    public int id;
+    int id;
     
-    public SoundBuffer(int id) {
+    private SoundBuffer(int id) {
         this.id = id;
     }
+
+    public void destroy() {
+        AL10.alDeleteBuffers(id);
+        
+        int err;
+        if((err = AL10.alGetError()) != AL10.AL_NO_ERROR) {
+            System.out.println("alDeleteBuffers error " + err);
+        }
+    }
     
-    public static SoundBuffer createBuffer(String file) {
-        // Load wav data into a buffer.
+    public static SoundBuffer get(String file) {
+        SoundBuffer sound = (SoundBuffer)AssetManager.get("SOUNDBUFF_" + file);
+        
+        if(sound != null) {
+            sound.use();
+            
+        } else {
+            sound = loadBuffer(file);
+            
+            if(sound != null) {
+                AssetManager.addReusable("SOUNDBUFF_" + file, sound);
+            }
+        }
+        
+        return sound;
+    }
+    
+    /**
+     * Buffer should be destroyed after using!
+     * @param file
+     * @return SoundBuffer with loaded file or null
+     */
+    public static SoundBuffer loadBuffer(String file) {
+        // Load vorbis data into a buffer.
         int soundBuffer = AL10.alGenBuffers();
 
         int err;
@@ -65,14 +98,5 @@ public class SoundBuffer extends ReusableContent {
         MemoryUtil.memFree(decoded);
         
         return new SoundBuffer(soundBuffer);
-    }
-
-    public void destroy() {
-        AL10.alDeleteBuffers(id);
-        
-        int err;
-        if((err = AL10.alGetError()) != AL10.AL_NO_ERROR) {
-            System.out.println("alDeleteBuffers error " + err);
-        }
     }
 }

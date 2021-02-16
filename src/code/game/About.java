@@ -1,8 +1,8 @@
 package code.game;
 
-import code.Screen;
+import code.engine.Screen;
 import code.ui.TextView;
-import code.utils.Asset;
+import code.utils.assetManager.AssetManager;
 import code.utils.Keys;
 
 /**
@@ -11,33 +11,34 @@ import code.utils.Keys;
  */
 public class About extends Screen {
     
-    Main main;
-    Menu menu;
+    private Main main;
+    private Menu menu;
     
-    String loadedText;
-    TextView text;
+    private String loadedText;
+    private TextView text;
     
-    public About(Main main, Menu menu) {
+    About(Main main, Menu menu) {
         this.main = main;
         this.menu = menu;
         
-        loadedText = Asset.loadString("about.txt");
+        loadedText = AssetManager.loadString("about.txt");
         
+        text = new TextView(getWidth(), getHeight(), main.font);
+        text.setHCenter(true);
+        text.setVCenter(true);
         setText();
+    }
+    
+    private void setText() {
+        text.setText(loadedText, '\n');
     }
     
     public void destroy() {
         menu.destroy();
     }
     
-    void setText() {
-        text = new TextView(null, getWidth(), getHeight(), main.font);
-        text.setCenter(true);
-        text.setVCenter(true);
-        text.setString(loadedText, '\n');
-    }
-    
     public void sizeChanged(int w, int h, Screen scr) {
+        text.setSize(getWidth(), getHeight());
         setText();
         menu.sizeChanged(w, h, this);
     }

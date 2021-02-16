@@ -1,10 +1,12 @@
 package code.game;
 
-import code.Engine;
-import code.Screen;
+import code.engine.Engine;
+import code.engine.Screen;
+
 import code.engine3d.Material;
+
 import code.ui.ItemList;
-import code.utils.Asset;
+import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.Keys;
 
@@ -14,11 +16,11 @@ import code.utils.Keys;
  */
 public class Menu extends Screen {
     
-    boolean initialized;
+    private boolean initialized;
     
-    Main main;
-    ItemList menu;
-    Material background, logo, shadow;
+    private Main main;
+    private ItemList menu;
+    public Material background, logo, shadow;
     
     public Menu(Main main) {
         this.main = main;
@@ -28,37 +30,30 @@ public class Menu extends Screen {
         if(initialized) return;
         initialized = true;
         
-        background = new Material(Asset.getTexture("/images/menu.png"));
-        logo = new Material(Asset.getTexture("/images/lsddejfg.png"));
-        logo.alphaTest = true;
-        shadow = new Material(Asset.getTexture("/images/menushadow.png"));
-        shadow.blendMode = Material.BLEND;
+        background = Material.get("/images/menu.png");
+        logo = Material.get("/images/lsddejfg.png;alpha_test=1");
+        shadow = Material.get("/images/menushadow.png;blend=blend");
         
         main.musPlayer.loadFile("/music/menu.ogg");
         main.musPlayer.play();
         
-        Engine.hideCursor(false);
-        
-        createMenu();
+        menu = ItemList.createItemList(getWidth()/2, getHeight(), main.font, main.selectedS);
+        setMenuText();
     }
     
     public void destroy() {
         main.musPlayer.stop();
         main.musPlayer.free();
-        Asset.destroyThings(Asset.ALL_EXCEPT_LOCKED);
+        AssetManager.destroyThings(AssetManager.ALL_EXCEPT_LOCKED);
     }
 
-    private void createMenu() {
-        menu = new ItemList(new String[]{"START","OPTIONS","ABOUT","EXIT"}, 
-                getWidth()/2, getHeight(), main.font) {
-                    public void itemSelected() {
-                        main.selectedS.play();
-                    }
-                };
+    private void setMenuText() {
+        menu.setItems(new String[]{"START","OPTIONS","ABOUT","EXIT"});
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
-        createMenu();
+        menu.setSize(getWidth()/2, getHeight());
+        setMenuText();
     }
     
     public void drawBackground() {
@@ -112,7 +107,7 @@ public class Menu extends Screen {
         menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor, false);
     }
     
-    public void menuClicked() {
+    private void menuClicked() {
         int index = menu.getIndex();
 
         if(index == 0) {
@@ -120,7 +115,7 @@ public class Menu extends Screen {
             main.musPlayer.stop();
             main.gameStartS.play();
         
-            Engine.hideCursor(true);
+            Engine.showCursor(false);
             
             BlankScreen blank = new BlankScreen(main, 5000, 0) {
                 
@@ -147,10 +142,10 @@ public class Menu extends Screen {
     
     public void keyReleased(int key) {
         if(Keys.isThatBinding(key, Keys.DOWN)) {
-            menu.scrollDown();
+            menu.down();
             Keys.reset();
         } else if(Keys.isThatBinding(key, Keys.UP)) {
-            menu.scrollUp();
+            menu.up();
             Keys.reset();
         }
 
@@ -162,7 +157,7 @@ public class Menu extends Screen {
     
     public void mouseScroll(double xx, double yy) {
         int scroll = (int) (yy*main.font.getHeight()/2f);
-        menu.scrollY(scroll);
+        menu.scroll(scroll);
     }
     
     public void mouseAction(int button, boolean pressed) {

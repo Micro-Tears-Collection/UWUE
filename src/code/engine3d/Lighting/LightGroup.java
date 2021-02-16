@@ -1,5 +1,6 @@
-package code.engine3d;
+package code.engine3d.Lighting;
 
+import code.engine3d.E3D;
 import java.nio.FloatBuffer;
 import java.util.Vector;
 import org.lwjgl.opengl.GL11;

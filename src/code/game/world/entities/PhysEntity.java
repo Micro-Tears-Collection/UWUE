@@ -1,10 +1,11 @@
 package code.game.world.entities;
 
 import code.game.world.World;
-import code.math.MathUtils;
+
 import code.math.Ray;
 import code.math.Sphere;
 import code.math.Vector3D;
+
 import code.utils.FPS;
 
 /**
@@ -18,8 +19,8 @@ public class PhysEntity extends Entity {
     public float rotY;
     public float radius, height;
     
-    boolean onGround;
-    int fallingTime;
+    protected boolean onGround;
+    protected int fallingTime;
     
     public boolean physics = true, pushable = true, canPush = true;
     
@@ -73,8 +74,8 @@ public class PhysEntity extends Entity {
         speed.y -= 8F * FPS.frameTime / 50;
     }
     
-    static final Vector3D tmp = new Vector3D(), tmp2 = new Vector3D();
-    static final Sphere tmpSphere = new Sphere();
+    private static final Vector3D tmp = new Vector3D(), tmp2 = new Vector3D();
+    private static final Sphere tmpSphere = new Sphere();
     
     private void move(World world) {
         tmp2.set(speed);

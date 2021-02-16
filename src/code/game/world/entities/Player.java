@@ -1,6 +1,7 @@
 package code.game.world.entities;
 
 import code.game.world.World;
+
 import code.utils.FPS;
 import code.utils.Keys;
 
@@ -10,7 +11,8 @@ import code.utils.Keys;
  */
 public class Player extends PhysEntity {
     
-    static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP, RUN;
+    public static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP, RUN,
+            INTERACT;
     
     public float eyeHeight;
     public float rotX;
@@ -41,13 +43,15 @@ public class Player extends PhysEntity {
         super.update(world);
     }
     
-    public static void initKeys(int w, int s, int a, int d, int space, int shift) {
+    public static void initKeys(int w, int s, int a, int d, int space, int shift, int e) {
         WALK_FORWARD = Keys.addKeyToBinding(WALK_FORWARD, w);
         WALK_BACKWARD = Keys.addKeyToBinding(WALK_BACKWARD, s);
         STRAFE_LEFT = Keys.addKeyToBinding(STRAFE_LEFT, a);
         STRAFE_RIGHT = Keys.addKeyToBinding(STRAFE_RIGHT, d);
         JUMP = Keys.addKeyToBinding(JUMP, space);
         RUN = Keys.addKeyToBinding(RUN, shift);
+        
+        INTERACT = Keys.addKeyToBinding(INTERACT, e);
     }
 
 }

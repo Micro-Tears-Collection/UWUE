@@ -1,24 +1,24 @@
-package code.utils;
+package code.utils.assetManager;
 
-import code.Engine;
-import code.audio.SoundBuffer;
-import code.audio.SoundSource;
-import code.engine3d.Material;
-import code.engine3d.Texture;
+import code.utils.IniFile;
+import code.utils.StringTools;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+
+//todo mesh caching
 import org.lwjgl.opengl.GL15;
 
 /**
  *
  * @author Roman Lahin
  */
-public class Asset {
+public class AssetManager {
     
-    static Vector<Integer> vbos = new Vector();
+    public static Vector<Integer> vbos = new Vector();
     static Vector<DisposableContent> disposable = new Vector();
     static Hashtable<String, ReusableContent> reusable = new Hashtable();
     
@@ -29,7 +29,7 @@ public class Asset {
         }
     }
     
-    private static void destroyDisposable(boolean destroyEverything) {
+    private static void destroyDisposable(boolean destroyLocked) {
         for(Integer vbo : vbos) {
             GL15.glDeleteBuffers(vbo.intValue());
         }
@@ -37,7 +37,7 @@ public class Asset {
         for(int i=0; i<disposable.size(); i++) {
             DisposableContent content = disposable.elementAt(i);
             
-            if(!content.neverUnload || destroyEverything) {
+            if(!content.neverUnload || destroyLocked) {
                 content.destroy();
                 disposable.removeElementAt(i);
                 i--;
@@ -63,7 +63,7 @@ public class Asset {
                 String key = keys.nextElement();
                 ReusableContent el = els.nextElement();
 
-                if(((!el.using || destroyNonFree) && !el.neverUnload) || destroyLocked) {
+                if((!el.using || destroyNonFree) && (!el.neverUnload || destroyLocked)) {
                     el.destroy();
                     reusable.remove(key);
                 }
@@ -73,87 +73,19 @@ public class Asset {
         System.gc();
     }
     
-    public static Material getMaterial(String name, 
-            Hashtable<String,String> replace, String prefix, String postfix) {
-        String[] lines = StringTools.cutOnStrings(name, ';');
-        IniFile stuff = new IniFile(lines, false);
-        
-        String path = lines[0];
-        
-        if(replace != null && replace.get(path) != null) {
-            path = replace.get(path);
-        } else if(prefix != null || postfix != null) {
-            //Trenchbroom handling
-            StringBuffer sb = new StringBuffer();
-            
-            if(prefix != null) sb.append(prefix);
-            sb.append(path);
-            if(postfix != null) sb.append(postfix);
-            path = sb.toString();
-        }
-        
-        Texture tex = getTexture(path);
-        Material mat = new Material(tex);
-        
-        mat.load(stuff);
-        
-        return mat;
+    public static void addDisposable(DisposableContent obj) {
+        disposable.add(obj);
     }
     
-    public static Material getMaterial(String name) {
-        return getMaterial(name, null, null, null);
+    public static void addReusable(String name, ReusableContent obj) {
+        reusable.put(name, obj);
     }
     
-    public static Texture getTexture(String name) {
-        Texture tex = (Texture)reusable.get("TEX_" + name);
-        if(tex != null) {
-            tex.using = true;
-            return tex;
-        }
-        
-        if(name.equals("null")) {
-            tex = new Texture(0);
-            tex.neverUnload = true;
-            reusable.put("TEX_" + name, tex);
-            return tex;
-        }
-        
-        tex = Texture.createTexture(name);
-        
-        if(tex != null) {
-            reusable.put("TEX_" + name, tex);
-            return tex;
-        }
-        
-        return getTexture("null");
+    public static ReusableContent get(String name) {
+        return reusable.get(name);
     }
     
-    public static SoundBuffer getSoundBuffer(String file) {
-        SoundBuffer sound = (SoundBuffer)reusable.get("SOUNDBUFF_" + file);
-        if(sound != null) {
-            sound.using = true;
-            return sound;
-        }
-        
-        sound = SoundBuffer.createBuffer(file);
-        if(sound != null) {
-            reusable.put("SOUNDBUFF_" + file, sound);
-            return sound;
-        }
-        
-        return null;
-    }
-    
-    public static SoundSource getSoundSource() {
-        return getSoundSource(null);
-    }
-    
-    public static SoundSource getSoundSource(String file) {
-        SoundSource source = file==null?new SoundSource():new SoundSource(file);
-        
-        disposable.add(source);
-        return source;
-    }
+    //todo move to new class(??) or not
     
     public static String loadString(String path) {
         File f = new File("data", path);

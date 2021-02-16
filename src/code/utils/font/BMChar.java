@@ -9,10 +9,10 @@ import org.lwjgl.opengl.GL15;
  */
 public class BMChar {
     
-    public Hashtable<Integer, Integer> kerning;
+    Hashtable<Integer, Integer> kerning;
     
-    public int cp;
-    public int xAdvance, texPage;
+    int cp;
+    int xAdvance, texPage;
     
     int coordVBO, uvVBO;
 
@@ -49,7 +49,7 @@ public class BMChar {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
     }
     
-    public void destroy() {
+    void destroy() {
         GL15.glDeleteBuffers(coordVBO);
         GL15.glDeleteBuffers(uvVBO);
     }

@@ -1,6 +1,6 @@
 package code.ui;
 
-import code.game.Main;
+import code.engine.Screen;
 import code.utils.font.BMFont;
 
 /**
@@ -9,8 +9,8 @@ import code.utils.font.BMFont;
  */
 public class DigitBox extends TextBox {
 
-    public DigitBox(Main main, BMFont font) {
-        super(main, font);
+    public DigitBox(Screen scr, BMFont font) {
+        super(scr, font);
     }
     
     public void addChars(char[] chrs) {

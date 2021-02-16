@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class FrameBuffer {
     
-    int frameBuffer, depthBuffer;
+    private int frameBuffer, depthBuffer;
     
     Texture frameBufferTex;
     
@@ -47,6 +47,15 @@ public class FrameBuffer {
         if(ARBFramebufferObject.glCheckFramebufferStatus(ARBFramebufferObject.GL_FRAMEBUFFER) 
                 != ARBFramebufferObject.GL_FRAMEBUFFER_COMPLETE) {
             throw new Error("error in framebuffer init");
+        }
+    }
+    
+    public void destroy() {
+        if(frameBuffer != 0) {
+            ARBFramebufferObject.glDeleteFramebuffers(frameBuffer);
+        }
+        if(depthBuffer != 0) {
+            ARBFramebufferObject.glDeleteRenderbuffers(depthBuffer);
         }
     }
     

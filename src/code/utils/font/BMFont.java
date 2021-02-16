@@ -1,6 +1,5 @@
 package code.utils.font;
 
-import code.Engine;
 import code.engine3d.Material;
 import code.engine3d.Texture;
 import java.io.DataInputStream;
@@ -40,6 +39,11 @@ public class BMFont {
         mat.linearInterpolation = interp;
     }
     
+    /**
+     * Should be destroyed after using!
+     * @param path
+     * @return BMFont or null
+     */
     public static BMFont loadFont(String path) {
         try {
             File file = new File("data", path);
@@ -103,7 +107,7 @@ public class BMFont {
                             sb.append(c);
                         }
                         
-                        font.pages[i] = Texture.createTexture(texp + sb.toString());
+                        font.pages[i] = Texture.loadTexture(texp + sb.toString());
                         sb.delete(0, sb.length());
                     }
                     

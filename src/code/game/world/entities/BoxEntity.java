@@ -26,7 +26,7 @@ public class BoxEntity extends Entity {
                 pos.x+size.x/2, pos.y+size.y/2, pos.z+size.z/2);
     }
     
-    public boolean inRadius(Vector3D start) {
+    protected boolean inRadius(Vector3D start) {
         float xx = (start.x - pos.x);
         xx = Math.max(0, xx*xx - size.x*size.x/4);
         

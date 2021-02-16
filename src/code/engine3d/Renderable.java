@@ -1,5 +1,6 @@
 package code.engine3d;
 
+import code.engine3d.Lighting.LightGroup;
 import code.math.Vector3D;
 import code.utils.IniFile;
 import org.joml.Matrix4f;

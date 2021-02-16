@@ -1,18 +1,23 @@
 package code.game.world;
 
 import code.audio.AudioEngine;
+
 import code.engine3d.E3D;
+import code.engine3d.Material;
 import code.engine3d.Mesh;
 import code.engine3d.Sprite;
+
 import code.game.Main;
 import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 import code.game.world.entities.SpriteObject;
+
 import code.math.Culling;
 import code.math.Ray;
 import code.math.Sphere;
-import code.utils.Asset;
+
 import code.utils.FPS;
+
 import java.util.Vector;
 import org.joml.Matrix4f;
 
@@ -48,7 +53,7 @@ public class World {
         
         if(debug) {
             sobj = new SpriteObject();
-            sobj.spr = new Sprite(Asset.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), 
+            sobj.spr = new Sprite(Material.get("/images/test.png;alpha_test=1;lightgroup=0"), 
                     false, 20, 20, Sprite.CENTER);
         }
     }
@@ -165,8 +170,8 @@ public class World {
         return got;
     }
     
-    public Matrix4f m = new Matrix4f(); 
-    public float[] tmp = new float[16];
+    public final Matrix4f m = new Matrix4f(); 
+    public final float[] tmp = new float[16];
     
     public void render(E3D e3d, int w, int h) {
         e3d.prepareRender(0, 0, w, h);

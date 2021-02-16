@@ -12,7 +12,7 @@ public class MathUtils {
         return Double.longBitsToDouble(((long) tmp2) << 32);
     }*/
     
-    static double M_PI_4 = 0.78539816339;
+    private static final double M_PI_4 = 0.78539816339;
     
     public static float atan(float x) {
         return (float) (M_PI_4*x - x*(Math.abs(x) - 1)*(0.2447 + 0.0663*Math.abs(x)));

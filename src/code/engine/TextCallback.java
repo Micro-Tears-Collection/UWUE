@@ -1,18 +1,13 @@
-package code;
+package code.engine;
 
-import code.game.Main;
 import org.lwjgl.glfw.GLFWCharCallback;
 
 public class TextCallback extends GLFWCharCallback {
 
-    Main main;
-
-    public TextCallback(Main main) {
-        this.main = main;
-    }
+    Screen scr;
 
     public void invoke(long window, int codepoint) {
-        main.charInput(codepoint);
+        if(scr != null) scr.charInput(codepoint);
     }
 
     public void close() {

@@ -1,12 +1,10 @@
 package code.engine3d;
 
-import code.Engine;
-import static code.engine3d.Renderable.NORMALDRAW;
+import code.engine3d.Lighting.LightGroup;
 import code.math.Vector3D;
 import code.utils.font.BMFont;
 import java.util.Vector;
 import org.joml.Matrix4f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
@@ -20,13 +18,13 @@ public class E3D {
     public float fovX, fovY;
     public int w, h;
     
-    Vector<Renderable> postDraw;
+    private final Vector<Renderable> postDraw;
     
-    Vector<Vector<Renderable>>[] toDraw;
-    Vector<Integer>[] toDrawOffset;
-    int[] toDrawUsed;
+    private final Vector<Vector<Renderable>>[] toDraw;
+    private final Vector<Integer>[] toDrawOffset;
+    private int[] toDrawUsed;
     
-    int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, cubeVBO, rectNormals;
+    public int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, cubeVBO, rectNormals;
     
     public boolean mode2D;
     public int maxLights;
@@ -134,10 +132,10 @@ public class E3D {
         LightGroup.clear(false);
     }
     
-    public Matrix4f cam = new Matrix4f(), invCam = new Matrix4f(), proj = new Matrix4f();
-    public float[] invCamf = new float[16];
-    public Matrix4f m = new Matrix4f();
-    float[] tmp = new float[16];
+    public final Matrix4f cam = new Matrix4f(), invCam = new Matrix4f(), proj = new Matrix4f();
+    public final float[] invCamf = new float[16];
+    public final Matrix4f m = new Matrix4f();
+    private final float[] tmp = new float[16];
     
     public void setCam(Vector3D camera, float rotX, float rotY, float fov, int w, int h) {
         this.w = w;
@@ -226,7 +224,7 @@ public class E3D {
     }
     
     public void add(Renderable obj) {
-        if(obj.drawOrder <= NORMALDRAW) {
+        if(obj.drawOrder <= Renderable.NORMALDRAW) {
             Vector<Vector<Renderable>> toDraw = this.toDraw[obj.drawOrder];
             Vector<Integer> toDrawOffset = this.toDrawOffset[obj.drawOrder];
             int usedLists = toDrawUsed[obj.drawOrder];
@@ -252,7 +250,7 @@ public class E3D {
     
     public void renderVectors() {
         //Finally draw 3d
-        for(int i=0; i<=NORMALDRAW; i++) {
+        for(int i=0; i<=Renderable.NORMALDRAW; i++) {
             Vector<Vector<Renderable>> toDraw = this.toDraw[i];
             int usedLists = toDrawUsed[i];
             sort(toDraw, toDrawOffset[i], usedLists);
@@ -272,11 +270,6 @@ public class E3D {
         for(Renderable object : postDraw) object.render(this);
         
         postDraw.removeAllElements();
-    }
-    
-    public void flush() {
-        GLFW.glfwSwapBuffers(Engine.window);
-        GLFW.glfwPollEvents();
     }
     
     public void drawRect(Material mat, float x, float y, float w, float h, 
@@ -530,8 +523,8 @@ public class E3D {
         }
     }
     
-    boolean clipEnabled;
-    float cx, cy, cw, ch;
+    private boolean clipEnabled;
+    private float cx, cy, cw, ch;
     
     public void clip(float x, float y, float cw, float ch) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -565,7 +558,7 @@ public class E3D {
         clipEnabled = true;
     }
     
-    public Vector clipPlanes = new Vector();
+    public final Vector clipPlanes = new Vector();
     
     public void pushClip() {
         clipPlanes.add(new Float(cx));

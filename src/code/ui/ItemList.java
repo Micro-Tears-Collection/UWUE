@@ -3,49 +3,71 @@ package code.ui;
 import code.engine3d.E3D;
 import code.utils.font.BMFont;
 
-public class ItemList {
+public class ItemList extends TextView {
     
-    private BMFont font;
-    private int w, h;
+    private int prevMX = Integer.MIN_VALUE, prevMY = Integer.MIN_VALUE;
+    private boolean skipMid = true;
+    private boolean wasInBox = false;
+    
     private String[] items;
-    private boolean[] midSel;
-    private boolean center = true, skipMid = true;
-    boolean wasInBox = false;
+    private boolean[] itemHCenter;
     
-    private int index = -1, yOffset;
+    private int index = -1;
+    private int[] itemsToLine, itemsLinesCount;
+    private int[] linesToItem;
 
     public ItemList(int w, int h, BMFont font) {
-        this.w = w; this.h = h;
-        this.font = font;
+        super(w, h, font);
+        hCenter = true;
+        vCenter = true;
+    }
+    
+    public static ItemList createItemList(int w, int h, BMFont font, final code.audio.SoundSource selectSound) {
+        
+        return new ItemList(w, h, font) {
+            public void itemSelected() {
+                selectSound.play();
+            }
+        };
     }
 
-    public ItemList(String[] items, int w, int h, BMFont font) {
-        this.items = items;
-        this.w = w; this.h = h;
-        this.font = font;
-        centralize();
-    }
-    
-    public ItemList(String[] items, int w, int h, BMFont font, boolean[] ms) {
-        this.items = items;
-        this.w = w; this.h = h;
-        this.font = font;
-        this.midSel = ms;
-        centralize();
-    }
-    
-    public void centralize() {
-        if(getHeight() < h) yOffset = (h - getHeight()) >> 1;
-        else yOffset = 0;
-    }
-    
     public void setItems(String[] items) {
         this.items = items;
+        itemsToLine = new int[items.length];
+        itemsLinesCount = new int[items.length];
+        
+        removeText();
+        for(int i=0; i<items.length; i++) {
+            String item = items[i];
+            
+            int itemLine = lines.size();
+            if(item == null) item = "";
+            addText(item, '\0');
+            
+            itemsToLine[i] = itemLine;
+            itemsLinesCount[i] = lines.size() - itemLine;
+        }
+        
+        linesToItem = new int[lines.size()];
+        for(int i=0; i<items.length; i++) {
+            int start = itemsToLine[i];
+            int end = start + itemsLinesCount[i];
+            
+            for(int x=start; x<end; x++) {
+                linesToItem[x] = i;
+            }
+        }
+        
         centralize();
     }
     
-    public void setMS(boolean[] ms) {
-        this.midSel = ms;
+    public void setItems(String[] items, boolean[] ms) {
+        setItems(items);
+        this.itemHCenter = ms;
+    }
+    
+    public void setItem(String item, int index) {
+        lines.setElementAt(item, itemsToLine[index]);
     }
     
     public void draw(E3D e3d, int x, int y, 
@@ -54,19 +76,18 @@ public class ItemList {
         
         e3d.pushClip();
         e3d.clip(x, y, w, h);
-        
-        final int stepY = font.getHeight();
-        int i = Math.max(0, -yOffset / stepY);
-        int posY = yOffset + i*stepY;
-        
-        for(; i < items.length; i++) {
-            if(posY > h) break;
-            String str = items[i];
-            
-            boolean inMiddle = (midSel != null && midSel[i] == true);
-            int offsetX = (center || inMiddle) ? (w - font.stringWidth(str)) >> 1 : 0;
 
-            font.drawString(str, x + offsetX, y + posY, 1, index==i?selColor:color);
+        final int stepY = font.getHeight();
+        int i = Math.max(0, -yScroll / stepY);
+        int posY = yScroll + i*stepY;
+        
+        for(; i < lines.size() && posY <= h; i++) {
+            String str = (String) lines.elementAt(i);
+            
+            boolean inMiddle = (itemHCenter != null && itemHCenter[linesToItem[i]] == true);
+            int offsetX = (hCenter || inMiddle) ? (w - font.stringWidth(str)) >> 1 : 0;
+
+            font.drawString(str, x + offsetX, y + posY, 1, index==linesToItem[i]?selColor:color);
             
             posY += stepY;
         }
@@ -74,12 +95,10 @@ public class ItemList {
         e3d.popClip();
     }
     
-    public boolean isInBox(int x, int y, int mx, int my) {
-        if(h > getHeight()) return mx>=x && my>=y+(h-getHeight())/2 && mx<x+w && my<y+h-(h-getHeight())/2;
-        return mx>=x && my>=y && mx<x+w && my<y+h;
-    }
-    
     public void mouseUpdate(int x, int y, int mouseX, int mouseY) {
+        if(prevMX == mouseX && prevMY == mouseY) return;
+        prevMX = mouseX; prevMY = mouseY;
+        
         if(!isInBox(x, y, mouseX, mouseY)) {
             if(wasInBox) {
                 wasInBox = false;
@@ -89,11 +108,11 @@ public class ItemList {
         }
         wasInBox = true;
         
-        int listY = y + yOffset;
+        int listY = y + yScroll;
         int newId = (mouseY - listY) / font.getHeight();
+        newId = (newId >= 0 && newId < lines.size()) ? linesToItem[newId] : -1;
         
-        if(newId >= 0 && newId < items.length &&
-                (!skipMid || midSel == null || !midSel[newId])) {
+        if(newId != -1 && (!skipMid || itemHCenter == null || !itemHCenter[newId])) {
             if(newId != index) {
                 index = newId;
                 itemSelected();
@@ -101,52 +120,32 @@ public class ItemList {
         } else index = -1;
     }
     
-    public void scrollDown() {scroll(1);}
+    public void down() {scrollIndex(1);}
+    public void up() {scrollIndex(-1);}
     
-    public void scrollUp() {scroll(-1);}
-    
-    public void scroll(int i) {
+    private void scrollIndex(int i) {
         int stepY = font.getHeight();
         
-        if(index == -1) index = Math.min(items.length-1, Math.max(0, (h/2-yOffset) / stepY));
+        if(index == -1) index = linesToItem[Math.min(lines.size()-1, Math.max(0, (h/2-yScroll) / stepY))];
         else index += i;
         
         if(index < 0) index = items.length - 1;
         else index %= items.length;
         
-        if(midSel != null && midSel[index] && skipMid) {
-            scroll(i);
+        if(skipMid && itemHCenter != null && itemHCenter[index]) {
+            scrollIndex(i);
             return;
         }
         
-        yOffset = h/2 - index*stepY - stepY/2;
-        limitY();
+        scrollYToCurrentIndex();
         itemSelected();
     }
-    
-    private void limitY() {
-        int elsHeight = getHeight();
+
+    private void scrollYToCurrentIndex() {
+        int stepY = font.getHeight();
         
-        if(elsHeight > h) {
-            yOffset = Math.max(h - elsHeight, Math.min(0, yOffset));
-        } else yOffset = (h - elsHeight) >> 1;
-    }
-    
-    public int getHeight() {
-        return items.length*font.getHeight();
-    }
-    
-    public void scrollY(int y) {
-        yOffset += y;
+        yScroll = h/2 - itemsToLine[index]*stepY - itemsLinesCount[index]*stepY/2;
         limitY();
-    }
-
-    public void setY(int y) {
-        yOffset = y;
-    }
-
-    public int getY() {
-        return yOffset;
     }
     
     public int getIndex() {
@@ -159,19 +158,9 @@ public class ItemList {
     }
 
     public void setIndexLimited(int i) {
-        int stepY = font.getHeight();
         index = i;
-        yOffset = h / 2 - index * stepY - stepY / 2;
-        limitY();
+        scrollYToCurrentIndex();
         itemSelected();
-    }
-
-    public boolean getCenter() {
-        return center;
-    }
-
-    public void setCenter(boolean bol) {
-        center = bol;
     }
 
     public boolean getSkipMiddle() {
@@ -182,12 +171,12 @@ public class ItemList {
         skipMid = bol;
     }
     
-    public final String getCurrentItem() {
-        return items[index];
+    public final int getItemsCount() {
+        return items.length;
     }
     
-    public final String[] getItems() {
-        return items;
+    public final String getCurrentItem() {
+        return items[index];
     }
     
     public void itemSelected() {}

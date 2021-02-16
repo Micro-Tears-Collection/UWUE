@@ -1,9 +1,8 @@
 package code.ui;
 
+import code.engine.Screen;
 import code.engine3d.E3D;
-import code.game.Main;
 import code.utils.font.BMFont;
-
 
 /**
  *
@@ -11,15 +10,15 @@ import code.utils.font.BMFont;
  */
 public class TextBox {
     
-    Main main;
+    Screen scr;
     BMFont font;
     public boolean focused;
     public String text = "";
     
     public int x, y, w;
     
-    public TextBox(Main main, BMFont font) {
-        this.main = main;
+    public TextBox(Screen scr, BMFont font) {
+        this.scr = scr;
         this.font = font;
     }
     
@@ -59,11 +58,11 @@ public class TextBox {
     }
     
     public void cancel() {
-        main.closeTextBox();
+        scr.closeTextBox();
     }
     
     public void enter() {
-        main.closeTextBox();
+        scr.closeTextBox();
     }
     
     public void addChars(char[] chrs) {

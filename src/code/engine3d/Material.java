@@ -1,6 +1,8 @@
 package code.engine3d;
 
 import code.utils.IniFile;
+import code.utils.StringTools;
+import java.util.Hashtable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -12,7 +14,7 @@ public class Material {
     
     public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5;
     public static final int UNDEFINED = -2, DEFAULT = -1;
-    static boolean lightingWasEnabled;
+    private static boolean lightingWasEnabled;
     
     public Texture tex;
     
@@ -23,6 +25,37 @@ public class Material {
     
     public float scrollXSpeed, scrollYSpeed;
     public float scrollX, scrollY;
+    
+    public static Material get(String name, 
+            Hashtable<String,String> replace, String prefix, String postfix) {
+        String[] lines = StringTools.cutOnStrings(name, ';');
+        IniFile stuff = new IniFile(lines, false);
+        
+        String path = lines[0];
+        
+        if(replace != null && replace.get(path) != null) {
+            path = replace.get(path);
+        } else if(prefix != null || postfix != null) {
+            //Trenchbroom handling
+            StringBuffer sb = new StringBuffer();
+            
+            if(prefix != null) sb.append(prefix);
+            sb.append(path);
+            if(postfix != null) sb.append(postfix);
+            path = sb.toString();
+        }
+        
+        Texture tex = Texture.get(path);
+        Material mat = new Material(tex);
+        
+        mat.load(stuff);
+        
+        return mat;
+    }
+    
+    public static Material get(String name) {
+        return get(name, null, null, null);
+    }
 
     public Material(Texture tex) {
         this.tex = tex;

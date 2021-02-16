@@ -1,4 +1,4 @@
-package code.utils;
+package code.utils.assetManager;
 
 /**
  *

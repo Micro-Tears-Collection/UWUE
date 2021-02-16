@@ -1,22 +1,26 @@
-package code.utils;
+package code.game.scripting;
 
-import code.Engine;
-import code.Screen;
+import code.engine.Screen;
+
 import code.audio.AudioEngine;
-import code.engine3d.Light;
-import code.engine3d.LightGroup;
+
+import code.engine3d.Lighting.Light;
+import code.engine3d.Lighting.LightGroup;
 import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
 import code.game.Main;
 import code.game.Pause;
+
 import code.game.world.entities.Entity;
 import code.game.world.entities.MeshObject;
 import code.game.world.entities.PhysEntity;
 import code.game.world.entities.Player;
 import code.game.world.entities.SoundSourceEntity;
 import code.game.world.entities.SpriteObject;
+
 import code.math.Vector3D;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
+
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaInteger;
@@ -41,6 +46,102 @@ import org.luaj.vm2.lib.TwoArgFunction;
  */
 public class Scripting {
     
+    public static LuaValue loadScript(Main main, String script) {
+        try {
+            return main.lua.load(script);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    public static LuaValue loadScriptFromFile(Main main, String path) {
+        File file = new File("data", path);
+        if(!file.exists()) {
+            System.out.println("No such file "+file.getAbsolutePath()+"!");
+            return null;
+        }
+        
+        DataInputStream dis = null;
+        try {
+            dis = new DataInputStream(new FileInputStream(file));
+            byte[] chars = new byte[dis.available()];
+            dis.readFully(chars);
+            dis.close();
+            dis = null;
+            
+            String script = new String(chars);
+            LuaValue chunk = main.lua.load(script);
+            return chunk;
+            
+        } catch(Exception e) {
+            if(dis != null) {
+                try{
+                    dis.close();
+                } catch(Exception ee) {}
+            }
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    public static void runScriptFromFile(Main main, String path) {
+        LuaValue chunk = loadScriptFromFile(main, path);
+        if(chunk != null) chunk.call();
+    }
+
+    public static LuaValue runScript(Main main, String script) {
+        try {
+            LuaValue chunk = main.lua.load(script);
+            return chunk.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return LuaValue.NIL;
+    }
+
+    public static LuaValue runScript(LuaValue chunk) {
+        try {
+            return chunk.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return LuaValue.NIL;
+    }
+
+    public static void loadMap(Main main, LuaValue mapArg, LuaValue data) {
+        String map = mapArg.toString();
+        Game game = main.getGame();
+
+        Vector3D newPlayerPos = null;
+        float rotX = Float.MAX_VALUE;
+        float rotY = Float.MAX_VALUE;
+        
+        if(!data.isnil() && data.istable()) {
+            LuaValue pos = data.get("pos");
+            
+            if(!pos.isnil() && pos.istable()) {
+                newPlayerPos = new Vector3D(
+                        pos.get(1).tofloat(),
+                        pos.get(2).tofloat(),
+                        pos.get(3).tofloat());
+            }
+            
+            if(!data.get("rotX").isnil()) rotY = data.get("rotX").tofloat();
+            if(!data.get("rotY").isnil()) rotY = data.get("rotY").tofloat();
+        }
+
+        if(game == null) {
+            game = new Game(main);
+            main.setScreen(game, true);
+        }
+        game.loadMap(map, newPlayerPos, rotX, rotY);
+    }
+    
     public static void initFunctions(final Main main) {
         LuaTable lua = main.lua;
         
@@ -50,7 +151,7 @@ public class Scripting {
                 LuaValue fade = (!data.isnil() && data.istable()) ? data.get("fade") : LuaValue.NIL;
                 
                 if(game == null || fade.isnil()) {
-                    main.loadMap(map, data);
+                    loadMap(main, map, data);
                     return LuaValue.NIL;
                 } else {
                     final int fadeColor;
@@ -64,7 +165,7 @@ public class Scripting {
                     game.paused = true;
                     game.setFade(new Fade(false, fadeColor, fadeTime) {
                         public void onDone() {
-                            main.loadMap(map, data);
+                            loadMap(main, map, data);
                             game.paused = false;
                             game.setFade(new Fade(true, fadeColor, fadeTime));
                         }
@@ -80,7 +181,10 @@ public class Scripting {
                 Game game = main.getGame();
                 
                 if(game != null) {
-                    game.loadMap(game.currentMap, new Vector3D(game.player.pos), game.player.rotX, game.player.rotY);
+                    game.loadMap(game.currentMap, 
+                            new Vector3D(game.player.pos), 
+                            game.player.rotX, 
+                            game.player.rotY);
                 }
                 return LuaValue.NIL;
             }
@@ -125,11 +229,12 @@ public class Scripting {
         });
         
         lua.set("rewindMusic", new ZeroArgFunction() {
-            public LuaValue call()  {
+            public LuaValue call() {
                 main.musPlayer.rewind();
                 return LuaValue.NIL;
             }
         });
+        
         
         lua.set("stopMusic", new ZeroArgFunction() {
             public LuaValue call()  {
@@ -179,7 +284,7 @@ public class Scripting {
 
                     game.setFade(new Fade(fadeIn.toboolean(), fadeColor, fadeTime) {
                         public void onDone() {
-                            if(!func.isnil()) main.runScript(func);
+                            if(!func.isnil()) runScript(func);
                         }
                     });
                 }
@@ -195,7 +300,7 @@ public class Scripting {
                 if(game != null) {
                     game.addPause(new Pause(time.toint()) {
                         public void onDone() {
-                            if(!func.isnil()) main.runScript(func);
+                            if(!func.isnil()) runScript(func);
                         }
                     });
                 }
@@ -230,7 +335,8 @@ public class Scripting {
             public LuaValue call(LuaValue p1, LuaValue p2)  {
                 String o1 = '\"'+p1.toString()+'\"', o2 = '\"'+p2.toString()+'\"';
                 
-                main.runScript("objVar("+o1+",\"rotY\",atan2("
+                runScript(main,
+                        "objVar("+o1+",\"rotY\",atan2("
                     +"objVar("+o1+",\"pos\"),"
                     +"objVar("+o2+",\"pos\")))");
                 
@@ -500,6 +606,7 @@ public class Scripting {
             
             if(snd != null) sourcesV.add(snd.source.getID());
         }
+        
         int[] sources = new int[sourcesV.size()];
 
         for(int i=0; i<sources.length; i++) {

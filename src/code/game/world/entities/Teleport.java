@@ -1,6 +1,7 @@
 package code.game.world.entities;
 
 import code.game.Main;
+import code.game.scripting.Scripting;
 import code.math.Vector3D;
 
 /**
@@ -21,12 +22,12 @@ public class Teleport extends Entity {
         pointable = false;
     }
     
-    public boolean activateImpl(Main main) {
+    protected boolean activateImpl(Main main) {
         if(useOffset) {
             main.getGame().player.pos.add(newPos.x-pos.x, newPos.y-pos.y, newPos.z-pos.z);
         } else main.getGame().player.pos.set(newPos);
         
-        if(onActivate != null) main.runScript(onActivate);
+        if(onActivate != null) Scripting.runScript(onActivate);
         
         return true;
     }

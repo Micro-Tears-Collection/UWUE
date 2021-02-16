@@ -2,9 +2,12 @@ package code.game.world.entities;
 
 import code.engine3d.E3D;
 import code.engine3d.Sprite;
+
 import code.game.world.World;
+
 import code.math.Ray;
 import code.math.Vector3D;
+
 import code.utils.FPS;
 
 /**

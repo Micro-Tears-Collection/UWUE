@@ -1,27 +1,47 @@
 package code.audio;
 
 import code.math.Vector3D;
-import code.utils.Asset;
-import code.utils.DisposableContent;
+
+import code.utils.assetManager.AssetManager;
+import code.utils.assetManager.DisposableContent;
+
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.EXTEfx;
 
 public class SoundSource extends DisposableContent {
-
-    public static final float defRefDist = 0, defMaxDist = 1000;
-    static float[] sourcePos = new float[3], sourceSpeed = new float[3];
+    public static final float defRefDist = 1, defMaxDist = 1000;
 
     public String soundName;
     public SoundBuffer buffer;
-    int soundSource;
-    boolean use3D = true;
     
+    private int soundSource;
+    private static final float[] sourcePos = new float[3], sourceSpeed = new float[3];
+    private boolean use3D = true;
+    
+    /**
+     * Should be destoroyed after using!
+     */
     public SoundSource() {
         init();
     }
     
+    /**
+     * Should be destoroyed after using!
+     */
     public SoundSource(String file) {
         init();
         loadFile(file);
+    }
+    
+    public static SoundSource get() {
+        return get(null);
+    }
+    
+    public static SoundSource get(String file) {
+        SoundSource source = file==null?new SoundSource():new SoundSource(file);
+        AssetManager.addDisposable(source);
+        return source;
     }
     
     private void init() {
@@ -33,8 +53,15 @@ public class SoundSource extends DisposableContent {
         sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
         AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
         
-        AL10.alSourcef(soundSource, AL10.AL_REFERENCE_DISTANCE, defRefDist);
-        AL10.alSourcef(soundSource, AL10.AL_MAX_DISTANCE, defMaxDist);
+        //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.01f);
+        //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.4f);
+        
+        setDistance(defRefDist, defMaxDist);
+        
+        /*if(AudioEngine.auxEffectSlot != 0) {
+            AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
+                    AudioEngine.auxEffectSlot, 0, EXTEfx.AL_FILTER_NULL);
+        }*/
     }
     
     public SoundSource beMusicPlayer() {
@@ -42,13 +69,18 @@ public class SoundSource extends DisposableContent {
         setLoop(true);
         set3D(false);
         
+        /*if(AudioEngine.auxEffectSlot != 0) {
+            AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
+                    EXTEfx.AL_EFFECTSLOT_NULL, 0, EXTEfx.AL_FILTER_NULL);
+        }*/
+        
         return this;
     }
 
     public void loadFile(String file) {
         soundName = null;
         
-        buffer = Asset.getSoundBuffer(file);
+        buffer = SoundBuffer.get(file);
         if(buffer != null) {
             AL10.alSourcei(soundSource, AL10.AL_BUFFER, buffer.id);
             soundName = file;
@@ -96,6 +128,7 @@ public class SoundSource extends DisposableContent {
     public void setDistance(float reference, float max) {
         AL10.alSourcef(soundSource, AL10.AL_REFERENCE_DISTANCE, reference);
         AL10.alSourcef(soundSource, AL10.AL_MAX_DISTANCE, max);
+        //AL10.alSourcef(soundSource, AL10.AL_REFERENCE_DISTANCE, 100);
     }
     
     public void set3D(boolean use3D) {
@@ -143,7 +176,7 @@ public class SoundSource extends DisposableContent {
         buffer = null;
     }
 
-    public Integer getID() {
+    public int getID() {
         return soundSource;
     }
 }
