@@ -183,6 +183,28 @@ public class BMFont {
         
         return (int) (w * baseScale);
     }
+
+    public String getCharByX(String text, int x) {
+        if(x < 0) return null;
+        int prevCP = 0;
+        int w = 0;
+        
+        for(int i=0; i<text.length(); i++) {
+            BMChar c = chars.get(Character.codePointAt(text, i));
+            if(c == null) continue;
+            
+            if(prevCP != 0) {
+                Integer kerning = c.kerning.get(prevCP);
+                if(kerning != null) w += kerning;
+            }
+            
+            w += c.xAdvance;
+            if(w*baseScale > x) return String.valueOf(Character.toChars(c.cp));
+            prevCP = c.cp;
+        }
+        
+        return null;
+    }
     
     public int cpWidth(int cp) {
         BMChar c = chars.get(cp);

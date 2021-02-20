@@ -10,16 +10,25 @@ import code.utils.font.BMFont;
  */
 public class TextBox {
     
-    Screen scr;
-    BMFont font;
-    public boolean focused;
-    public String text = "";
+    protected Screen scr;
+    protected BMFont font;
+    
+    protected String text = "";
+    protected String backup;
+    protected boolean onlyDigits;
     
     public int x, y, w;
+    public boolean selected;
     
     public TextBox(Screen scr, BMFont font) {
         this.scr = scr;
         this.font = font;
+    }
+    
+    public TextBox(Screen scr, BMFont font, String text) {
+        this.scr = scr;
+        this.font = font;
+        this.text = text;
     }
     
     public TextBox setText(String text) {
@@ -34,21 +43,27 @@ public class TextBox {
         return this;
     }
     
-    public void draw(E3D e3d) {
+    public void onlyDigits(boolean set) {
+        this.onlyDigits = set;
+    }
+    
+    public void draw(E3D e3d, boolean focused, int focusedColor) {
         e3d.drawRect(null, x, y, w, font.getHeight(), 0, 0.5f);
-        if(focused) {
-            e3d.drawRect(null, x, y, w, 1, 0xffffff, 0.5f);
-            e3d.drawRect(null, x, y+font.getHeight()-1, w, 1, 0xffffff, 0.5f);
+        int color = focused && !selected ? focusedColor : 0xffffff;
+        
+        if(selected || focused) {
+            e3d.drawRect(null, x, y, w, 1, color, 0.5f);
+            e3d.drawRect(null, x, y+font.getHeight()-1, w, 1, color, 0.5f);
             
-            e3d.drawRect(null, x, y+1, 1, font.getHeight()-2, 0xffffff, 0.5f);
-            e3d.drawRect(null, x+w-1, y+1, 1, font.getHeight()-2, 0xffffff, 0.5f);
+            e3d.drawRect(null, x, y+1, 1, font.getHeight()-2, color, 0.5f);
+            e3d.drawRect(null, x+w-1, y+1, 1, font.getHeight()-2, color, 0.5f);
         }
         
         e3d.pushClip();
         e3d.clip(x, y, w, font.getHeight());
         
         int xx = Math.min(0, w - font.stringWidth(text));
-        font.drawString(text, x + xx, y, 1, 0xffffff);
+        font.drawString(text, x + xx, y, 1, color);
         
         e3d.popClip();
     }
@@ -57,16 +72,49 @@ public class TextBox {
         return mx>=x && my>=y && mx<x+w && my<y+font.getHeight();
     }
     
-    public void cancel() {
+    public void open() {
+        backup = text;
+        selected = true;
+    }
+    
+    public void onCancel() {
+        scr.closeTextBox();
+        text = backup;
+    }
+    
+    public void onEnter() {
         scr.closeTextBox();
     }
     
-    public void enter() {
+    public void onMouseUnfocus() {
         scr.closeTextBox();
     }
     
     public void addChars(char[] chrs) {
-        text += String.valueOf(chrs, 0, chrs.length);
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(text);
+        
+        if(onlyDigits) {
+            for(char ch : chrs) {
+                if(Character.isDigit(ch)) buffer.append(ch);
+            }
+        } else {
+            buffer.append(chrs);
+        }
+        
+        text = buffer.toString();
+    }
+    
+    public void erase()  {
+        if(text.length() > 0) text = text.substring(0, text.length() - 1);
+    }
+    
+    public int toInteger() {
+        try {
+            return Integer.valueOf(text);
+        } catch(NumberFormatException e) {
+            return 0;
+        }
     }
 
 }

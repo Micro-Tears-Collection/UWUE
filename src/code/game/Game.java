@@ -13,7 +13,7 @@ import code.game.world.entities.Player;
 
 import code.math.Vector3D;
 
-import code.ui.ItemList;
+import code.ui.itemList.ItemList;
 
 import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
@@ -27,14 +27,11 @@ import java.util.Vector;
  */
 public class Game extends Screen {
     
-    public static final int PROPORTIONAL = 0, PROPORTIONAL_FULL = 1, FULL = 2;
-    
     public Main main;
     
     public long time;
     public boolean paused;
     private int w, h;
-    private int prevMX, prevMY;
     
     public E3D e3d;
     public DialogScreen dialog;
@@ -50,15 +47,13 @@ public class Game extends Screen {
     private Vector<Pause> pauses;
     private Entity toActivate;
     private Material handIcon;
-    //todo
-    private Material image;
-    private int imageScale = 0;
-    private int imageBackgroundColor = 0;
     
+    //Load map
     public String nextMap;
     public Vector3D newPlayerPos;
     public float nextRotX, nextRotY;
     
+    //Load dialog
     public String nextDialog;
     public boolean loadDialogFromFile;
     
@@ -81,7 +76,7 @@ public class Game extends Screen {
     }
     
     private void setPauseScreenItems() {
-        pauseScreen.setItems(new String[]{"CONTINUE","WAKE UP"});
+        pauseScreen.set(new String[]{"CONTINUE","OPTIONS","WAKE UP"}, main.font, true);
     }
     
     public void loadMap(String nextMap) {
@@ -188,12 +183,18 @@ public class Game extends Screen {
         }
         
         if(!showCursor() && isFocused()) {
-            player.rotY -= (getMouseX() - (w >> 1)) * 60f / h;
-            player.rotX -= (getMouseY() - (h >> 1)) * 60f / h;
-            player.rotX = Math.max(Math.min(player.rotX, 89), -89);
+            float lookSpeed = 60f / h * main.conf.mouseLookSpeed / 100f;
+            
+            player.rotY -= (getMouseX() - (w >> 1)) * lookSpeed;
+            player.rotX -= (getMouseY() - (h >> 1)) * lookSpeed;
             
             setCursorPos(w >> 1, h >> 1);
         }
+        float lookSpeed = FPS.frameTime * 0.1f * main.conf.keyboardLookSpeed / 100f;
+        
+        player.rotY += ((Keys.isPressed(Keys.LEFT)?1:0) - (Keys.isPressed(Keys.RIGHT)?1:0)) * 2 * lookSpeed;
+        player.rotX += ((Keys.isPressed(Keys.UP)?1:0) - (Keys.isPressed(Keys.DOWN)?1:0)) * lookSpeed;
+        player.rotX = Math.max(Math.min(player.rotX, 89), -89);
         
         world.update(player);
         if(player.isAlive()) {
@@ -232,11 +233,11 @@ public class Game extends Screen {
                     10, 10 + main.font.getHeight(), 1, main.fontColor);
         }
         
-        if(inPauseScreen) {
+        if(inPauseScreen && main.getScreen() == this) {
             e3d.drawRect(null, 0, 0, w, h, 0, 0.5f);
             
             pauseScreen.mouseUpdate(0, 0, getMouseX(), getMouseY());
-            pauseScreen.draw(main.e3d, 0, 0, main.fontColor, main.fontSelColor, false);
+            pauseScreen.draw(main.e3d, 0, 0, main.fontColor, main.fontSelColor);
         }
         
         if(fade != null && (!inPauseScreen || isWakingUp())) {
@@ -270,6 +271,9 @@ public class Game extends Screen {
             togglePauseScreen();
         } else if(index == 1) {
             main.clickedS.play();
+            main.setScreen(new Settings(main, this));
+        } else if(index == 2) {
+            main.clickedS.play();
             wakeUp();
         } 
     }
@@ -290,7 +294,6 @@ public class Game extends Screen {
                 tmp.activate(main);
             }
         } else if(inPauseScreen) {
-            Keys.reset();
             if(Keys.isThatBinding(key, Keys.DOWN)) {
                 pauseScreen.down();
             } else if(Keys.isThatBinding(key, Keys.UP)) {
@@ -344,7 +347,7 @@ public class Game extends Screen {
     }
     
     private boolean isPaused() {
-        return inPauseScreen || paused || image != null || !pauses.isEmpty();
+        return inPauseScreen || paused || !pauses.isEmpty();
     }
     
     private boolean isWakingUp() {

@@ -118,8 +118,18 @@ public class Texture extends ReusableContent {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE); 
+            
+            boolean hasAlpha = false;
+            for(int i=w[0]*h[0]*4-1; i>=0; i-=4) {
+                if((img.get(i)&0xff) < 0xff) {
+                    hasAlpha = true;
+                    break;
+                }
+            }
+            
+            int textureFormat = hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
 
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, w[0], h[0], 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, img);
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, img);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
             
             MemoryUtil.memFree(img);

@@ -5,7 +5,7 @@ import code.engine.Screen;
 
 import code.engine3d.Material;
 
-import code.ui.ItemList;
+import code.ui.itemList.ItemList;
 import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.Keys;
@@ -48,7 +48,7 @@ public class Menu extends Screen {
     }
 
     private void setMenuText() {
-        menu.setItems(new String[]{"START","OPTIONS","ABOUT","EXIT"});
+        menu.set(new String[]{"START","OPTIONS","ABOUT","EXIT"}, main.font, true);
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
@@ -104,7 +104,7 @@ public class Menu extends Screen {
 
         menu.mouseUpdate(getWidth() / 2, 0, getMouseX(), getMouseY());
         
-        menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor, false);
+        menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor);
     }
     
     private void menuClicked() {

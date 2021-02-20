@@ -46,7 +46,7 @@ public class About extends Screen {
     public void tick() {
         menu.drawBackground();
         main.e3d.drawRect(null, 0, 0, getWidth(), getHeight(), 0, 0.5f);
-        text.paint(main.e3d, 0, 0, main.fontColor);
+        text.draw(main.e3d, 0, 0, main.fontColor);
         
         step();
     }

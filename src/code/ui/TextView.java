@@ -9,7 +9,7 @@ public class TextView {
     protected BMFont font;
     protected int w, h;
     
-    protected final Vector lines = new Vector();
+    protected final Vector<String> lines = new Vector();
     protected boolean hCenter = false, vCenter = false;
     protected int yScroll = 0;
 
@@ -25,7 +25,7 @@ public class TextView {
         limitY();
     }
 
-    public static void createLines(String txt, Vector lines, char lineDivider, BMFont font, int w) {
+    public static void createLines(String txt, Vector<String> lines, char lineDivider, BMFont font, int w) {
         int lineWidth = 0;
         int wordStart = 0;
         int lastSpace = -1;
@@ -78,7 +78,6 @@ public class TextView {
 
     public void addText(String str, char lineDivider) {
         createLines(str, lines, lineDivider, font, w);
-        centralize();
     }
     
     public void setText(String str) {
@@ -86,24 +85,29 @@ public class TextView {
     }
 
     public void setText(String str, char lineDivider) {
-        removeText();
+        lines.removeAllElements();
         addText(str, lineDivider);
+        centralize();
     }
     
-    public void removeText() {
-        lines.removeAllElements();
-    }
-
-    public void paint(E3D e3d, int x, int y, int color) {
+    public void draw(E3D e3d, int x, int y, int color) {
         e3d.pushClip();
         e3d.clip(x, y, w, h);
+        
+        TextView.draw(e3d, lines, font, x, y, w, h, yScroll, hCenter, color);
+
+        e3d.popClip();
+    }
+
+    public static void draw(E3D e3d, Vector<String> lines, BMFont font, 
+            int x, int y, int w, int h, int yScroll, boolean hCenter, int color) {
 
         final int stepY = font.getHeight();
         int i = Math.max(0, -yScroll / stepY);
         int posY = yScroll + i*stepY;
         
         for(; i < lines.size() && posY <= h; i++) {
-            String str = (String) lines.elementAt(i);
+            String str = lines.elementAt(i);
             
             int offsetX = hCenter ? (w - font.stringWidth(str)) >> 1 : 0;
 
@@ -111,15 +115,6 @@ public class TextView {
             
             posY += stepY;
         }
-
-        e3d.popClip();
-    }
-    
-    public boolean isInBox(int x, int y, int mx, int my) {
-        if(mx < x || mx >= x+w) return false;
-        
-        if(h > getTextHeight()) return my>=y+(h-getTextHeight())/2 && my<y+h-(h-getTextHeight())/2;
-        return my>=y && my<y+h;
     }
     
     protected void centralize() {
@@ -137,7 +132,6 @@ public class TextView {
             //Нижний край в конце окна
             if(yScroll < h - textHeight) yScroll = h - textHeight;
         } else {
-            //Текст по середине
             centralize();
         }
     }

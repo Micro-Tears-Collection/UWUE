@@ -6,7 +6,7 @@ import code.engine.Screen;
 import code.engine3d.E3D;
 import code.game.scripting.Scripting;
 
-import code.ui.ItemList;
+import code.ui.itemList.ItemList;
 import code.ui.TextView;
 
 import code.utils.assetManager.AssetManager;
@@ -210,8 +210,7 @@ public class DialogScreen extends Screen {
                             if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.play();
                         }
                     };
-                    itemList.setItems(items);
-                    itemList.setHCenter(false);
+                    itemList.set(items, font, false);
                     itemList.setIndexLimited(capLen);
                     
                     return true;
@@ -258,19 +257,19 @@ public class DialogScreen extends Screen {
         if(itemList == null) {
             textBegin = y+textView.getYScroll();
             textEnd = textBegin + textView.getTextHeight();
-            textView.paint(game.e3d, x, y, game.main.fontColor);
+            textView.draw(game.e3d, x, y, game.main.fontColor);
         } else { //Draw question
             textBegin = y+itemList.getYScroll();
-            textEnd = textBegin + itemList.getTextHeight();
+            textEnd = textBegin + itemList.getFullHeight();
             
             itemList.mouseUpdate(x, y, getMouseX(), getMouseY());
             if(itemList.getIndex() == 0 && itemListHasCaption) itemList.setIndex(-1);
             
-            itemList.draw(game.e3d, x, y, game.main.fontColor, game.main.fontSelColor, false);
+            itemList.draw(game.e3d, x, y, game.main.fontColor, game.main.fontSelColor);
         }
         
         if((textView.getTextHeight() > textView.getHeight() && itemList == null)
-                || (itemList != null && itemList.getTextHeight() > textView.getHeight())) {
+                || (itemList != null && itemList.getFullHeight() > textView.getHeight())) {
 
             //Down arrow
             if(textEnd > y + textView.getHeight()) game.e3d.drawArrow(

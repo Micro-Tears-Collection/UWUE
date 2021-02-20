@@ -31,12 +31,7 @@ public class Player extends PhysEntity {
             ((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed,
             ((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed,
             speed
-        );
-        
-        
-        rotY += ((Keys.isPressed(Keys.LEFT)?1:0) - (Keys.isPressed(Keys.RIGHT)?1:0)) * FPS.frameTime * 0.2f;
-        rotX += ((Keys.isPressed(Keys.UP)?1:0) - (Keys.isPressed(Keys.DOWN)?1:0)) * FPS.frameTime * 0.1f;
-        rotX = Math.max(Math.min(rotX, 89), -89);
+        ); 
         
         if(Keys.isPressed(JUMP)) jump(50);
         

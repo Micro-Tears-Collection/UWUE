@@ -85,6 +85,23 @@ public class AssetManager {
         return reusable.get(name);
     }
     
+    public static Vector<DisposableContent> getAll(int mask) {
+        Vector<DisposableContent> content = new Vector();
+        
+        if((mask&DISPOSABLE) == DISPOSABLE) content.addAll(disposable);
+        
+        if((mask&REUSABLE) == REUSABLE) {
+            Enumeration<ReusableContent> els = reusable.elements();
+
+            while(els.hasMoreElements()) {
+                ReusableContent el = els.nextElement();
+                content.add(el);
+            }
+        }
+        
+        return content;
+    }
+    
     //todo move to new class(??) or not
     
     public static String loadString(String path) {

@@ -62,6 +62,7 @@ public class Main extends Screen {
         Engine.setListener(main);
         
         main.gamecfg = AssetManager.loadIni("game.ini", true);
+        Engine.setTitle(main.gamecfg.get("game", "name"));
         main.conf = new Configuration(sizes[0], sizes[1]);
         
         Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
@@ -83,14 +84,15 @@ public class Main extends Screen {
         
         Engine.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
         AudioEngine.init();
+        AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
+        main.conf.applyAudio();
         
         main.init();
     }
 
     private void init() {
-        Engine.setTitle(gamecfg.get("game", "name"));
-
         musPlayer = ((SoundSource) SoundSource.get().lock()).beMusicPlayer();
+        musPlayer.setSoundType(Configuration.MUSIC);
         selectedS = (SoundSource) SoundSource.get("/sounds/select.ogg").lock();
         selectedS.buffer.neverUnload = true;
         clickedS = (SoundSource) SoundSource.get("/sounds/click.ogg").lock();
@@ -108,17 +110,15 @@ public class Main extends Screen {
         e3d = new E3D();
         
         clearLua();
-
-        setScreen(new Menu(this));
         
         console = new TextBox(this, font) {
-            public void cancel() {
-                super.cancel();
+            public void onCancel() {
+                super.onCancel();
                 text = "";
             }
             
-            public void enter() {
-                super.enter();
+            public void onEnter() {
+                super.onEnter();
 
                 LuaValue val = Scripting.runScript(main, text);
                 if(!val.isnil()) {
@@ -132,6 +132,7 @@ public class Main extends Screen {
             }
         }.setXYW(0, 0, getWidth());
 
+        setScreen(new Menu(this));
         run();
     }
 
@@ -181,12 +182,8 @@ public class Main extends Screen {
             
             if(textBox == console) {
                 if(!e3d.mode2D) e3d.prepare2D(0, 0, getWidth(), getHeight());
-                console.draw(e3d);
+                console.draw(e3d, false, 0);
             }
-            
-            /*e3d.prepare2D(0, 0, Engine.w, Engine.h);
-            e3d.drawDitheredSurface(frameBufferTex, dither,
-                    (Engine.w - Engine.h*320/240)/2, Engine.h, Engine.h*320/240, -Engine.h);*/
             
             Engine.flush();
 
@@ -222,12 +219,20 @@ public class Main extends Screen {
         else return null;
     }
     
-    public void openTextBox(TextBox textBox) {
-        this.textBox = textBox;
+    public void openTextBox(Object textBox) {
+        this.textBox = (TextBox) textBox;
+        this.textBox.open();
     }
     
     public void closeTextBox() {
-        this.textBox = null;
+        if(textBox != null) {
+            textBox.selected = false;
+            textBox = null;
+        }
+    }
+
+    public TextBox getTextBox() {
+        return textBox;
     }
     
     public void charInput(int codepoint) {
@@ -242,14 +247,14 @@ public class Main extends Screen {
         
         if((textBox == console || textBox == null) && Keys.isThatBinding(key, TILDE)) {
             if(textBox == null) openTextBox(console);
-            else console.cancel();
+            else console.onCancel();
             
             return;
         } else if(textBox != null && Keys.isThatBinding(key, Keys.OK)) {
-            textBox.enter();
+            textBox.onEnter();
             return;
         } else if(textBox != null && Keys.isThatBinding(key, Keys.ESC)) {
-            textBox.cancel();
+            textBox.onCancel();
             return;
         }
         
@@ -269,8 +274,7 @@ public class Main extends Screen {
             
         if(textBox != null) {
             if(Keys.isThatBinding(key, ERASE)) {
-                if(textBox.text.length() > 0)
-                    textBox.text = textBox.text.substring(0, textBox.text.length() - 1);
+                textBox.erase();
             }
             return;
         }
@@ -282,8 +286,7 @@ public class Main extends Screen {
     public void keyRepeated(int key) {
         if(textBox != null) {
             if(Keys.isThatBinding(key, ERASE)) {
-                if(textBox.text.length() > 0)
-                    textBox.text = textBox.text.substring(0, textBox.text.length() - 1);
+                textBox.erase();
             }
             return;
         }
@@ -292,6 +295,11 @@ public class Main extends Screen {
     }
 
     public void mouseAction(int button, boolean pressed) {
+        if(!pressed && textBox != null && textBox != console) {
+            if(!textBox.isInBox(getMouseX(), getMouseY())) textBox.onMouseUnfocus();
+            //Don't return okay?
+        } 
+        
         if(screen != null) screen.mouseAction(button, pressed);
     }
 

@@ -16,6 +16,8 @@ public class SoundSource extends DisposableContent {
     public SoundBuffer buffer;
     
     private int soundSource;
+    private int soundType;
+    private float volume = 1;
     private static final float[] sourcePos = new float[3], sourceSpeed = new float[3];
     private boolean use3D = true;
     
@@ -52,6 +54,7 @@ public class SoundSource extends DisposableContent {
         AL10.alSourcefv(soundSource, AL10.AL_POSITION, sourcePos);
         sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
         AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
+        AL10.alSourcef(soundSource, AL10.AL_GAIN, AudioEngine.getSoundTypeVolume(soundType));
         
         //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.01f);
         //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.4f);
@@ -86,6 +89,15 @@ public class SoundSource extends DisposableContent {
             soundName = file;
         } else AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
     }
+    
+    public void setSoundType(int type) {
+        soundType = type;
+        setVolume(volume);
+    }
+    
+    public int getSoundType() {
+        return soundType;
+    }
 
     public void setLoop(boolean loop) {
         AL10.alSourcei(soundSource, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
@@ -96,11 +108,12 @@ public class SoundSource extends DisposableContent {
     }
 
     public void setVolume(float gain) {
-        AL10.alSourcef(soundSource, AL10.AL_GAIN, gain);
+        volume = gain;
+        AL10.alSourcef(soundSource, AL10.AL_GAIN, gain*AudioEngine.getSoundTypeVolume(soundType));
     }
 
     public float getVolume() {
-        return AL10.alGetSourcef(soundSource, AL10.AL_GAIN);
+        return volume;
     }
 
     public void setPitch(float pitch) {

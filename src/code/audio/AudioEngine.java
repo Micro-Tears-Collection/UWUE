@@ -23,6 +23,8 @@ public class AudioEngine {
     static ALCCapabilities alcCapabilities;
     static ALCapabilities alCapabilities;
     
+    public static int[] soundTypesVolume;
+    
     //static int auxEffectSlot, reverbEffect;
     
     //Env Size Diffus Room RoomHF RoomLF DecTm DcHF DcLF Refl RefDel Ref Pan Revb RevDel Rev Pan EchTm	EchDp ModTm ModDp AirAbs HFRef LFRef RRlOff FLAGS
@@ -238,5 +240,11 @@ public class AudioEngine {
     public static void rewindMultiple(int[] sources) {
         AL10.alSourceRewindv(sources);
         AL10.alSourcePlayv(sources);
+    }
+
+    public static float getSoundTypeVolume(int type) {
+        if(soundTypesVolume == null) return 1;
+        
+        return soundTypesVolume[type]/100f;
     }
 }
