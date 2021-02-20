@@ -62,7 +62,6 @@ public class Main extends Screen {
         Engine.setListener(main);
         
         main.gamecfg = AssetManager.loadIni("game.ini", true);
-        Engine.setTitle(main.gamecfg.get("game", "name"));
         main.conf = new Configuration(sizes[0], sizes[1]);
         
         Keys.UP = Keys.addKeyToBinding(Keys.UP, GLFW.GLFW_KEY_UP);
@@ -83,6 +82,7 @@ public class Main extends Screen {
         int h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
         
         Engine.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
+        Engine.setTitle(main.gamecfg.get("game", "name"));
         AudioEngine.init();
         AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
         main.conf.applyAudio();
