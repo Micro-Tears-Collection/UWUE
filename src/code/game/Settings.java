@@ -72,21 +72,23 @@ public class Settings extends Screen {
             applyConfirmText.setHCenter(true).setSkip(true);
             applyConfirm.add(applyConfirmText);
             
-            applyConfirm.add((new TextItem("Yes", font) {
+            applyConfirm.add(new TextItem("Yes", font) {
                 public void onEnter() {
+                    main.clickedS.play();
                     main.conf.copy(mconf);
                     main.conf.save();
                     main.setScreen(previous);
                 }
                 
-            }).setHCenter(true));
-            applyConfirm.add((new TextItem("No", font) {
+            }.setHCenter(true));
+            applyConfirm.add(new TextItem("No", font) {
                 public void onEnter() {
+                    main.clickedS.play();
                     main.conf.apply(true);
                     setList(VIDEO);
                 }
                 
-            }).setHCenter(true));
+            }.setHCenter(true));
         } else {
             applyConfirm.setSize(getWidth(), getHeight());
         }
@@ -131,13 +133,13 @@ public class Settings extends Screen {
         if(message == null) {
             message = ItemList.createItemList(getWidth(), getHeight(), font, main.selectedS);
             
-            messageText = new TextItem("", font);
+            messageText = new TextItem("", font).setHCenter(true);
             message.add(messageText);
-            message.add((new TextItem("Ok", font) {
+            message.add(new TextItem("Ok", font) {
                 public void onEnter() {
                     setList(listType);
                 }
-            }));
+            }.setHCenter(true));
         } else {
             message.setSize(getWidth(), getHeight());
         }

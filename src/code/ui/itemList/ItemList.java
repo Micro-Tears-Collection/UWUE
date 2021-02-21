@@ -43,6 +43,7 @@ public class ItemList {
     
     public void removeAll() {
         items.removeAllElements();
+        itemPressed = -1;
         fullHeight = 0;
         topIndex = 0;
     }
@@ -76,7 +77,6 @@ public class ItemList {
             fullHeight += item.height;
         }
         
-        itemPressed = -1;
         centralize();
     }
     
