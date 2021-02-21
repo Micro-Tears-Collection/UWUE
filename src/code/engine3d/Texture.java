@@ -20,13 +20,16 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Texture extends ReusableContent {
     
-    public static int oldLevel = 0;
+    public static boolean disableMipmapping;
+    private static int oldLevel = 0;
     
     public int w = 1, h = 1;
     public int id;
     
-    private Texture(int id) {
+    private Texture(int id, int w, int h) {
         this.id = id;
+        this.w = w;
+        this.h = h;
     }
     
     public void bind(boolean linearInterpolation, boolean mipMapping, boolean wrapClamp, int level) {
@@ -37,7 +40,7 @@ public class Texture extends ReusableContent {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
         
         int mag = linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST;
-        int interp = mipMapping ?
+        int interp = (!disableMipmapping&&mipMapping) ?
                 (linearInterpolation ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_NEAREST_MIPMAP_LINEAR)
                 : mag;
         int wrap = wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT;
@@ -70,7 +73,7 @@ public class Texture extends ReusableContent {
         }
         
         if(name.equals("null")) {
-            tex = new Texture(0);
+            tex = new Texture(0, 1, 1);
             tex.lock();
         } else {
             tex = loadTexture(name);
@@ -113,7 +116,6 @@ public class Texture extends ReusableContent {
             MemoryUtil.memFree(bruh);
 
             int id = GL11.glGenTextures();
-            Texture tex = new Texture(id);
             
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
@@ -134,10 +136,7 @@ public class Texture extends ReusableContent {
             
             MemoryUtil.memFree(img);
             
-            tex.w = w[0];
-            tex.h = h[0];
-            
-            return tex;
+            return new Texture(id, w[0], h[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,13 +145,13 @@ public class Texture extends ReusableContent {
     }
     
     public static Texture createTexture(int w, int h) {
-        int tex = GL11.glGenTextures();
+        int gltex = GL11.glGenTextures();
 
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_RGB8, 320, 240, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, 0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, gltex);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_RGB8, w, h, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, 0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
         
-        return new Texture(tex);
+        return new Texture(gltex, w, h);
     }
     
 }

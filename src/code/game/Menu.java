@@ -6,6 +6,7 @@ import code.engine.Screen;
 import code.engine3d.Material;
 
 import code.ui.itemList.ItemList;
+import code.ui.itemList.TextItem;
 import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.Keys;
@@ -48,7 +49,50 @@ public class Menu extends Screen {
     }
 
     private void setMenuText() {
-        menu.set(new String[]{"START","OPTIONS","ABOUT","EXIT"}, main.font, true);
+        menu.removeAll();
+        final Menu thisMenu = this;
+        
+        menu.add(new TextItem("START", main.font) {
+            public void onEnter() {
+                main.musPlayer.setVolume(0);
+                main.musPlayer.stop();
+                main.gameStartS.play();
+
+                Engine.showCursor(false);
+
+                BlankScreen blank = new BlankScreen(main, 5000, 0) {
+
+                    public void action() {
+                        Game game = new Game(main);
+                        main.setScreen(game, true);
+                        game.loadMap(main.gamecfg.get("game", "start_map"));
+                        game.setFade(new Fade(true, 0, 1000));
+                    }
+                };
+                main.setScreen(blank, true);
+            }
+        }.setHCenter(true));
+        
+        menu.add(new TextItem("OPTIONS", main.font) {
+            public void onEnter() {
+                main.clickedS.play();
+                main.setScreen(new Settings(main, thisMenu));
+            }
+        }.setHCenter(true));
+        
+        menu.add(new TextItem("ABOUT", main.font) {
+            public void onEnter() {
+                main.clickedS.play();
+                main.setScreen(new About(main, thisMenu));
+            }
+        }.setHCenter(true));
+        
+        menu.add(new TextItem("EXIT", main.font) {
+            public void onEnter() {
+                main.clickedS.play();
+                main.stop();
+            }
+        }.setHCenter(true));
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
@@ -107,63 +151,22 @@ public class Menu extends Screen {
         menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor);
     }
     
-    private void menuClicked() {
-        int index = menu.getIndex();
-
-        if(index == 0) {
-            main.musPlayer.setVolume(0);
-            main.musPlayer.stop();
-            main.gameStartS.play();
-        
-            Engine.showCursor(false);
-            
-            BlankScreen blank = new BlankScreen(main, 5000, 0) {
-                
-                public void action() {
-                    Game game = new Game(main);
-                    main.setScreen(game, true);
-                    game.loadMap(main.gamecfg.get("game", "start_map"));
-                    game.setFade(new Fade(true, 0, 1000));
-                }
-            };
-            main.setScreen(blank, true);
-            
-        } else if(index == 1) {
-            main.clickedS.play();
-            main.setScreen(new Settings(main, this));
-        } else if(index == 2) {
-            main.clickedS.play();
-            main.setScreen(new About(main, this));
-        } else if(index == 3) {
-            main.clickedS.play();
-            main.stop();
-        }
+    public void keyPressed(int key) {
+        menu.keyPressed(key);
     }
     
-    public void keyReleased(int key) {
-        if(Keys.isThatBinding(key, Keys.DOWN)) {
-            menu.down();
-            Keys.reset();
-        } else if(Keys.isThatBinding(key, Keys.UP)) {
-            menu.up();
-            Keys.reset();
-        }
-
-        if(Keys.isThatBinding(key, Keys.OK)) {
-            Keys.reset();
-            menuClicked();
-        }
+    public void keyRepeated(int key) {
+        menu.keyRepeated(key);
     }
     
     public void mouseScroll(double xx, double yy) {
         int scroll = (int) (yy*main.font.getHeight()/2f);
-        menu.scroll(scroll);
+        menu.mouseScroll(scroll);
     }
     
     public void mouseAction(int button, boolean pressed) {
-        if(pressed || button != Screen.MOUSE_LEFT) return;
-        
-        if(menu.isInBox(getWidth()/2, 0, getMouseX(), getMouseY())) menuClicked();
+        if(button == Screen.MOUSE_LEFT) 
+            menu.mouseAction(getWidth()/2, 0, getMouseX(), getMouseY(), pressed);
     }
 
 }

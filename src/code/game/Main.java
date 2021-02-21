@@ -1,6 +1,5 @@
 package code.game;
 
-import code.game.scripting.Scripting;
 import code.engine.Engine;
 import code.engine.Screen;
 
@@ -13,6 +12,7 @@ import code.game.world.entities.Player;
 
 import code.ui.TextBox;
 
+import code.game.scripting.Scripting;
 import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.IniFile;
@@ -85,7 +85,7 @@ public class Main extends Screen {
         Engine.setTitle(main.gamecfg.get("game", "name"));
         AudioEngine.init();
         AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
-        main.conf.applyAudio();
+        main.conf.apply(false);
         
         main.init();
     }
@@ -93,11 +93,17 @@ public class Main extends Screen {
     private void init() {
         musPlayer = ((SoundSource) SoundSource.get().lock()).beMusicPlayer();
         musPlayer.setSoundType(Configuration.MUSIC);
+        
         selectedS = (SoundSource) SoundSource.get("/sounds/select.ogg").lock();
+        selectedS.set3D(false);
         selectedS.buffer.neverUnload = true;
+        
         clickedS = (SoundSource) SoundSource.get("/sounds/click.ogg").lock();
+        clickedS.set3D(false);
         clickedS.buffer.neverUnload = true;
+        
         gameStartS = (SoundSource) SoundSource.get("/sounds/game start.ogg").lock();
+        gameStartS.set3D(false);
         gameStartS.buffer.neverUnload = true;
         
         font = BMFont.loadFont(gamecfg.get("hud", "font"));
@@ -171,6 +177,7 @@ public class Main extends Screen {
                 }
 
                 screen = nextScreen;
+                nextScreen = null;
                 screen.show();
             }
             
@@ -242,42 +249,28 @@ public class Main extends Screen {
         }
     }
 
-    public void keyReleased(int key) {
-        if(textBox == null) Keys.keyReleased(key);
-        
-        if((textBox == console || textBox == null) && Keys.isThatBinding(key, TILDE)) {
-            if(textBox == null) openTextBox(console);
-            else console.onCancel();
-            
+    public void keyPressed(int key) {
+        if(key == GLFW.GLFW_KEY_F11) {
+            boolean fullscr = !Engine.isFullscr();
+            Engine.setWindow(fullscr, fullscr ? conf.fw : conf.ww, fullscr ? conf.fh : conf.wh, conf.vsync);
             return;
-        } else if(textBox != null && Keys.isThatBinding(key, Keys.OK)) {
+        } else if(key == GLFW.GLFW_KEY_F2) {
+            Engine.takeScreenshot();
+            return;
+        }
+        
+        if(textBox != null && Keys.isThatBinding(key, Keys.OK)) {
             textBox.onEnter();
             return;
         } else if(textBox != null && Keys.isThatBinding(key, Keys.ESC)) {
             textBox.onCancel();
             return;
+        } else if(textBox != null && Keys.isThatBinding(key, ERASE)) {
+            textBox.erase();
+            return;
         }
         
         if(textBox != null) return;
-        
-        if(screen != null) screen.keyReleased(key);
-    }
-
-    public void keyPressed(int key) {
-        if(key == GLFW.GLFW_KEY_F11) {
-            boolean fullscr = !Engine.isFullscr();
-            Engine.setWindow(fullscr, fullscr ? conf.fw : conf.ww, fullscr ? conf.fh : conf.wh, conf.vsync);
-        } else if(key == GLFW.GLFW_KEY_F2) {
-            Engine.takeScreenshot();
-            return;
-        }
-            
-        if(textBox != null) {
-            if(Keys.isThatBinding(key, ERASE)) {
-                textBox.erase();
-            }
-            return;
-        }
         
         Keys.keyPressed(key);
         if(screen != null) screen.keyPressed(key);
@@ -292,6 +285,21 @@ public class Main extends Screen {
         }
         
         if(screen != null) screen.keyRepeated(key);
+    }
+
+    public void keyReleased(int key) {
+        Keys.keyReleased(key);
+        
+        if((textBox == console || textBox == null) && Keys.isThatBinding(key, TILDE)) {
+            if(textBox == null) openTextBox(console);
+            else console.onCancel();
+            
+            return;
+        } 
+        
+        if(textBox != null) return;
+        
+        if(screen != null) screen.keyReleased(key);
     }
 
     public void mouseAction(int button, boolean pressed) {

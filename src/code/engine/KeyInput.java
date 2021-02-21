@@ -15,9 +15,7 @@ public class KeyInput extends GLFWKeyCallback {
         } else if(action == GLFW.GLFW_RELEASE) {
             scr.keyReleased(key);
         } else if(action == GLFW.GLFW_REPEAT) {
-            if(key == GLFW.GLFW_KEY_BACKSPACE) {
-                scr.keyPressed(key);
-            }
+            scr.keyRepeated(key);
         }
     }
 

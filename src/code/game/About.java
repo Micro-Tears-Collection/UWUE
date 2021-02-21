@@ -56,9 +56,8 @@ public class About extends Screen {
         if(Keys.isPressed(Keys.UP)) text.scroll(3);
     }
     
-    public void keyReleased(int key) {
+    public void keyPressed(int key) {
         if(Keys.isThatBinding(key, Keys.ESC)) {
-            Keys.reset();
             main.clickedS.play();
             main.setScreen(menu);
         }

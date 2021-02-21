@@ -230,6 +230,10 @@ public class BMFont {
     }
     
     public void drawString(String text, int x, int y, float scale, int color) {
+        drawString(text, x, y, scale, color, 1);
+    }
+    
+    public void drawString(String text, int x, int y, float scale, int color, float a) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         
@@ -243,7 +247,7 @@ public class BMFont {
         
         GL11.glColor4f(((color>>16)&255) / 255f, 
                 ((color>>8)&255) / 255f, 
-                (color&255) / 255f, 1);
+                (color&255) / 255f, a);
         
 
         int prevCP = 0;

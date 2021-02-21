@@ -8,6 +8,7 @@ import code.game.scripting.Scripting;
 
 import code.ui.itemList.ItemList;
 import code.ui.TextView;
+import code.ui.itemList.TextItem;
 
 import code.utils.assetManager.AssetManager;
 import code.utils.Keys;
@@ -30,8 +31,6 @@ public class DialogScreen extends Screen {
     private boolean reset;
     private int index = -1;
     private String[] dialog;
-    
-    //private int pX, pY;
 
     public DialogScreen() {}
     
@@ -52,21 +51,20 @@ public class DialogScreen extends Screen {
         }
     }
     
-    public void set(String text, Game game, BMFont font) {
-        set(StringTools.cutOnStrings(text, '@'), game, font);
-    }
-    
     public void load(String path, Game game, BMFont font) {
         set(AssetManager.loadLines(path), game, font);
         dialogPath = path;
     }
     
+    public void set(String text, Game game, BMFont font) {
+        set(StringTools.cutOnStrings(text, '@'), game, font);
+    }
+    
     public void set(String[] text, Game game, BMFont font) {
-        Keys.reset();
-        reset = true;
         w = getWidth(); h = getHeight();
         this.font = font;
         dialogPath = null;
+        reset = true;
 
         this.game = game;
         itemList = null;
@@ -88,14 +86,17 @@ public class DialogScreen extends Screen {
     private void initView() {
         if(font == null) return;
         
-        int h2 = (int) (h / 3.5f);
+        int h2 = (int) (game.getViewportH() / 3.5f);
         if(h2 < font.getHeight() * 3) h2 = font.getHeight() * 3;
+        int w2 = game.getViewportW() - 20;
         
-        textView = new TextView(w - 20, h2, font);
+        if(textView == null) textView = new TextView(w2, h2, font);
+        else textView.setSize(w2, h2);
     }
     
     public void open() {
         game.main.setScreen(this);
+        initView();
         Engine.showCursor(true);
     }
     
@@ -166,52 +167,50 @@ public class DialogScreen extends Screen {
                 } else if(script.equals("question")) {
                     //ask question
                     
+                    itemList = ItemList.createItemList(
+                            textView.getWidth(), textView.getHeight(), 
+                            font, game.main.selectedS);
+                    
                     String[] arguments = StringTools.cutOnStrings(option, ' '); // &question& length is 10
                     boolean generative = (arguments.length>=2 && arguments[0].equalsIgnoreCase("gen"));
                     itemListHasCaption = !(arguments.length>=2 && arguments[arguments.length-2].equalsIgnoreCase("nocap"));
                     int capLen = (itemListHasCaption?1:0);
                     
-                    int answers = StringTools.parseInt(arguments[arguments.length-1]);
-                    String[] items;
+                    //Caption
+                    if(itemListHasCaption) 
+                        itemList.add((new TextItem(dialog[index+1], game.main.font)).setSkip(true));
                     
+                    int answers = StringTools.parseInt(arguments[arguments.length-1]);
                     if(generative) {
-                        int newAnswers = 0;
-                        String[] allItems = new String[answers];
                         answersGoIndex = new int[answers];
-                        
-                        for(int i=0;i<answers;i++) {
-                            String answer = dialog[index+1+capLen+i];
-                            String condition = dialog[index+1+capLen+i+answers];
-                            
-                            if(Scripting.runScript(game.main, "return "+condition).toboolean()) {
-                                allItems[newAnswers] = answer;
-                                answersGoIndex[newAnswers] = index+1+capLen+i+answers*2;
-                                newAnswers++;
-                            }
-                        }
-                        
-                        if(newAnswers == 0) {
-                            index += capLen+answers*3;
-                            return nextText();
-                        }
-                        
-                        items = new String[ newAnswers + capLen ]; //Questions count + caption
-                        System.arraycopy(allItems, 0, items, capLen, newAnswers); //Copy questions to itemList
-                        
-                    } else {
-                        items = new String[ answers + capLen ]; //Questions count + caption
-                        System.arraycopy(dialog, index+capLen+1, items, capLen, answers); //Copy questions to itemList
                     }
                     
-                    if(itemListHasCaption) items[0] = dialog[index+1]; //Caption
+                    int answersCount = 0;
                     
-                    itemList = new ItemList(textView.getWidth(), textView.getHeight(), font) {
-                        public void itemSelected() {
-                            if(!itemListHasCaption || itemList.getIndex() > 0) game.main.selectedS.play();
+                    for(int i=0; i<answers; i++) {
+                        String answer = dialog[index+1+capLen+i];
+                        String condition = dialog[index+1+capLen+i+answers];
+                        boolean add = !generative;
+                        
+                        if(generative && Scripting.runScript(game.main, "return "+condition).toboolean()) {
+                            add = true;
+                            answersGoIndex[answersCount] = index+1+capLen+i+answers*2;
                         }
-                    };
-                    itemList.set(items, font, false);
-                    itemList.setIndexLimited(capLen);
+                        
+                        if(add) {
+                            itemList.add(new TextItem(answer, game.main.font){
+                                public void onEnter() {
+                                    onPress();
+                                }
+                            });
+                            answersCount++;
+                        }
+                    }
+                    
+                    if(answersCount == 0) {
+                        index += capLen + answers * 3;
+                        return nextText();
+                    }
                     
                     return true;
                 } else if(script.equals("end")) {
@@ -250,7 +249,7 @@ public class DialogScreen extends Screen {
 
         int x = getDialogX();
         int y = getDialogY();
-        game.e3d.drawWindow(0, y, w, textView.getHeight());
+        game.e3d.drawWindow(game.getViewportX(), y, game.getViewportW(), textView.getHeight());
         
         //Draw dialog
         int textBegin, textEnd;
@@ -263,7 +262,6 @@ public class DialogScreen extends Screen {
             textEnd = textBegin + itemList.getFullHeight();
             
             itemList.mouseUpdate(x, y, getMouseX(), getMouseY());
-            if(itemList.getIndex() == 0 && itemListHasCaption) itemList.setIndex(-1);
             
             itemList.draw(game.e3d, x, y, game.main.fontColor, game.main.fontSelColor);
         }
@@ -273,12 +271,12 @@ public class DialogScreen extends Screen {
 
             //Down arrow
             if(textEnd > y + textView.getHeight()) game.e3d.drawArrow(
-                        w - 10 - 3, y + textView.getHeight() - 10 - 3,
+                        game.getViewportX() + game.getViewportW() - 10 - 3, y + textView.getHeight() - 10 - 3,
                         20, 20, 90, game.main.fontColor, 1);
 
             //Up arrow
             if(textBegin < y) game.e3d.drawArrow(
-                        w - 10 - 3, y + 10 + 3,
+                        game.getViewportX() + game.getViewportW() - 10 - 3, y + 10 + 3,
                         20, 20, -90, game.main.fontColor, 1);
             /*game.e3d.drawRect(null,
                     x + textView.getWidth()+5, y - textView.getHeight() * textView.getY() / textView.getTextHeight(),
@@ -293,71 +291,61 @@ public class DialogScreen extends Screen {
         if(itemList == null) {
             if(Keys.isPressed(Keys.DOWN)) textView.scroll(-3);
             if(Keys.isPressed(Keys.UP)) textView.scroll(3);
-        } else {
-            if(Keys.isPressed(Keys.DOWN)) {
-                itemList.down();
-                if(itemList.getIndex()==0 && itemListHasCaption) itemList.down();
-                Keys.reset();
-            }
-            if(Keys.isPressed(Keys.UP)) {
-                itemList.up();
-                if(itemList.getIndex()==0 && itemListHasCaption) itemList.up();
-                Keys.reset();
-            }
         }
+    }
+    
+    public void onPress() {
+        game.main.clickedS.play();
         
-        ok:
-        if(Keys.isPressed(Keys.OK)) {
-            Keys.reset();
-            if(itemList != null && itemList.getIndex() == -1) break ok;
-            
-            game.main.clickedS.play();
-            if(!nextText()) {
-                if(reset) {
-                    show();
-                    return;
-                }
-                
-                itemList = null;
-                dialog = null;
-
-                Engine.showCursor(false);
-                game.main.setScreen(game);
+        if(!nextText()) {
+            if(reset) {
+                show();
                 return;
             }
+
+            itemList = null;
+            dialog = null;
+
+            Engine.showCursor(false);
+            game.main.setScreen(game);
+            return;
         }
     }
     
-    private final int getDialogX() {
-        return (w - textView.getWidth()) / 2;
+    public void keyPressed(int key) {
+        if(itemList != null) itemList.keyPressed(key);
+        else {
+            if(Keys.isThatBinding(key, Keys.OK)) onPress();
+        }
     }
     
-    private final int getDialogY() {
-        return h - textView.getHeight() - E3D.getWindowYBorder();
+    public void keyRepeated(int key) {
+        if(itemList != null) itemList.keyRepeated(key);
     }
     
-    public int getIndex() {
-        return index;
-    }
-    
-    public void setIndex(int index) {
-        this.index = index - 1;
-        nextText();
+    public void mouseAction(int button, boolean pressed) {
+        if(itemList == null) {
+            if(!pressed || button != Screen.MOUSE_LEFT) onPress();
+        } else {
+            itemList.mouseAction(
+                    getDialogX(), getDialogY(), 
+                    getMouseX(), getMouseY(), 
+                    pressed);
+        }
     }
     
     public void mouseScroll(double xx, double yy) {
         int scroll = (int) (yy*game.main.scrollSpeed());
         
         if(itemList == null) textView.scroll(scroll);
-        else itemList.scroll(scroll);
+        else itemList.mouseScroll(scroll);
     }
     
-    public void mouseAction(int button, boolean pressed) {
-        if(pressed || button != Screen.MOUSE_LEFT) return;
-        
-        if(itemList == null) 
-            Keys.keyPressed(Keys.getBindingKeyCode(Keys.OK, 0));
-        else if(itemList.isInBox(getDialogX(), getDialogY(), getMouseX(), getMouseY())) 
-            Keys.keyPressed(Keys.getBindingKeyCode(Keys.OK, 0));
+    private final int getDialogX() {
+        return game.getViewportX() + (game.getViewportW() - textView.getWidth()) / 2;
+    }
+    
+    private final int getDialogY() {
+        return game.getViewportY() + game.getViewportH() - textView.getHeight() - E3D.getWindowYBorder();
     }
 }

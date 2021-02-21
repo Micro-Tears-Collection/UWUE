@@ -19,13 +19,13 @@ public class Fade {
         this.len = max = len;
     }
     
-    public float step(E3D e3d, int w, int h) {
+    public float step(E3D e3d, int x, int y, int w, int h) {
         if(len < 0) return 0;
         
         float intensity = (float) len / max;
         if(!in) intensity = 1 - intensity;
 
-        e3d.drawRect(null, 0, 0, w, h, color, intensity);
+        e3d.drawRect(null, x, y, w, h, color, intensity);
 
         len -= FPS.frameTime;
         

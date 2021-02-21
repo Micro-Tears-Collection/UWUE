@@ -4,6 +4,7 @@ import code.engine.Engine;
 import code.engine.Screen;
 
 import code.ui.itemList.ItemList;
+import code.ui.itemList.TabsItem;
 import code.ui.itemList.TextBoxItem;
 import code.ui.itemList.TextItem;
 
@@ -29,11 +30,12 @@ public class Settings extends Screen {
     private ItemList list, applyConfirm, resetConfirm, message;
     
     private ItemList currentList;
-    private int listType = AUDIO;
+    private int listType;
     private long applyBegin;
     
     private TextBoxItem fullscr, windowres, vres;
     private TextItem messageText, applyConfirmText;
+    private TabsItem tabs;
     
     public Settings(final Main main, Screen previous) {
         this.main = main;
@@ -80,7 +82,7 @@ public class Settings extends Screen {
             }).setHCenter(true));
             applyConfirm.add((new TextItem("No", font) {
                 public void onEnter() {
-                    main.conf.apply();
+                    main.conf.apply(true);
                     setList(VIDEO);
                 }
                 
@@ -140,6 +142,19 @@ public class Settings extends Screen {
             message.setSize(getWidth(), getHeight());
         }
         message.updateList();
+        
+        if(tabs == null) {
+            tabs = new TabsItem(new String[]{"AUDIO", "VIDEO", "GAMEPLAY"}, font) {
+                public void onEnter() {
+                    super.onEnter();
+
+                    if(currentTab != -1) {
+                        main.clickedS.play();
+                        setList(currentTab);
+                    }
+                }
+            }.setCurrentTab(listType);
+        }
     }
     
     private String checkBox(boolean bol) {
@@ -160,71 +175,63 @@ public class Settings extends Screen {
         currentList = list;
         list.removeAll();
         
-        list.add(new TextItem(
-                type==AUDIO?"<Audio settings>":(type==VIDEO?"<Video settings>":"<Gameplay settings>"), 
-                font) {
-                    public void onRight() {
-                        main.clickedS.play();
-                        setList((listType+1)%3);
-                    }
-                    
-                    public void onLeft() {
-                        main.clickedS.play();
-                        setList(listType==0?2:listType-1);
-                    }
-                    
-                    public void onEnter() {onRight();}
-                }.setHCenter(true));
+        list.add(tabs);
         
         if(type == AUDIO) {
             list.add(new TextItem("Music volume: " + valueEdit(mconf.musicVolume), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             main.clickedS.play();
                             mconf.musicVolume = Math.min(100, mconf.musicVolume+5);
                             mconf.applyAudio();
                             setText("Music volume: " + valueEdit(mconf.musicVolume), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             main.clickedS.play();
                             mconf.musicVolume = Math.max(0, mconf.musicVolume-5);
                             mconf.applyAudio();
                             setText("Music volume: " + valueEdit(mconf.musicVolume), list);
+                            return true;
                         }
                     });
             
             list.add(new TextItem("Sound volume: " + valueEdit(mconf.soundsVolume), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             main.clickedS.play();
                             mconf.soundsVolume = Math.min(100, mconf.soundsVolume+5);
                             mconf.applyAudio();
                             setText("Sound volume: " + valueEdit(mconf.soundsVolume), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             main.clickedS.play();
                             mconf.soundsVolume = Math.max(0, mconf.soundsVolume-5);
                             mconf.applyAudio();
                             setText("Sound volume: " + valueEdit(mconf.soundsVolume), list);
+                            return true;
                         }
                     });
             
             list.add(new TextItem("Footsteps volume: " + valueEdit(mconf.footstepsVolume), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             main.clickedS.play();
                             mconf.footstepsVolume = Math.min(100, mconf.footstepsVolume+5);
                             mconf.applyAudio();
                             setText("Footsteps volume: " + valueEdit(mconf.footstepsVolume), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             main.clickedS.play();
                             mconf.footstepsVolume = Math.max(0, mconf.footstepsVolume-5);
                             mconf.applyAudio();
                             setText("Footsteps volume: " + valueEdit(mconf.footstepsVolume), list);
+                            return true;
                         }
                     });
             
@@ -258,18 +265,20 @@ public class Settings extends Screen {
             
             list.add(new TextItem("Antialiasing: "+mconf.aa+"x",
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             main.clickedS.play();
                             mconf.aa <<= 1;
                             if(mconf.aa > maxAA) mconf.aa = 1;
                             setText("Antialiasing: "+mconf.aa+"x", list);
+                            return true;
                         }
                         
-                        public void onLeft() {
+                        public boolean onLeft() {
                             main.clickedS.play();
                             if(mconf.aa == 1) mconf.aa = maxAA;
                             else mconf.aa >>= 1;
                             setText("Antialiasing: "+mconf.aa+"x", list);
+                            return true;
                         }
                         
                         public void onEnter() {onRight();}
@@ -315,40 +324,46 @@ public class Settings extends Screen {
             
             list.add(new TextItem("Mouse look speed: " + valueEdit(mconf.mouseLookSpeed), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             mconf.mouseLookSpeed += 5;
                             setText("Mouse look speed: " + valueEdit(mconf.mouseLookSpeed), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             mconf.mouseLookSpeed = Math.max(0, mconf.mouseLookSpeed - 5);
                             setText("Mouse look speed: " + valueEdit(mconf.mouseLookSpeed), list);
+                            return true;
                         }
                     });
             
             list.add(new TextItem("Keyboard look speed: " + valueEdit(mconf.keyboardLookSpeed), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             mconf.keyboardLookSpeed += 5;
                             setText("Keyboard look speed: " + valueEdit(mconf.keyboardLookSpeed), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             mconf.keyboardLookSpeed = Math.max(0, mconf.keyboardLookSpeed - 5);
                             setText("Keyboard look speed: " + valueEdit(mconf.keyboardLookSpeed), list);
+                            return true;
                         }
                     });
             
             list.add(new TextItem("Gamepad look speed: " + valueEdit(mconf.gamepadLookSpeed), 
                     font) {
-                        public void onRight() {
+                        public boolean onRight() {
                             mconf.gamepadLookSpeed += 5;
                             setText("Gamepad look speed: " + valueEdit(mconf.gamepadLookSpeed), list);
+                            return true;
                         }
 
-                        public void onLeft() {
+                        public boolean onLeft() {
                             mconf.gamepadLookSpeed = Math.max(0, mconf.gamepadLookSpeed - 5);
                             setText("Gamepad look speed: " + valueEdit(mconf.gamepadLookSpeed), list);
+                            return true;
                         }
                     });
         
@@ -383,7 +398,7 @@ public class Settings extends Screen {
                         currentList = message;
                         messageText.setText("Unsupported videomode :(", message);
                     } else {
-                        mconf.apply();
+                        mconf.apply(true);
                         
                         if(mconf.isNeedToConfirm(main.conf)) {
                             applyBegin = System.currentTimeMillis();
@@ -404,11 +419,12 @@ public class Settings extends Screen {
             }
         });
         
-        list.updateList();
         listType = type;
         if(wasList) {
             list.setIndex(Math.min(list.getItemsCount()-1, prevIndex));
-            list.scroll(prevYScroll-list.getYScroll());
+            
+            list.setYScroll(prevYScroll);
+            list.limitYScroll();
         }
     }
     
@@ -419,7 +435,7 @@ public class Settings extends Screen {
     
     public void tick() {
         if(currentList == applyConfirm && System.currentTimeMillis() - applyBegin >= 10000) {
-            main.conf.apply();
+            main.conf.apply(true);
             setList(VIDEO);
         }
         
@@ -445,41 +461,34 @@ public class Settings extends Screen {
     }
     
     public void mouseAction(int key, boolean pressed) {
-        if(key == Screen.MOUSE_LEFT && !pressed) {
-            currentList.mouseClick( 
+        if(key == Screen.MOUSE_LEFT) {
+            currentList.mouseAction( 
                     currentList == list ? getWidth()/4 : 0, 0, 
-                    getMouseX(), getMouseY());
+                    getMouseX(), getMouseY(),
+                    pressed);
         }
     }
     
-    public void keyReleased(int key) {
-        if(Keys.isThatBinding(key, Keys.DOWN)) {
-            currentList.down();
-        } else if(Keys.isThatBinding(key, Keys.UP)) {
-            currentList.up();
-        }
-        
+    public void keyPressed(int key) {
         if(Keys.isThatBinding(key, Keys.ESC)) {
             if(currentList == list) {
                 main.clickedS.play();
 
                 main.conf.applyAudio();
                 main.setScreen(previous);
+                return;
             }
-        } else if(Keys.isThatBinding(key, Keys.OK)) {
-            currentList.enter();
-            
-        } else if(Keys.isThatBinding(key, Keys.LEFT)) {
-            currentList.left();
-            
-        } else if(Keys.isThatBinding(key, Keys.RIGHT)) {
-            currentList.right();
-            
         }
+        
+        currentList.keyPressed(key);
+    }
+    
+    public void keyRepeated(int key) {
+        currentList.keyRepeated(key);
     }
     
     public void mouseScroll(double xx, double yy) {
-        currentList.scroll((int) (yy*main.scrollSpeed()));
+        currentList.mouseScroll((int) (yy*main.scrollSpeed()));
     }
 
 }

@@ -1,5 +1,5 @@
+$question 6
 What music do you want to play?
-$question nocap 6
 Don't change music
 unreverted verted kids
 air smell

@@ -9,7 +9,7 @@ import code.engine3d.E3D;
 public class ListItem {
     
     int y, height;
-    boolean skip;
+    boolean skip, selected;
     
     public ListItem() {}
     
@@ -24,10 +24,13 @@ public class ListItem {
             int yScroll, boolean selected, int color, int selColor) {}
     
     public void onSelected() {}
+    public void mouseUpdate(int x, int y, int mx, int my) {}
+    public boolean onMouseScroll(int y) {return false;}
+    
     public void onEnter() {}
     public void onClick(int x, int y, int mx, int my) {onEnter();}
     
-    public void onLeft() {}
-    public void onRight() {}
+    public boolean onLeft() {return false;}
+    public boolean onRight() {return false;}
 
 }

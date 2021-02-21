@@ -115,8 +115,6 @@ public class E3D {
             GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_CONSTANT_ATTENUATION, 0);
             GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
         }
-        
-        Shader shader = new Shader("/shaders/dither");
     }
     
     public void destroy() {
@@ -321,38 +319,6 @@ public class E3D {
         }
         
         if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
-    }
-    
-    public void drawDitheredSurface(Texture frameBuffer, Texture dither, float x, float y, float w, float h,
-            Shader ditherShader, int ditherW, int ditherH) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(w, h, 0);
-        
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        
-        frameBuffer.bind(false, false, true, 0);
-        if(ditherShader.isCompiled()) dither.bind(false, false, false, 1);
-        ditherShader.bind();
-        ditherShader.setUniformf(ditherW, frameBuffer.w/dither.w);
-        ditherShader.setUniformf(ditherH, frameBuffer.h/dither.h);
-        
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO);
-        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
-        
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-        
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        
-        frameBuffer.unbind(0);
-        dither.unbind(1);
-        ditherShader.unbind();
         
         GL11.glPopMatrix();
     }

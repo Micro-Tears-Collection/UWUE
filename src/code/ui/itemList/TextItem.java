@@ -43,7 +43,8 @@ public class TextItem extends ListItem {
         this.text = text;
         int yScroll = list.getYScroll();
         list.updateList();
-        list.scroll(yScroll - list.getYScroll());
+        list.setYScroll(yScroll);
+        list.limitYScroll();
     }
     
     public void updateHeight(int w) {
@@ -72,22 +73,22 @@ public class TextItem extends ListItem {
         return font.getCharByX(line, mx - x + offsetX);
     }
     
-    public boolean onClickCheck(int x, int y, int mx, int my) {
+    public boolean leftRightCheck(int x, int y, int mx, int my) {
         String ch = getCharUnderCursor(x, y, mx, my);
         
         if("<".equals(ch)) {
             onLeft();
-			return false;
+            return true;
         } else if(">".equals(ch)) {
             onRight();
-			return false;
+            return true;
         }
         
-        return true;
+        return false;
     }
     
     public void onClick(int x, int y, int mx, int my) {
-        if(onClickCheck(x, y, mx, my)) super.onClick(x, y, mx, my);
+        if(!leftRightCheck(x, y, mx, my)) super.onClick(x, y, mx, my);
     }
 
 }

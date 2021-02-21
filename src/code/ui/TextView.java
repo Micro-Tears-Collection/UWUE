@@ -130,7 +130,7 @@ public class TextView {
             if(yScroll > 0) yScroll = 0;
             
             //Нижний край в конце окна
-            if(yScroll < h - textHeight) yScroll = h - textHeight;
+            if(yScroll + textHeight < h) yScroll = h - textHeight;
         } else {
             centralize();
         }

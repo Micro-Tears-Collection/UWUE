@@ -3,6 +3,7 @@ package code.game;
 import code.audio.AudioEngine;
 import code.audio.SoundSource;
 import code.engine.Engine;
+import code.engine3d.Texture;
 
 import code.utils.assetManager.AssetManager;
 import code.utils.IniFile;
@@ -179,12 +180,15 @@ public class Configuration {
         return Engine.isResolutionValid(fw, fh);
     }
     
-    void apply() {
-        boolean fullscr = Engine.isFullscr();
-        if(fullscr) {
-            Engine.setWindow(fullscr, fullscr?fw:ww, fullscr?fh:wh, vsync);
+    void apply(boolean changeWindow) {
+        if(changeWindow) {
+            boolean fullscr = Engine.isFullscr();
+            if(fullscr) {
+                Engine.setWindow(fullscr, fullscr ? fw : ww, fullscr ? fh : wh, vsync);
+            }
         }
         applyAudio();
+        Texture.disableMipmapping = psxRender;
     }
     
     void applyAudio() {

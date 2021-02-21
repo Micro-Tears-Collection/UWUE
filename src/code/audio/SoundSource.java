@@ -50,32 +50,18 @@ public class SoundSource extends DisposableContent {
         // Bind the buffer with the source.
         soundSource = AL10.alGenSources();
         
-        sourcePos[0] = sourcePos[1] = sourcePos[2] = 0;
-        AL10.alSourcefv(soundSource, AL10.AL_POSITION, sourcePos);
-        sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
-        AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
-        AL10.alSourcef(soundSource, AL10.AL_GAIN, AudioEngine.getSoundTypeVolume(soundType));
+        set3D(true);
+        setVolume(volume);
         
         //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.01f);
         //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.4f);
         
         setDistance(defRefDist, defMaxDist);
-        
-        /*if(AudioEngine.auxEffectSlot != 0) {
-            AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
-                    AudioEngine.auxEffectSlot, 0, EXTEfx.AL_FILTER_NULL);
-        }*/
     }
     
     public SoundSource beMusicPlayer() {
-        //player.setVolume(musicGain); //todo
         setLoop(true);
         set3D(false);
-        
-        /*if(AudioEngine.auxEffectSlot != 0) {
-            AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
-                    EXTEfx.AL_EFFECTSLOT_NULL, 0, EXTEfx.AL_FILTER_NULL);
-        }*/
         
         return this;
     }
@@ -153,6 +139,11 @@ public class SoundSource extends DisposableContent {
             AL10.alSourcefv(soundSource, AL10.AL_POSITION, sourcePos);
             sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
             AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
+        }
+        
+        if(Audio3DEffects.auxEffectSlot != 0) {
+            AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
+                    use3D?Audio3DEffects.auxEffectSlot:EXTEfx.AL_EFFECTSLOT_NULL, 0, EXTEfx.AL_FILTER_NULL);
         }
     }
 

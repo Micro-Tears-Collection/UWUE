@@ -1,6 +1,7 @@
 package code.engine3d;
 
 import code.utils.assetManager.AssetManager;
+import code.utils.assetManager.ReusableContent;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -9,7 +10,7 @@ import org.lwjgl.opengl.GL20;
  *
  * @author Roman Lahin
  */
-public class Shader {
+public class Shader extends ReusableContent {
     
     private int vertShader, fragShader;
     private int program;
@@ -69,6 +70,19 @@ public class Shader {
         
         if(vertShader != 0) GL20.glDeleteProgram(vertShader);
         if(fragShader != 0) GL20.glDeleteProgram(fragShader);
+    }
+    
+    public static Shader get(String path) {
+        Shader shader = (Shader) AssetManager.get("SHRD_" + path);
+        if(shader != null) {
+            shader.use();
+            return shader;
+        }
+        
+        shader = new Shader(path);
+        
+        AssetManager.addReusable("SHRD_" + path, shader);
+        return shader;
     }
     
     public boolean isCompiled() {
