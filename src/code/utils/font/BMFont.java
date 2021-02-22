@@ -18,14 +18,14 @@ import org.lwjgl.opengl.GL15;
  */
 public class BMFont {
     
-    Texture[] pages;
-    Material mat;
+    private Texture[] pages;
+    private Material mat;
     
     public String name;
-    public int fontSize, scale;
+    private int fontSize, stretchH;
     public float baseScale = 1;
     
-    public Hashtable<Integer, BMChar> chars;
+    private Hashtable<Integer, BMChar> chars;
     
     public BMFont() {
         chars = new Hashtable();
@@ -76,7 +76,7 @@ public class BMFont {
                     font.fontSize = dis.read() | (dis.read() << 8);
                     dis.skip(1); //bitField
                     dis.skip(1); //charset
-                    font.scale = dis.read() | (dis.read() << 8);
+                    font.stretchH = dis.read() | (dis.read() << 8);
                     dis.skip(1); //aa
                     dis.skip(4); //padding
                     dis.skip(2); //spacing

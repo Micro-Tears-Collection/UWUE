@@ -52,8 +52,8 @@ public class TabsItem extends ListItem {
             int distancing = (w - totalWidth) / tabs.length;
             
             for(int i=0; i<tabs.length; i++) {
-                tabW[i] += distancing;
                 tabX[i] += distancing*i;
+                tabW[i] = (i==tabs.length-1) ? (w-tabX[i]) : (tabW[i]+distancing);
             }
             
             totalWidth = w;
@@ -81,19 +81,21 @@ public class TabsItem extends ListItem {
         
         for(int i=0; i<tabs.length; i++) {
             int tabX = this.tabX[i];
-            //if(tabX + xScroll > windowH) break;
+            if(tabX + xScroll > windowH) break;
             
             int tabW = this.tabW[i];
-            //if(tabX + tabW + xScroll >= 0) continue;
+            if(tabX + tabW + xScroll <= 0) continue;
             
             String tab = tabs[i];
             
             int offsetX = (tabW - font.stringWidth(tab)) / 2;
+            boolean tabSelected = (selected&&selectedTab==i);
+            boolean tabIsCurrent = currentTab == i;
             
             font.drawString(tab, 
                     windowX + tabX + xScroll + offsetX, 
                     windowY + y + yScroll, 
-                    1, color, currentTab==i?1:0.5f);
+                    1, tabSelected?selColor:color, (tabIsCurrent||tabSelected)?1:0.5f);
         }
     }
     

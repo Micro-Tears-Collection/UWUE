@@ -109,7 +109,7 @@ vt 20.596923828125 -4.82438659667969 0
 vt 20.596923828125 -4.81572914123535 0
 # 32 texture coordinates
 
-o tv.1;order=1;lightgroup=0
+o tv.1;lightgroup=0
 usemtl /textures/flatpack/noise.png;blend=add;scroll_x=1;scroll_y=0.5;это другой материал)
 f 23/4/1 24/3/1 25/2/1 26/1/1
 

@@ -16,6 +16,7 @@ public class TextBox {
     protected String text = "";
     protected String backup;
     protected boolean onlyDigits;
+    protected long openTime;
     
     public int x, y, w;
     public boolean selected;
@@ -47,34 +48,60 @@ public class TextBox {
         this.onlyDigits = set;
     }
     
+    public int getHeight() {
+        return font.getHeight() + 4;
+    }
+    
     public void draw(E3D e3d, boolean focused, int focusedColor) {
-        e3d.drawRect(null, x, y, w, font.getHeight(), 0, 0.5f);
-        int color = focused && !selected ? focusedColor : 0xffffff;
+        int h = getHeight();
+        e3d.drawRect(null, x, y, w, h, 0, 0.5f);
+        
+        int color = (focused || selected) ? focusedColor : 0xffffff;
         
         if(selected || focused) {
-            e3d.drawRect(null, x, y, w, 1, color, 0.5f);
-            e3d.drawRect(null, x, y+font.getHeight()-1, w, 1, color, 0.5f);
+            int lineWidth = selected?2:1;
+            float alpha = selected?1:0.5f;
             
-            e3d.drawRect(null, x, y+1, 1, font.getHeight()-2, color, 0.5f);
-            e3d.drawRect(null, x+w-1, y+1, 1, font.getHeight()-2, color, 0.5f);
+            e3d.drawRect(null, x, y, w, lineWidth, color, alpha);
+            e3d.drawRect(null, x, y+h-lineWidth, w, lineWidth, color, alpha);
+            
+            e3d.drawRect(null, x, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
+            e3d.drawRect(null, x+w-lineWidth, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
         }
         
         e3d.pushClip();
-        e3d.clip(x, y, w, font.getHeight());
+        e3d.clip(x, y, w, h);
         
-        int xx = Math.min(0, w - font.stringWidth(text));
-        font.drawString(text, x + xx, y, 1, color);
+        int textWidth = font.stringWidth(text);
+        
+        int fontScale = Math.max(1, (int)font.baseScale);
+        int textWithStuffWidth = textWidth + (selected?fontScale*3:0);
+        int textX = 2+Math.min(0, w-4 - textWithStuffWidth);
+        
+        font.drawString(text, x + textX, y+2, 1, color);
+        
+        if(selected) {
+            int time = (int)(((System.currentTimeMillis() - openTime)/500)&1);
+            if(time == 0) {
+                e3d.drawRect(null, 
+                        x + textX+textWidth+fontScale, y+2+fontScale*3, 
+                        fontScale, h-4-fontScale*3, 
+                        focusedColor, 1);
+            }
+            
+        }
         
         e3d.popClip();
     }
     
     public boolean isInBox(int mx, int my) {
-        return mx>=x && my>=y && mx<x+w && my<y+font.getHeight();
+        return mx>=x && my>=y && mx<x+w && my<y+getHeight();
     }
     
     public void open() {
         backup = text;
         selected = true;
+        openTime = System.currentTimeMillis();
     }
     
     public void onCancel() {

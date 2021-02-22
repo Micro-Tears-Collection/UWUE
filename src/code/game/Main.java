@@ -189,7 +189,7 @@ public class Main extends Screen {
             
             if(textBox == console) {
                 if(!e3d.mode2D) e3d.prepare2D(0, 0, getWidth(), getHeight());
-                console.draw(e3d, false, 0);
+                console.draw(e3d, false, fontSelColor);
             }
             
             Engine.flush();

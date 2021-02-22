@@ -14,6 +14,7 @@ public class TextBoxItem extends ListItem {
     private Screen scr;
     private BMFont font;
     private TextBox[] boxes;
+    private int selectedBox = 0;
     
     public TextBoxItem(Screen scr, BMFont font, final int boxesCount) {
         this.scr = scr;
@@ -26,10 +27,6 @@ public class TextBoxItem extends ListItem {
             boxes[i] = new TextBox(scr, font) {
                 public void onEnter() {
                     super.onEnter();
-                    
-                    if(index != boxesCount-1) {
-                        this.scr.openTextBox(boxes[index+1]);
-                    }
                 }
             };
         }
@@ -66,7 +63,7 @@ public class TextBoxItem extends ListItem {
             box.setXYW(0, 0, boxW);
         }
         
-        height = font.getHeight();
+        height = boxes[0].getHeight();
     }
     
     public void draw(E3D e3d, int windowX, int windowY, int windowW, int windowH, 
@@ -78,23 +75,49 @@ public class TextBoxItem extends ListItem {
             
             box.x = windowX+(box.w+divW)*i;
             box.y = windowY+y+yScroll;
-            box.draw(e3d, selected, selColor);
+            box.draw(e3d, selected && i == selectedBox, selColor);
             
-            if(i != boxes.length-1) font.drawString("x", box.x+box.w, box.y, 1, selected?selColor:color);
+            if(i != boxes.length-1) font.drawString("x", box.x+box.w, box.y, 1, color);
         }
     }
     
-    public void onEnter() {
-        scr.openTextBox(boxes[0]);
+    public void onSelected() {
+        super.onSelected();
+        if(selectedBox == -1) selectedBox = 0;
     }
     
-    public void onClick(int x, int y, int mx, int my) {
-        for(TextBox box : boxes) {
+    public void mouseUpdate(int x, int y, int mx, int my) {
+        selectedBox = -1;
+        
+        for(int i=0; i<boxes.length; i++) {
+            TextBox box = boxes[i];
             
             if(box.isInBox(mx, my)) {
-                scr.openTextBox(box);
+                selectedBox = i;
                 break;
             }
+        }
+    }
+    
+    public boolean onLeft() {
+        if(selectedBox == -1) selectedBox = 0;
+        else if(selectedBox == 0) selectedBox = boxes.length-1;
+        else selectedBox--;
+        
+        return true;
+    }
+    
+    public boolean onRight() {
+        if(selectedBox == -1) selectedBox = 0;
+        else if(selectedBox == boxes.length-1) selectedBox = 0;
+        else selectedBox++;
+        
+        return true;
+    }
+    
+    public void onEnter() {
+        if(selectedBox != -1) {
+            scr.openTextBox(boxes[selectedBox]);
         }
     }
 
