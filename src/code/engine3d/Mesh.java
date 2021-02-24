@@ -134,11 +134,11 @@ public class Mesh extends Renderable {
         sortZ = middle.z;
     }
     
-    public void prepareRender(E3D e3d) {
-        if(visible) super.prepareRender(e3d);
+    public void render(E3D e3d) {
+        if(visible) super.render(e3d);
     }
     
-    public void render(E3D e3d) {
+    public void renderImmediate(E3D e3d) {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadMatrixf(drawMatrix);
             

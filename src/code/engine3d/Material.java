@@ -122,14 +122,32 @@ public class Material {
             GL11.glEnable(GL11.GL_BLEND);
             GL14.glBlendEquation(GL14.GL_FUNC_ADD);
             
-            if(blendMode == BLEND) GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            else if(blendMode == ADD) GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-            else if(blendMode == SUB) GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
-            else if(blendMode == SCR) GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR);
-            else if(blendMode == MAX) {
+            if(blendMode == BLEND) {
+                GL14.glBlendFuncSeparate(
+                    GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE, GL11.GL_ZERO);
+                
+            } else if(blendMode == ADD) {
+                GL14.glBlendFuncSeparate(
+                    GL11.GL_ONE, GL11.GL_ONE,
+                    GL11.GL_ONE, GL11.GL_ZERO);
+                
+            } else if(blendMode == SUB) {
+                GL14.glBlendFuncSeparate(
+                    GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR,
+                    GL11.GL_ONE, GL11.GL_ZERO);
+                
+            } else if(blendMode == SCR) {
+                GL14.glBlendFuncSeparate(
+                    GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR,
+                    GL11.GL_ONE, GL11.GL_ZERO);
+                
+            } else if(blendMode == MAX) {
                 GL14.glBlendEquation(GL14.GL_MAX);
                 //GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_DST_COLOR);
-                GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+                GL14.glBlendFuncSeparate(GL11.GL_ONE, GL11.GL_ONE,
+                    GL11.GL_ONE, GL11.GL_ZERO);
+                
             }
         }
     }

@@ -19,19 +19,12 @@ public class E3D {
     
     private final Vector<Renderable> postDraw;
     
-    private final Vector<Vector<Renderable>>[] toDraw;
-    private final Vector<Integer>[] toDrawOffset;
-    private int[] toDrawUsed;
-    
     public int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, cubeVBO, rectNormals;
     
     public boolean mode2D;
     public int maxLights;
     
     public E3D() {
-        toDraw = new Vector[]{new Vector(), new Vector()};
-        toDrawOffset = new Vector[]{new Vector(), new Vector()};
-        toDrawUsed = new int[2];
         postDraw = new Vector();
         
         rectCoordVBO = GL15.glGenBuffers(); //Creates a VBO ID
@@ -221,50 +214,13 @@ public class E3D {
     }
     
     public void add(Renderable obj) {
-        if(obj.drawOrder <= Renderable.NORMALDRAW) {
-            Vector<Vector<Renderable>> toDraw = this.toDraw[obj.drawOrder];
-            Vector<Integer> toDrawOffset = this.toDrawOffset[obj.drawOrder];
-            int usedLists = toDrawUsed[obj.drawOrder];
-            int orderOffset = obj.orderOffset;
-            
-            int vec = 0;
-            for(; vec<usedLists; vec++) {
-                if(toDrawOffset.elementAt(vec).intValue() == orderOffset) break;
-            }
-            
-            if(vec == usedLists) {
-                if(usedLists == toDraw.size()) {
-                    toDraw.add(new Vector());
-                    toDrawOffset.add(orderOffset);
-                } else toDrawOffset.set(vec, orderOffset);
-                
-                toDrawUsed[obj.drawOrder]++;
-            }
-            
-            toDraw.elementAt(vec).add(obj);
-        } else postDraw.add(obj);
+        postDraw.add(obj);
     }
     
-    public void renderVectors() {
+    public void postRender() {
         //Finally draw 3d
-        for(int i=0; i<=Renderable.NORMALDRAW; i++) {
-            Vector<Vector<Renderable>> toDraw = this.toDraw[i];
-            int usedLists = toDrawUsed[i];
-            sort(toDraw, toDrawOffset[i], usedLists);
-            
-            for(int x=0; x<usedLists; x++) {
-                Vector<Renderable> toRender = toDraw.elementAt(x);
-                
-                for(Renderable object : toRender) object.render(this);
-                
-                toRender.removeAllElements();
-            }
-            
-            toDrawUsed[i] = 0;
-        }
-        
         sort(postDraw);
-        for(Renderable object : postDraw) object.render(this);
+        for(Renderable object : postDraw) object.renderImmediate(this);
         
         postDraw.removeAllElements();
     }
@@ -452,8 +408,8 @@ public class E3D {
                 
                 //m1 ближе чем m2
                 if(nearest == null || 
-                        (m1.sortZ > nearest.sortZ && m1.orderOffset >= nearest.orderOffset) ||
-                        m1.orderOffset > nearest.orderOffset) {
+                        (m1.sortZ > nearest.sortZ && m1.drawOrder >= nearest.drawOrder) ||
+                        m1.drawOrder > nearest.drawOrder) {
                     nearest = m1;
                     pos = x;
                 }
@@ -461,30 +417,6 @@ public class E3D {
             
             list.setElementAt(list.elementAt(i), pos);
             list.setElementAt(nearest, i);
-        }
-    }
-    
-    private static void sort(Vector<Vector<Renderable>> list, Vector<Integer> offset, int length) {
-        for(int i=length-1; i>=1; i--) {
-            Vector<Renderable> max = null;
-            int maximumOffset = Integer.MIN_VALUE;
-            int maximumIndex = 0;
-            
-            for(int x=0; x<=i; x++) {
-                int tmpOffset = offset.elementAt(x);
-                
-                if(tmpOffset > maximumOffset) {
-                    max = list.elementAt(x);
-                    maximumOffset = tmpOffset;
-                    maximumIndex = x;
-                }
-            }
-            
-            list.setElementAt(list.elementAt(i), maximumIndex);
-            list.setElementAt(max, i);
-            
-            offset.setElementAt(offset.elementAt(i), maximumIndex);
-            offset.setElementAt(maximumOffset, i);
         }
     }
     

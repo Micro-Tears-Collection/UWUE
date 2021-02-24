@@ -77,7 +77,7 @@ public class MeshObject extends PhysEntity {
         if(visible) {
             mesh.setTransformation(pos, new Vector3D(0, rotY, 0));
             mesh.setCamera(world.m, e3d.invCam);
-            mesh.prepareRender(e3d);
+            mesh.render(e3d);
         }
     }
 

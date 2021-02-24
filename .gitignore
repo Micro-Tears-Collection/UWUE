@@ -4,3 +4,4 @@ dist/log.txt
 /dist/bin/
 dist/data/config.ini
 dist/saves
+/InfoFinder/nbproject/private/

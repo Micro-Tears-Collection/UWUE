@@ -60,7 +60,7 @@ public class Sprite extends Renderable {
         sortZ = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
     }
     
-    public void render(E3D e3d) {
+    public void renderImmediate(E3D e3d) {
         GL11.glEnable(GL11.GL_NORMALIZE);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadMatrixf(drawMatrix);

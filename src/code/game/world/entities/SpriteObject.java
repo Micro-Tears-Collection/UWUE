@@ -40,7 +40,7 @@ public class SpriteObject extends Entity {
         if(visible) {
             spr.setTransformation(pos, null);
             spr.setCamera(world.m, e3d.invCam);
-            spr.prepareRender(e3d);
+            spr.render(e3d);
         }
     }
 

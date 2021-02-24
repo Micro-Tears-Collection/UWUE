@@ -190,7 +190,7 @@ public class World {
             for(Mesh mesh : skybox) {
                 mesh.fastIdentityCamera(tmp);
                 mesh.animate(renderTime, true);
-                mesh.render(e3d);
+                mesh.renderImmediate(e3d);
             }
             
             e3d.clearZbuffer();
@@ -209,7 +209,7 @@ public class World {
         for(Entity object : objects) object.render(e3d, this);
         if(sobj != null) sobj.render(e3d, this);
         
-        e3d.renderVectors();
+        e3d.postRender();
         renderTime += FPS.frameTime;
     }
     

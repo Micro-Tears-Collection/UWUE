@@ -45,7 +45,7 @@ public class Node {
         
         if(visible >= Culling.VISIBLE) {
             mesh.animate(renderTime, true);
-            mesh.prepareRender(e3d);
+            mesh.render(e3d);
             
             if(visible == Culling.FULLY_VISIBLE) {
                 for(int i=0; i<childs.size(); i++) {
@@ -62,7 +62,7 @@ public class Node {
     void renderFully(E3D e3d, float[] invCam, World world, long renderTime) {
         mesh.fastIdentityCamera(invCam);
         mesh.animate(renderTime, true);
-        mesh.prepareRender(e3d);
+        mesh.render(e3d);
 
         for(int i=0; i<childs.size(); i++) {
             childs.elementAt(i).renderFully(e3d, invCam, world, renderTime);

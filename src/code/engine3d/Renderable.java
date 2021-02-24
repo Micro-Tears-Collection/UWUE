@@ -11,9 +11,9 @@ import org.joml.Matrix4f;
  */
 public class Renderable {
     
-    public static final int NORMALDRAW = 1, PREDRAW = 0, POSTDRAW = 2;
+    public static final int NORMALDRAW = Integer.MAX_VALUE;
     
-    public int drawOrder = NORMALDRAW, orderOffset;
+    public int drawOrder = NORMALDRAW;
     public float sortZ;
     
     public String lightGroupName = null;
@@ -25,13 +25,10 @@ public class Renderable {
         String tmp = ini.get("order");
         
         if(tmp != null) {
-            if(tmp.startsWith("pre")) {
-                drawOrder = PREDRAW;
-                if(tmp.length() > 3) orderOffset = Integer.valueOf(tmp.substring(3));
-            } else if(tmp.startsWith("post")) {
-                drawOrder = POSTDRAW;
-                if(tmp.length() > 4) orderOffset = Integer.valueOf(tmp.substring(4));
-            } else orderOffset = Integer.valueOf(tmp);
+            if(tmp.startsWith("post")) {
+                if(tmp.length() > 4) drawOrder = Integer.valueOf(tmp.substring(4));
+                else drawOrder = 0;
+            }
         }
         
         tmp = ini.getDef("lightgroup", "default");
@@ -46,11 +43,12 @@ public class Renderable {
         else this.time += time;
     }
     
-    public void prepareRender(E3D e3d) {
-        e3d.add(this);
+    public void render(E3D e3d) {
+        if(drawOrder == NORMALDRAW) renderImmediate(e3d);
+        else e3d.add(this);
     }
     
-    public void render(E3D e3d) {}
+    public void renderImmediate(E3D e3d) {}
     
     public void bindLight(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
         if(!LightGroup.lightgroups.isEmpty() && lightGroupName != null) {
