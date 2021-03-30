@@ -1,0 +1,18 @@
+Из сталкера:
+flatpack/backpack
+flatpack/bed
+grassy/grasstown (тут столько изменений что наверное можно забить)
+grassy/podezdwall
+grassy/lenolium (но тут не уверен)
+schill/wind
+
+IKBASE ебучий:
+(может авторам уже похуй и если спросить их то они разрешат юзать свои текстуры в платном продукте?)
+flatpack/wallbrick.png
+flatpack/wallsmall.png
+grassy/carpet
+
+Soviettexture.com, неизвестно, как авторка отнесЄтс¤ к продаже игры с еЄ текстурами:
+soviet_period1/
+soviet_period2/
+soviet_period3/
