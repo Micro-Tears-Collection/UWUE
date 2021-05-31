@@ -18,6 +18,11 @@ public class BoxEntity extends Entity {
         activable = true;
     }
     
+    public void destroy() {
+        super.destroy();
+        size = null;
+    }
+    
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes || !activable) return false;
         

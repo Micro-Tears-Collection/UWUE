@@ -3,7 +3,6 @@ package code.engine3d.Lighting;
 import code.engine3d.E3D;
 import java.nio.FloatBuffer;
 import java.util.Vector;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -51,6 +50,7 @@ public class LightGroup {
     
     public void destroy() {
         MemoryUtil.memFree(ambient);
+        ambient = null;
     }
     
     public void setAmbient(float[] ambient) {
@@ -71,11 +71,11 @@ public class LightGroup {
     }
     
     public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadMatrixf(e3d.invCamf);
+        /*GL33C.glMatrixMode(GL33C.GL_MODELVIEW);
+        GL33C.glPushMatrix();
+        GL33C.glLoadMatrixf(e3d.invCamf);
         
-        GL11.glEnable(GL11.GL_LIGHTING);
+        GL33C.glEnable(GL33C.GL_LIGHTING);*/
             
         activeLightsCount = 0;
         for(Light light : lights) {
@@ -102,38 +102,38 @@ public class LightGroup {
             activeLightsCount++;
         }
         
-        if(renderLights.size() > e3d.maxLights) sort(renderLights);
+        //if(renderLights.size() > e3d.maxLights) sort(renderLights);
         
-        activeLightsCount = Math.min(activeLightsCount, e3d.maxLights);
+        //activeLightsCount = Math.min(activeLightsCount, e3d.maxLights);
         
         for(int ii=0; ii<activeLightsCount; ii++) {
             Light light = renderLights.elementAt(ii);
             
-            GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_DIFFUSE, light.color);
-            //GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_SPECULAR, light.color);
-            GL11.glLightfv(GL11.GL_LIGHT0+ii, GL11.GL_POSITION, light.posOrDir);
+            //GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_DIFFUSE, light.color);
+            ////GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_SPECULAR, light.color);
+            //GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_POSITION, light.posOrDir);
             
-            if(light.spotDir != null) {
-                GL11.glLightf(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_CUTOFF, light.cutoff);
-                GL11.glLightfv(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_DIRECTION, light.spotDir);
+            /*if(light.spotDir != null) {
+                GL33C.glLightf(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_CUTOFF, light.cutoff);
+                GL33C.glLightfv(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_DIRECTION, light.spotDir);
             } else {
-                GL11.glLighti(GL11.GL_LIGHT0 + ii, GL11.GL_SPOT_CUTOFF, 180);
-            }
+                GL33C.glLighti(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_CUTOFF, 180);
+            }*/
             
-            GL11.glEnable(GL11.GL_LIGHT0+ii);
+            //GL33C.glEnable(GL33C.GL_LIGHT0+ii);
         }
         renderLights.removeAllElements();
         
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_AMBIENT, ambient);
+        /*GL33C.glMaterialfv(GL33C.GL_FRONT, GL33C.GL_AMBIENT, ambient);
 
-        GL11.glPopMatrix();
+        GL33C.glPopMatrix();*/
     }
     
     public void unbind() {
-        GL11.glDisable(GL11.GL_LIGHTING);
+        //GL33C.glDisable(GL33C.GL_LIGHTING);
         
         for(int i=0; i<activeLightsCount; i++) {
-            GL11.glDisable(GL11.GL_LIGHT0+i);
+            //GL33C.glDisable(GL33C.GL_LIGHT0+i);
         }
     }
     

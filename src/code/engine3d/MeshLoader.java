@@ -1,9 +1,8 @@
 package code.engine3d;
 
 import code.math.Vector3D;
-
-import code.utils.assetManager.AssetManager;
 import code.utils.IniFile;
+
 import code.utils.StringTools;
 
 import java.io.File;
@@ -13,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Vector;
 
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL33C;
 
 /**
  *
@@ -22,41 +21,59 @@ import org.lwjgl.opengl.GL15;
 public class MeshLoader {
     
     private static int storeData(float[] data) {
-        int vbo = GL15.glGenBuffers(); //Creates a VBO ID
-        AssetManager.vbos.add(vbo);
+        int vbo = GL33C.glGenBuffers(); //Creates a VBO ID
         
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
         
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, data, GL33C.GL_STATIC_DRAW);
         
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
         
         return vbo;
     }
     
-    public static void createMesh(Mesh mesh, float[][] positions, float[][] UVs, float[][] normals,
+    private static void createMesh(Mesh mesh, float[][] positions, float[][] UVs, float[][] normals,
             Material[] tex, 
             Vector3D min, Vector3D max) {
-        int[] vout = new int[tex.length];
-        int[] uvout = new int[tex.length];
-        int[] normalsout = new int[tex.length];
+        int[] vaos = new int[tex.length];
+        int[] vbos = new int[tex.length*3];
         int[] lensout = new int[tex.length];
         
         for(int i = 0; i < tex.length; i++) {
-            vout[i] = storeData(positions[i]);
-            uvout[i] = storeData(UVs[i]);
-            normalsout[i] = storeData(normals[i]);
+            int pos = storeData(positions[i]);
+            int uv = storeData(UVs[i]);
+            int norm = storeData(normals[i]);
+            
+            int vao = GL33C.glGenVertexArrays();
+            GL33C.glBindVertexArray(vao);
+            
+            GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, pos);
+            GL33C.glVertexAttribPointer(0, 3, GL33C.GL_FLOAT, false, 0, 0);
+            
+            GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, uv);
+            GL33C.glVertexAttribPointer(1, 2, GL33C.GL_FLOAT, false, 0, 0);
+            
+            GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, norm);
+            GL33C.glVertexAttribPointer(2, 3, GL33C.GL_FLOAT, false, 0, 0);
+            
+            GL33C.glEnableVertexAttribArray(0); //pos
+            GL33C.glEnableVertexAttribArray(1); //uvm
+            GL33C.glEnableVertexAttribArray(2); //pos
+            
+            vaos[i] = vao;
+            vbos[i*3] = pos;
+            vbos[i*3+1] = uv;
+            vbos[i*3+2] = norm;
             lensout[i] = UVs[i].length >> 1;
         }
 
-        mesh.set(vout, uvout, normalsout, lensout, tex, min, max);
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); 
+        GL33C.glBindVertexArray(0);
+        
+        mesh.set(vaos, vbos, lensout, tex, min, max);
     }
     
-    public static Mesh[] loadObj(String name) {
-        return loadObj(name, false, null, null);
-    }
-    
-    public static Mesh[] loadObj(String name, boolean createPhysics, String prefix, String postfix) {
+    static Mesh[] loadObj(E3D e3d, String name) {
         //long begin = System.currentTimeMillis();
         String[] replaceRaw = StringTools.cutOnStrings(name, '|');
         Hashtable<String, String> replace = new Hashtable();
@@ -148,7 +165,7 @@ public class MeshLoader {
                         float[][] normals = new float[keysArr.length][];
                         
                         for(int i=0; i<keysArr.length; i++) {
-                            texs[i] = Material.get(keysArr[i], replace, prefix, postfix);
+                            texs[i] = e3d.getMaterial(keysArr[i], replace);
                             Vector<Face> meshFaces = materials.get(keysArr[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];
@@ -189,7 +206,7 @@ public class MeshLoader {
                         }
                         
                         createMesh(currentMesh, poses, uvm, normals, texs, new Vector3D(min), new Vector3D(max));
-                        if(createPhysics) currentMesh.setPhysics(poses);
+                        /*if(createPhysics) */currentMesh.setPhysics(poses);
                         currentMesh = null;
                     }
                     
@@ -198,7 +215,7 @@ public class MeshLoader {
                         
                         String[] lines = StringTools.cutOnStrings(line.substring(2),';');
                         currentMesh.name = lines[0];
-                        currentMesh.load(new IniFile(lines, false));
+                        currentMesh.ini = new IniFile(lines, false);
                         
                         meshes.add(currentMesh);
                         

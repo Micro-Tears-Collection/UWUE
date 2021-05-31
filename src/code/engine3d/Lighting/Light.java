@@ -58,6 +58,8 @@ public class Light {
         MemoryUtil.memFree(posOrDir);
         MemoryUtil.memFree(color);
         if(spotDir != null) MemoryUtil.memFree(spotDir);
+        
+        posOrDir = color = spotDir = null;
     }
 
 }

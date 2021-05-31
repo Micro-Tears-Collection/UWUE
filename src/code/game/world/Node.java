@@ -1,14 +1,15 @@
 package code.game.world;
 
 import code.engine3d.E3D;
-import code.engine3d.Mesh;
 
 import code.engine3d.collision.Ray;
 import code.engine3d.collision.RayCast;
 import code.engine3d.collision.Sphere;
 import code.engine3d.collision.SphereCast;
+import code.engine3d.instancing.MeshInstance;
 
 import code.math.Culling;
+import java.nio.FloatBuffer;
 
 import java.util.Vector;
 
@@ -18,10 +19,10 @@ import java.util.Vector;
  */
 public class Node {
     
-    Mesh mesh;
+    MeshInstance mesh;
     Vector<Node> childs;
     
-    Node(Mesh mesh) {
+    Node(MeshInstance mesh) {
         this.mesh = mesh;
         childs = new Vector();
     }
@@ -38,7 +39,7 @@ public class Node {
     
     static final Culling cul = new Culling();
     
-    void render(E3D e3d, float[] invCam, World world, long renderTime) {
+    void render(E3D e3d, FloatBuffer invCam, World world, long renderTime) {
         mesh.fastIdentityCamera(invCam);
         cul.setBox(mesh.min, mesh.max);
         int visible = cul.visible();
@@ -59,7 +60,7 @@ public class Node {
         }
     }
     
-    void renderFully(E3D e3d, float[] invCam, World world, long renderTime) {
+    void renderFully(E3D e3d, FloatBuffer invCam, World world, long renderTime) {
         mesh.fastIdentityCamera(invCam);
         mesh.animate(renderTime, true);
         mesh.render(e3d);
@@ -75,7 +76,7 @@ public class Node {
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.physicsVerts != null) SphereCast.sphereCast(mesh, sphere);
+            if(mesh.collision) SphereCast.sphereCast(mesh.mesh, sphere);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).sphereCast(sphere);
@@ -89,7 +90,7 @@ public class Node {
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.physicsVerts != null) RayCast.rayCast(mesh, ray);
+            if(mesh.collision) RayCast.rayCast(mesh.mesh, ray);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).rayCast(ray);

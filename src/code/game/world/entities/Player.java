@@ -2,7 +2,6 @@ package code.game.world.entities;
 
 import code.game.world.World;
 
-import code.utils.FPS;
 import code.utils.Keys;
 
 /**

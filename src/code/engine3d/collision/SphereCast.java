@@ -3,6 +3,7 @@ package code.engine3d.collision;
 import code.engine3d.Mesh;
 import code.math.MathUtils;
 import code.math.Vector3D;
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -28,9 +29,7 @@ public class SphereCast {
         SphereCast.sphereCast(mesh, null, sphere);
     }
     
-    public static void sphereCast(Mesh mesh, float[] mat, Sphere sphere) {
-        if(!mesh.collision) return;
-        
+    public static void sphereCast(Mesh mesh, FloatBuffer mat, Sphere sphere) {
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         
@@ -46,9 +45,9 @@ public class SphereCast {
             float[] norms = normals[t];
 
             for(int i = 0; i < verts.length; i += 9) {
-                float cx = verts[i], cy = verts[i + 1], cz = verts[i + 2];
+                float ax = verts[i], ay = verts[i + 1], az = verts[i + 2];
                 float bx = verts[i + 3], by = verts[i + 4], bz = verts[i + 5];
-                float ax = verts[i + 6], ay = verts[i + 7], az = verts[i + 8];
+                float cx = verts[i + 6], cy = verts[i + 7], cz = verts[i + 8];
 
                 v1.set(ax, ay, az);
                 v2.set(bx, by, bz);
@@ -71,16 +70,16 @@ public class SphereCast {
                 v3.y = (v3.y-pos.y)*toRad + pos.y;
                 
                 nor.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
-                if(mat != null) nor.transformNoOffset(mat);
+                if(mat != null) nor.transform(mat, false);
                 
-                boolean floor = nor.y < -0.3f;
+                boolean floor = nor.y > 0.3f;
                 
                 nor.mul(toRad, 1, toRad);
                 nor.setLength(1);
                 float dis = MathUtils.distanceSphereToPolygon(v1, v2, v3, nor, pos, rad);
 
                 if(dis != Float.MAX_VALUE && dis > 0) {
-                    pos.add(-nor.x * dis, -nor.y * dis * toHeight, -nor.z * dis);
+                    pos.add(nor.x * dis, nor.y * dis * toHeight, nor.z * dis);
                     sphere.set(mesh, t, i);
                     
                     if(floor) sphere.onFloor = true;

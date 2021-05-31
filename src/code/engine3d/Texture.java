@@ -1,6 +1,5 @@
 package code.engine3d;
 
-import code.utils.assetManager.AssetManager;
 import code.utils.assetManager.ReusableContent;
 
 import java.io.DataInputStream;
@@ -8,9 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL33C;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryUtil;
 
@@ -26,67 +23,45 @@ public class Texture extends ReusableContent {
     public int w = 1, h = 1;
     public int id;
     
-    private Texture(int id, int w, int h) {
+    Texture(int id, int w, int h) {
         this.id = id;
         this.w = w;
         this.h = h;
     }
+
+    public void destroy() {
+        GL33C.glDeleteTextures(id);
+    }
     
     public void bind(boolean linearInterpolation, boolean mipMapping, boolean wrapClamp, int level) {
         if(level != oldLevel) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0+level);
+            GL33C.glActiveTexture(GL33C.GL_TEXTURE0+level);
             oldLevel = level;
         }
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
+        GL33C.glGetError();
         
-        int mag = linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST;
-        int interp = (!disableMipmapping&&mipMapping) ?
-                (linearInterpolation ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_NEAREST_MIPMAP_LINEAR)
+        int mag = linearInterpolation ? GL33C.GL_LINEAR : GL33C.GL_NEAREST;
+        int interp = (!disableMipmapping && mipMapping) ?
+                (linearInterpolation ? GL33C.GL_LINEAR_MIPMAP_LINEAR : GL33C.GL_NEAREST_MIPMAP_LINEAR)
                 : mag;
-        int wrap = wrapClamp?GL11.GL_CLAMP:GL11.GL_REPEAT;
+        int wrap = wrapClamp?GL33C.GL_CLAMP_TO_EDGE:GL33C.GL_REPEAT;
 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, interp);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mag);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, interp);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, mag);
         
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrap);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrap);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, wrap);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, wrap);
     }
     
     public void unbind(int level) {
         if(level != oldLevel) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0+level);
+            GL33C.glActiveTexture(GL33C.GL_TEXTURE0+level);
             oldLevel = level;
         }
         
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
     }
-
-    public void destroy() {
-        GL11.glDeleteTextures(id);
-    }
-    
-    public static Texture get(String name) {
-        Texture tex = (Texture) AssetManager.get("TEX_" + name);
-        if(tex != null) {
-            tex.use();
-            return tex;
-        }
-        
-        if(name.equals("null")) {
-            tex = new Texture(0, 1, 1);
-            tex.lock();
-        } else {
-            tex = loadTexture(name);
-        }
-        
-        if(tex != null) {
-            AssetManager.addReusable("TEX_" + name, tex);
-            return tex;
-        }
-        
-        return get("null");
-    }
-    
     
     /**
      * Should be destroyed after using!
@@ -115,11 +90,10 @@ public class Texture extends ReusableContent {
             ByteBuffer img = STBImage.stbi_load_from_memory(bruh, w, h, channels, 4);
             MemoryUtil.memFree(bruh);
 
-            int id = GL11.glGenTextures();
+            int id = GL33C.glGenTextures();
             
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
-            GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE); 
+            GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
+            GL33C.glPixelStorei(GL33C.GL_UNPACK_ALIGNMENT, 1);
             
             boolean hasAlpha = false;
             for(int i=w[0]*h[0]*4-1; i>=0; i-=4) {
@@ -129,10 +103,11 @@ public class Texture extends ReusableContent {
                 }
             }
             
-            int textureFormat = hasAlpha ? GL11.GL_RGBA : GL11.GL_RGB;
+            int textureFormat = hasAlpha ? GL33C.GL_RGBA : GL33C.GL_RGB;
 
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, img);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+            GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, img);
+            GL33C.glGenerateMipmap(GL33C.GL_TEXTURE_2D);
+            GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
             
             MemoryUtil.memFree(img);
             
@@ -144,12 +119,18 @@ public class Texture extends ReusableContent {
         return null;
     }
     
+    /**
+     * Should be destroyed after using!
+     * @param w Texture width
+     * @param h Texture height
+     * @return Texture
+     */
     public static Texture createTexture(int w, int h) {
-        int gltex = GL11.glGenTextures();
+        int gltex = GL33C.glGenTextures();
 
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, gltex);
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_RGB8, w, h, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, 0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, gltex);
+        GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, GL33C.GL_RGB8, w, h, 0, GL33C.GL_RGB, GL33C.GL_UNSIGNED_BYTE, 0);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
         
         return new Texture(gltex, w, h);
     }

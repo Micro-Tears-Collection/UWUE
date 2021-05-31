@@ -1,6 +1,6 @@
 package code.ui.itemList;
 
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.utils.Keys;
 import code.utils.font.BMFont;
 import java.util.Vector;
@@ -80,10 +80,10 @@ public class ItemList {
         centralize();
     }
     
-    public void draw(E3D e3d, int x, int y, 
+    public void draw(HudRender hudRender, int x, int y, 
             int color, int selColor) {
-        e3d.pushClip();
-        e3d.clip(x, y, w, h);
+        hudRender.pushClip();
+        hudRender.clip(x, y, w, h);
         
         ListItem topItem = items.elementAt(topIndex);
         
@@ -109,10 +109,10 @@ public class ItemList {
             
             if(y+item.y+yScroll >= y+h) break;
             
-            item.draw(e3d, x, y, w, h, yScroll, index == i, color, selColor);
+            item.draw(hudRender, x, y, w, h, yScroll, index == i, color, selColor);
         }
 
-        e3d.popClip();
+        hudRender.popClip();
     }
     
     public boolean isInBox(int x, int y, int mx, int my) {

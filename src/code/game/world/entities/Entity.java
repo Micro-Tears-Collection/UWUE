@@ -24,13 +24,19 @@ public class Entity {
     
     public String name, unicalID;
     
+    public void destroy() {
+        pos = null;
+        name = unicalID = null;
+        activateWhen = onActivate = onFail = null;
+    }
+    
     public void update(World world) {}
     public void physicsUpdate(World world) {}
     public void collisionTest(Entity entity) {}
     public boolean rayCast(Ray ray, boolean onlyMeshes) {return false;}
     public boolean meshSphereCast(Sphere sphere) {return false;}
     //spherecast is only for mesh objects
-    //this physics system sucks i should rewrite it
+    //todo this physics system sucks i should rewrite it
     
     public void animate(long step, boolean paused, Entity teteAtete) {}
     public void render(E3D e3d, World world) {}

@@ -3,17 +3,17 @@ package code.game;
 import code.audio.AudioEngine;
 import code.audio.SoundSource;
 import code.engine.Engine;
+import code.engine.Window;
 import code.engine3d.Texture;
 
 import code.utils.assetManager.AssetManager;
 import code.utils.IniFile;
-import code.utils.assetManager.DisposableContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -180,11 +180,11 @@ public class Configuration {
         return Engine.isResolutionValid(fw, fh);
     }
     
-    void apply(boolean changeWindow) {
+    void apply(Window window, boolean changeWindow) {
         if(changeWindow) {
-            boolean fullscr = Engine.isFullscr();
+            boolean fullscr = window.isFullscr();
             if(fullscr) {
-                Engine.setWindow(fullscr, fullscr ? fw : ww, fullscr ? fh : wh, vsync);
+                window.setWindow(fullscr, fullscr ? fw : ww, fullscr ? fh : wh, vsync);
             }
         }
         applyAudio();
@@ -196,14 +196,9 @@ public class Configuration {
         AudioEngine.soundTypesVolume[MUSIC] = musicVolume;
         AudioEngine.soundTypesVolume[FOOTSTEP] = footstepsVolume;
         
-        Vector<DisposableContent> list = AssetManager.getAll(AssetManager.DISPOSABLE);
-        for(DisposableContent content : list) {
-            
-            if(content instanceof SoundSource) {
-                SoundSource source = (SoundSource) content;
-                
-                source.setVolume(source.getVolume());
-            }
+        ArrayList<SoundSource> list = AudioEngine.sources;
+        for(SoundSource source : list) {
+            source.setVolume(source.getVolume());
         }
             
     }

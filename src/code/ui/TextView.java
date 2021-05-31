@@ -1,6 +1,6 @@
 package code.ui;
 
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.utils.font.BMFont;
 import java.util.Vector;
 
@@ -90,16 +90,16 @@ public class TextView {
         centralize();
     }
     
-    public void draw(E3D e3d, int x, int y, int color) {
-        e3d.pushClip();
-        e3d.clip(x, y, w, h);
+    public void draw(HudRender hudRender, int x, int y, int color) {
+        hudRender.pushClip();
+        hudRender.clip(x, y, w, h);
         
-        TextView.draw(e3d, lines, font, x, y, w, h, yScroll, hCenter, color);
+        TextView.draw(hudRender, lines, font, x, y, w, h, yScroll, hCenter, color);
 
-        e3d.popClip();
+        hudRender.popClip();
     }
 
-    public static void draw(E3D e3d, Vector<String> lines, BMFont font, 
+    public static void draw(HudRender hudRender, Vector<String> lines, BMFont font, 
             int x, int y, int w, int h, int yScroll, boolean hCenter, int color) {
 
         final int stepY = font.getHeight();
@@ -111,7 +111,7 @@ public class TextView {
             
             int offsetX = hCenter ? (w - font.stringWidth(str)) >> 1 : 0;
 
-            font.drawString(str, x + offsetX, y + posY, 1, color);
+            font.drawString(hudRender, str, x + offsetX, y + posY, 1, color);
             
             posY += stepY;
         }

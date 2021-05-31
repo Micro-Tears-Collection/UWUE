@@ -24,6 +24,11 @@ public class PhysEntity extends Entity {
     
     public boolean physics = true, pushable = true, canPush = true;
     
+    public void destroy() {
+        super.destroy();
+        speed = null;
+    }
+    
     public void setSize(float radius, float height) {
         this.radius = radius;
         this.height = height;

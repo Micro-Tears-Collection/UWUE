@@ -38,14 +38,11 @@ public class SoundBuffer extends ReusableContent {
     public static SoundBuffer get(String file) {
         SoundBuffer sound = (SoundBuffer)AssetManager.get("SOUNDBUFF_" + file);
         
-        if(sound != null) {
-            sound.use();
-            
-        } else {
+        if(sound == null) {
             sound = loadBuffer(file);
             
             if(sound != null) {
-                AssetManager.addReusable("SOUNDBUFF_" + file, sound);
+                AssetManager.add("SOUNDBUFF_" + file, sound);
             }
         }
         

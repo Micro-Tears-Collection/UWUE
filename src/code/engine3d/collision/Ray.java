@@ -4,7 +4,7 @@ import code.engine3d.Mesh;
 import code.math.Vector3D;
 
 public class Ray {
-    public boolean collision = false;
+    public boolean collision;
     public float distance;
     public Mesh mesh;
     public int submesh, polID;
@@ -16,22 +16,25 @@ public class Ray {
         reset();
     }
 
-    public void set(Mesh mesh, int submesh, int polID, float distance, Vector3D colPoint) {
-        this.collision = true;
-        this.submesh = submesh;
+    public final void set(Mesh mesh, int submesh, int polID, float distance, Vector3D colPoint) {
+        collision = true;
         this.mesh = mesh;
+        this.submesh = submesh;
         this.polID = polID;
         this.distance = distance;
-        this.collisionPoint.set(colPoint);
+        collisionPoint.set(colPoint);
     }
 
-    public void set(Ray ray) {
+    public final void set(Ray ray) {
         collision = ray.collision;
+        mesh = ray.mesh;
+        submesh = ray.submesh;
+        polID = ray.polID;
         distance = ray.distance;
         collisionPoint.set(ray.collisionPoint);
     }
 
-    public void reset() {
+    public final void reset() {
         collision = false;
         mesh = null;
         submesh = polID = 0;

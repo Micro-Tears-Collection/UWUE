@@ -1,6 +1,7 @@
 package code.audio;
 
 import code.math.Vector3D;
+import java.util.ArrayList;
 
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
@@ -22,6 +23,7 @@ public class AudioEngine {
     static ALCapabilities alCapabilities;
     
     public static int[] soundTypesVolume;
+    public static ArrayList<SoundSource> sources;
             
     public static void init() {
         // Initialize OpenAL and clear the error bit.
@@ -41,6 +43,7 @@ public class AudioEngine {
         else System.out.println("HRTF support doesnt found");
         
         //Audio3DEffects.init();
+        sources = new ArrayList<>();
     }
 
     static float[] listenerPos = new float[]{0.0f, 0.0f, 0.0f};
@@ -75,6 +78,7 @@ public class AudioEngine {
     
     public static void close() {
         //Audio3DEffects.destroy();
+        sources = null;
         ALC10.alcDestroyContext(context);
         ALC10.alcCloseDevice(device);
     }

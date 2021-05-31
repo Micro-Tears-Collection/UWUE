@@ -1,5 +1,7 @@
 package code.math;
 
+import java.nio.FloatBuffer;
+
 /**
  *
  * @author Roman Lahin
@@ -27,7 +29,7 @@ public class Culling {
     */
     private final Vector3D[] verts;
     
-    public static void set(float[] invertedCameraMatrix, float fovx, float fovy, float zNear, float zFar) {
+    public static void set(FloatBuffer invertedCameraMatrix, float fovx, float fovy, float zNear, float zFar) {
         float xX = (float)Math.sin(Math.toRadians(fovx)/2);
         float xY = (float)Math.cos(Math.toRadians(fovx)/2);
         xLine = xX / xY;
@@ -36,7 +38,9 @@ public class Culling {
         float yY = (float)Math.sin(Math.toRadians(fovy)/2);
         yLine = yX / yY;
         
-        System.arraycopy(invertedCameraMatrix, 0, invCam, 0, 16);
+        invertedCameraMatrix.get(invCam);
+        invertedCameraMatrix.rewind();
+        
         zNearClip = zNear;
         zFarClip = zFar;
     }

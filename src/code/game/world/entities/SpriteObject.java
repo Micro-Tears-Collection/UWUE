@@ -1,7 +1,7 @@
 package code.game.world.entities;
 
 import code.engine3d.E3D;
-import code.engine3d.Sprite;
+import code.engine3d.instancing.Sprite;
 
 import code.game.world.World;
 
@@ -16,8 +16,18 @@ import code.utils.FPS;
  */
 public class SpriteObject extends Entity {
     
-    public Sprite spr;
+    private Sprite spr;
     public boolean visible = true;
+    
+    public SpriteObject(Sprite spr) {
+        this.spr = spr;
+    }
+    
+    public void destroy() {
+        spr.destroy();
+        spr = null;
+        super.destroy();
+    }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes) return false;

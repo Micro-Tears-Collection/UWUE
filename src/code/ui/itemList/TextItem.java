@@ -1,6 +1,6 @@
 package code.ui.itemList;
 
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.ui.TextView;
 import code.utils.font.BMFont;
 import java.util.Vector;
@@ -55,10 +55,10 @@ public class TextItem extends ListItem {
         height = lines.size() * font.getHeight();
     }
     
-    public void draw(E3D e3d, int windowX, int windowY, int windowW, int windowH, 
+    public void draw(HudRender hudRender, int windowX, int windowY, int windowW, int windowH, 
             int yScroll, boolean selected, int color, int selColor) {
         
-        TextView.draw(e3d, lines, font, 
+        TextView.draw(hudRender, lines, font, 
                 windowX, windowY, windowW, windowH, 
                 yScroll+y, hCenter, selected?selColor:color);
     }

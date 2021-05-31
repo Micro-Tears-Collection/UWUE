@@ -1,12 +1,26 @@
 package code.engine3d;
 
+import code.engine3d.instancing.Renderable;
+import code.engine.Window;
 import code.engine3d.Lighting.LightGroup;
+import code.engine3d.materials.WorldMaterial;
 import code.math.Vector3D;
+import code.utils.IniFile;
+import code.utils.StringTools;
+import code.utils.assetManager.AssetManager;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Vector;
+import javax.imageio.ImageIO;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.system.MemoryUtil;
 
 /**
  *
@@ -14,203 +28,219 @@ import org.lwjgl.opengl.GL15;
  */
 public class E3D {
     
-    public float fovX, fovY;
-    public int w, h;
-    
-    private final Vector<Renderable> postDraw;
-    
-    public int rectCoordVBO, rectuvVBO, rectuvMVBO, windowColVBO, arrowVBO, cubeVBO, rectNormals;
+    private Window win;
     
     public boolean mode2D;
-    public int maxLights;
+    public float w, h;
+    public float fovX, fovY;
+    public Matrix4f tmpM, invCam, proj;
+    public Matrix3f tmpM3;
+    public FloatBuffer tmpMf, tmpM3f, invCamf, projf;
     
-    public E3D() {
+    int rectCoordVBO, rectuvVBO, rectuvMVBO, rectNormals;
+    public int rectVAO, spriteVAO;
+    
+    public UniformBlock matrices;
+    private final Vector<Renderable> postDraw;
+    
+    public E3D(Window win) {
+        this.win = win;
         postDraw = new Vector();
         
-        rectCoordVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+        /*GL33C.glLightModelfv(GL33C.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
+        GL33C.glLightModeli(GL33C.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+        GL33C.glMaterialfv(GL33C.GL_FRONT, GL33C.GL_DIFFUSE, new float[]{1,1,1,1});
+        maxLights = GL33C.glGetInteger(GL33C.GL_MAX_LIGHTS);*/
+        
+        /*for(int i=0; i<maxLights; i++) {
+            GL33C.glLightf(GL33C.GL_LIGHT0+i, GL33C.GL_CONSTANT_ATTENUATION, 0);
+            GL33C.glLightf(GL33C.GL_LIGHT0+i, GL33C.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
+        }*/
+        
+        tmpM = new Matrix4f();
+        tmpMf = MemoryUtil.memAllocFloat(4*4);
+        
+        tmpM3 = new Matrix3f();
+        tmpM3f = MemoryUtil.memAllocFloat(3*3);
+        
+        invCam = new Matrix4f();
+        invCamf = MemoryUtil.memAllocFloat(4*4);
+        
+        proj = new Matrix4f();
+        projf = MemoryUtil.memAllocFloat(4*4);
+        
+        //Rectangle data
+        rectVAO = GL33C.glGenVertexArrays();
+        GL33C.glBindVertexArray(rectVAO);
+        
+        rectCoordVBO = GL33C.glGenBuffers(); //Creates a VBO ID
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectCoordVBO); //Loads the current VBO to store the data
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
                 new short[]{
                     0, 0, 0, 1, 0, 0,
                     1, 1, 0, 0, 1, 0
-                }, GL15.GL_STATIC_DRAW);
+                }, GL33C.GL_STATIC_DRAW);
+            
+        GL33C.glVertexAttribPointer(0, 3, GL33C.GL_SHORT, false, 0, 0);
         
-        rectuvVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+        rectuvVBO = GL33C.glGenBuffers(); //Creates a VBO ID
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectuvVBO); //Loads the current VBO to store the data
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
                 new short[]{
                     0, 0, 1, 0,
                     1, 1, 0, 1
-                }, GL15.GL_STATIC_DRAW);
+                }, GL33C.GL_STATIC_DRAW);
+
+        GL33C.glVertexAttribPointer(1, 2, GL33C.GL_SHORT, false, 0, 0);
         
-        rectNormals = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectNormals); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
-                new short[]{
-                    0, 0, 1, 0, 0, 1,
-                    0, 0, 1, 0, 0, 1
-                }, GL15.GL_STATIC_DRAW);
+        //Sprite data
+        spriteVAO = GL33C.glGenVertexArrays();
+        GL33C.glBindVertexArray(spriteVAO);
+            
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectCoordVBO);
+        GL33C.glVertexAttribPointer(0, 3, GL33C.GL_SHORT, false, 0, 0);
         
-        arrowVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, arrowVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
-                new short[]{
-                    -1, -1, 0, 1, 0, 0,
-                    -1, 1, 0,
-                }, GL15.GL_STATIC_DRAW);
-        
-        rectuvMVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvMVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+        rectuvMVBO = GL33C.glGenBuffers(); //Creates a VBO ID
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectuvMVBO); //Loads the current VBO to store the data
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
                 new short[]{
                     0, 1, 1, 1,
                     1, 0, 0, 0
-                }, GL15.GL_STATIC_DRAW);
+                }, GL33C.GL_STATIC_DRAW);
+
+        GL33C.glVertexAttribPointer(1, 2, GL33C.GL_SHORT, false, 0, 0);
         
-        windowColVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, windowColVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
-                new float[]{
-                    0, 0, 0, 0.75f, 0, 0, 0, 0.75f,
-                    0, 0, 0, 0, 0, 0, 0, 0
-                }, GL15.GL_STATIC_DRAW);
-        
-        cubeVBO = GL15.glGenBuffers(); //Creates a VBO ID
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cubeVBO); //Loads the current VBO to store the data
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, 
+        rectNormals = GL33C.glGenBuffers(); //Creates a VBO ID
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectNormals); //Loads the current VBO to store the data
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
                 new short[]{
-                    0, 0, 0, 0, 0, 1,
-                    0, 0, 0, 0, 1, 0,
-                    0, 0, 0, 1, 0, 0,
-                    
-                    1, 1, 1, 1, 1, 0,
-                    1, 1, 1, 1, 0, 1,
-                    1, 1, 1, 0, 1, 1,
-                    
-                    1, 0, 1, 1, 0, 0,
-                    1, 0, 1, 0, 0, 1,
-                    
-                    0, 1, 0, 1, 1, 0,
-                    0, 1, 0, 0, 1, 1,
-                    
-                    0, 0, 1, 0, 1, 1,
-                    1, 0, 0, 1, 1, 0,
-                }, GL15.GL_STATIC_DRAW);
+                    0, 0, 1, 0, 0, 1,
+                    0, 0, 1, 0, 0, 1
+                }, GL33C.GL_STATIC_DRAW);
+
+        GL33C.glVertexAttribPointer(2, 3, GL33C.GL_SHORT, false, 0, 0);
         
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+        GL33C.glEnableVertexAttribArray(0);
+        GL33C.glEnableVertexAttribArray(1);
+        GL33C.glEnableVertexAttribArray(2);
         
-        GL11.glLightModelfv(GL11.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
-        GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-        GL11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, new float[]{1,1,1,1});
-        maxLights = GL11.glGetInteger(GL11.GL_MAX_LIGHTS);
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0);
+        GL33C.glBindVertexArray(0);
         
-        for(int i=0; i<maxLights; i++) {
-            GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_CONSTANT_ATTENUATION, 0);
-            GL11.glLightf(GL11.GL_LIGHT0+i, GL11.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
-        }
+        matrices = new UniformBlock((4*4 * 2) * 4, 0);
     }
     
     public void destroy() {
-        GL15.glDeleteBuffers(rectCoordVBO);
-        GL15.glDeleteBuffers(rectuvVBO);
-        GL15.glDeleteBuffers(rectuvMVBO);
-        GL15.glDeleteBuffers(rectNormals);
-        GL15.glDeleteBuffers(windowColVBO);
-        GL15.glDeleteBuffers(arrowVBO);
-        GL15.glDeleteBuffers(cubeVBO);
+        MemoryUtil.memFree(tmpMf);
+        MemoryUtil.memFree(tmpM3f);
+        MemoryUtil.memFree(invCamf);
+        MemoryUtil.memFree(projf);
+        tmpMf = tmpM3f = invCamf = projf = null;
+        
+        matrices.destroy();
+        matrices = null;
         
         LightGroup.clear(false);
+        
+        GL33C.glDeleteVertexArrays(rectVAO);
+        GL33C.glDeleteVertexArrays(spriteVAO);
+        
+        GL33C.glDeleteBuffers(rectCoordVBO);
+        GL33C.glDeleteBuffers(rectuvVBO);
+        GL33C.glDeleteBuffers(rectuvMVBO);
+        GL33C.glDeleteBuffers(rectNormals);
     }
     
-    public final Matrix4f cam = new Matrix4f(), invCam = new Matrix4f(), proj = new Matrix4f();
-    public final float[] invCamf = new float[16];
-    public final Matrix4f m = new Matrix4f();
-    private final float[] tmp = new float[16];
-    
-    public void setCam(Vector3D camera, float rotX, float rotY, float fov, int w, int h) {
-        this.w = w;
-        this.h = h;
+    public void setInvCam(Vector3D camera, float rotX, float rotY) {
+        invCam.identity();
+        invCam.rotateY((float) Math.toRadians(rotY));
+        invCam.rotateX((float) Math.toRadians(rotX));
+        invCam.setTranslation(camera.x, camera.y, camera.z);
         
-        cam.identity();
-        cam.rotateY((float) Math.toRadians(rotY));
-        cam.rotateX((float) Math.toRadians(rotX));
-        cam.setTranslation(camera.x, camera.y, camera.z);
-        
-        invCam.set(cam);
         invCam.invert();
         invCam.get(invCamf);
+    }
+    
+    public void setProjectionPers(float fov, int w, int h) {
+        proj.identity().perspective((float) Math.toRadians(fov), (float) w / h, 1f, 40000.0f);
+        proj.get(projf);
         
-        proj.identity();
-        proj.perspective((float) Math.toRadians(fov), (float) w / h, 1f, 40000.0f);
+        matrices.bind();
+        matrices.sendData(projf, 4*4*4);
+        matrices.unbind();
         
         fovY = fov;
         fovX = (float)Math.toDegrees(2f*Math.atan((float) (Math.tan(Math.toRadians(fovY/2f)) * w / h)));
     }
     
-    public void disableFog() {
-        GL11.glDisable(GL11.GL_FOG);
-    }
-    
-    public void setLinearFog(float start, float end, float[] color) {
-        GL11.glEnable(GL11.GL_FOG);
-        GL11.glFogfv(GL11.GL_FOG_COLOR, color);
-
-        GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-        GL11.glFogf(GL11.GL_FOG_START, start);
-        GL11.glFogf(GL11.GL_FOG_END, end);
-    }
-    
-    public void setExpFog(float density, float[] color) {
-        GL11.glEnable(GL11.GL_FOG);
-        GL11.glFogfv(GL11.GL_FOG_COLOR, color);
-
-        GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
-        GL11.glFogf(GL11.GL_FOG_DENSITY, density);
-    }
-    
-    public void clearZbuffer() {
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-    }
-    
-    public void clearColor(int color) {
-        GL11.glClearColor(((color>>16)&255) / 255f, 
-                ((color>>8)&255) / 255f, 
-                (color&255) / 255f, 1);
+    public void setProjectionOrtho(int w, int h) {
+        proj.identity().ortho(0, w, h, 0, 0, 40000);
+        proj.get(projf);
         
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        matrices.bind();
+        matrices.sendData(projf, 4*4*4);
+        matrices.unbind();
     }
     
-    public void proj() {
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadMatrixf(proj.get(tmp));
+    public void setModelView(FloatBuffer modelView) {
+        matrices.bind();
+        matrices.sendData(modelView, 0);
+        matrices.unbind();
     }
     
-    private void ortho(int w, int h) {
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadMatrixf(m.identity().ortho(0, w, h, 0, 0, 40000).get(tmp));
+    public void prepare3D(int xx, int yy, int ww, int hh) {
+        w = ww; h = hh;
+        mode2D = false;
+        
+        GL33C.glViewport(xx, yy, ww, hh);
+        
+        GL33C.glEnable(GL33C.GL_DEPTH_TEST);
+        GL33C.glEnable(GL33C.GL_CULL_FACE);
+        GL33C.glCullFace(GL33C.GL_BACK);
     }
     
     public void prepare2D(int xx, int yy, int ww, int hh) {
-        GL11.glViewport(xx, yy, ww, hh);
-        
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_FOG);
-        
-        ortho(ww, hh);
-        
+        w = ww; h = hh;
         mode2D = true;
+        
+        GL33C.glViewport(xx, yy, ww, hh);
+        setProjectionOrtho(ww, hh);
+        
+        GL33C.glDisable(GL33C.GL_DEPTH_TEST);
+        GL33C.glDisable(GL33C.GL_CULL_FACE);
     }
     
-    public void prepareRender(int xx, int yy, int ww, int hh) {
-        GL11.glViewport(xx, yy, ww, hh);
+    public void clearZbuffer() {
+        GL33C.glClear(GL33C.GL_DEPTH_BUFFER_BIT);
+    }
+    
+    public void clearColor(int color) {
+        GL33C.glClearColor(((color>>16)&255) / 255f, 
+                ((color>>8)&255) / 255f, 
+                (color&255) / 255f, 1);
         
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_FOG);
-        GL11.glCullFace(GL11.GL_BACK);
+        GL33C.glClear(GL33C.GL_COLOR_BUFFER_BIT);
+    }
+    
+    public void disableFog() {
+        //GL33C.glDisable(GL33C.GL_FOG);
+    }
+    
+    public void setLinearFog(float start, float end, float[] color) {
+        /*GL33C.glEnable(GL33C.GL_FOG);
+        GL33C.glFogfv(GL33C.GL_FOG_COLOR, color);
+
+        GL33C.glFogi(GL33C.GL_FOG_MODE, GL33C.GL_LINEAR);
+        GL33C.glFogf(GL33C.GL_FOG_START, start);
+        GL33C.glFogf(GL33C.GL_FOG_END, end);*/
+    }
+    
+    public void setExpFog(float density, float[] color) {
+        /*GL33C.glEnable(GL33C.GL_FOG);
+        GL33C.glFogfv(GL33C.GL_FOG_COLOR, color);
+
+        GL33C.glFogi(GL33C.GL_FOG_MODE, GL33C.GL_EXP);
+        GL33C.glFogf(GL33C.GL_FOG_DENSITY, density);*/
     }
     
     public void add(Renderable obj) {
@@ -223,179 +253,6 @@ public class E3D {
         for(Renderable object : postDraw) object.renderImmediate(this);
         
         postDraw.removeAllElements();
-    }
-    
-    public void drawRect(Material mat, float x, float y, float w, float h, 
-            int color, float a) {
-        drawRect(mat, x, y, w, h, 
-                ((color>>16)&255) / 255f,
-                ((color>>8)&255) / 255f,
-                (color&255) / 255f,
-                a);
-    }
-    
-    public void drawRect(Material mat, float x, float y, float w, float h, 
-            float r, float g, float b, float a) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(w, h, 0);
-        
-        if(mat != null) GL15.glActiveTexture(GL15.GL_TEXTURE0);
-        
-        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(r, g, b, a);
-        
-        if(mat != null) mat.bind();
-        else {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        }
-        
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO);
-        GL11.glVertexPointer(3, GL11.GL_SHORT, 0, 0);
-        
-        if(mat != null) {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectuvVBO);
-            GL11.glTexCoordPointer(2, GL11.GL_SHORT, 0, 0);
-        }
-        
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-        
-        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        if(mat != null) {
-            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-            mat.unbind();
-        } else {
-            GL11.glDisable(GL11.GL_BLEND);
-        }
-        
-        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
-    }
-    
-    public void drawWindow(float x, float y, float w, float h) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        
-        GL11.glEnable(GL11.GL_BLEND);
-        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glEnableClientState(GL15.GL_COLOR_ARRAY);
-        
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rectCoordVBO);
-        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, windowColVBO);
-        GL15.glColorPointer(4, GL15.GL_FLOAT, 0, 0);
-        
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(w, -getWindowYBorder(), 0);
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-        
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y+h, 0);
-        GL11.glScalef(w, getWindowYBorder(), 0);
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-        
-        GL15.glDisableClientState(GL15.GL_COLOR_ARRAY);
-        GL11.glColor4f(0, 0, 0, 0.75f);
-        
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(w, h, 0);
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-        
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glDisable(GL11.GL_BLEND);
-        
-        GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
-    }
-    
-    public void drawCube(Vector3D min, Vector3D max, int color, float a) {
-        m.identity();
-        m.translate(min.x, min.y, min.z);
-        m.scale(max.x-min.x, max.y-min.y, max.z-min.z);
-        invCam.mul(m);
-        
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadMatrixf(invCam.get(tmp));
-        invCam.set(invCamf);
-        
-        float r = ((color>>16)&255) / 255f;
-        float g = ((color>>8)&255) / 255f;
-        float b = (color&255) / 255f;
-        
-        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(r, g, b, a);
-        
-        GL11.glEnable(GL11.GL_BLEND);
-        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cubeVBO);
-        GL11.glVertexPointer(3, GL11.GL_SHORT, 0, 0);
-        
-        GL11.glDrawArrays(GL11.GL_LINES, 0, 24);
-        
-        GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glDisable(GL11.GL_BLEND);
-        
-        if(r != 1 || g != 1 || b != 1 || a != 1) GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
-    }
-    
-    public static int getWindowYBorder() {
-        return 15;
-    }
-    
-    public void drawArrow(float x, float y, float w, float h, float rot, int color, float a) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        
-        m.identity();
-        m.scale(w/2, h/2, 0);
-        m.rotate((float)Math.toRadians(rot), 0, 0, 1);
-        m.setTranslation(x, y, 0);
-        
-        GL11.glLoadMatrixf(m.get(tmp));
-        
-        if(color != 0xffffff || a != 1) GL11.glColor4f(((color>>16)&255) / 255f, 
-                ((color>>8)&255) / 255f, 
-                (color&255) / 255f, a);
-        
-        GL11.glEnable(GL11.GL_BLEND);
-        GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, arrowVBO);
-        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
-        
-        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
-        
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glDisable(GL11.GL_BLEND);
-        
-        if(color != 0xffffff || a != 1) GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
     }
     
     private static void sort(Vector<Renderable> list) {
@@ -420,74 +277,156 @@ public class E3D {
         }
     }
     
-    private boolean clipEnabled;
-    private float cx, cy, cw, ch;
-    
-    public void clip(float x, float y, float cw, float ch) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadMatrixf(m.identity().get(tmp));
+    public void drawRect(float x, float y, float w, float h, boolean sendUVM) {
+        tmpM.identity();
+        tmpM.translate(x, y, 0);
+        tmpM.scale(w, h, 0);
+        tmpM.get(tmpMf);
 
-        //left clip
-        double[] eq = new double[]{1,0,0,-x};
-        GL11.glClipPlane(GL11.GL_CLIP_PLANE0, eq);
-	GL11.glEnable(GL11.GL_CLIP_PLANE0);
+        setModelView(tmpMf);
         
-        //right clip
-        eq[0] = -1; eq[3] = x+cw;
-        GL11.glClipPlane(GL11.GL_CLIP_PLANE1, eq);
-	GL11.glEnable(GL11.GL_CLIP_PLANE1);
+        GL33C.glEnable(GL33C.GL_BLEND);
+        GL33C.glBlendEquation(GL33C.GL_FUNC_ADD);
+        GL33C.glBlendFunc(GL33C.GL_SRC_ALPHA, GL33C.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL33C.glBindVertexArray(rectVAO);
+
+        GL33C.glEnableVertexAttribArray(0); //pos
+        if(sendUVM) GL33C.glEnableVertexAttribArray(1); //uvm
         
-        //bottom clip
-        eq[0] = 0; eq[1] = 1; eq[3] = -y;
-        GL11.glClipPlane(GL11.GL_CLIP_PLANE2, eq);
-	GL11.glEnable(GL11.GL_CLIP_PLANE2);
+        GL33C.glDrawArrays(GL33C.GL_TRIANGLE_FAN, 0, 4);
         
-        //top clip
-        eq[1] = -1; eq[3] = y+ch;
-        GL11.glClipPlane(GL11.GL_CLIP_PLANE3, eq);
-	GL11.glEnable(GL11.GL_CLIP_PLANE3);
+        GL33C.glDisableVertexAttribArray(0); //pos
+        if(sendUVM) GL33C.glDisableVertexAttribArray(1); //uvm
+
+        GL33C.glBindVertexArray(0);
+        GL33C.glDisable(GL33C.GL_BLEND);
+    }
+
+    public void takeScreenshot() {
+        GL33C.glReadBuffer(GL33C.GL_FRONT);
+        ByteBuffer buffer = MemoryUtil.memAlloc(win.getWidth() * win.getHeight() * 4);
+        GL33C.glReadPixels(0, 0, win.getWidth(), win.getHeight(), GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, buffer);
         
-        GL11.glPopMatrix();
+        int error = GL33C.glGetError();
+        if(error != 0) System.out.println("takeScreenshot GL error: " + error);
         
-        cx = x; cy = y;
-        this.cw = cw; this.ch = ch;
-        clipEnabled = true;
+        try {
+            File file = new File("screenshots/");
+            if(!file.exists()) file.mkdir();
+            
+            Calendar cal = Calendar.getInstance();
+            String date = cal.get(Calendar.YEAR) + "-"
+                    + (cal.get(Calendar.MONTH) + 1) + "-"
+                    + cal.get(Calendar.DAY_OF_MONTH) + " "
+                    + cal.get(Calendar.HOUR_OF_DAY) + "." + cal.get(Calendar.MINUTE) + "." + cal.get(Calendar.SECOND);
+            
+            file = new File("screenshots/" + date + ".png");
+            BufferedImage image = new BufferedImage(win.getWidth(), win.getHeight(), BufferedImage.TYPE_INT_RGB);
+            
+            for(int x = 0; x < win.getWidth(); x++) {
+                for(int y = 0; y < win.getHeight(); y++) {
+                    int i = (x + (win.getWidth() * y)) * 4;
+                    int r = buffer.get(i) & 255;
+                    int g = buffer.get(i + 1) & 255;
+                    int b = buffer.get(i + 2) & 255;
+                    image.setRGB(x, win.getHeight() - (y + 1), (255 << 24) | (r << 16) | (g << 8) | b);
+                }
+            }
+            
+            MemoryUtil.memFree(buffer);
+            ImageIO.write(image, "PNG", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getMaxAA() {
+        return GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
     }
     
-    public final Vector clipPlanes = new Vector();
+    //Loading scripts
     
-    public void pushClip() {
-        clipPlanes.add(new Float(cx));
-        clipPlanes.add(new Float(cy));
-        clipPlanes.add(new Float(cw));
-        clipPlanes.add(new Float(ch));
-        clipPlanes.add(new Boolean(clipEnabled));
+    public Model getModel(String path, String prefix, String postfix) {
+        Model model = (Model) AssetManager.get("MODEL_" + path);
+
+        if(model != null) return model;
+        
+        model = new Model(MeshLoader.loadObj(this, path));
+        AssetManager.add("MODEL_" + path, model);
+
+        return model;
     }
     
-    public void popClip() {
-        clipEnabled = (Boolean) clipPlanes.elementAt(clipPlanes.size()-1);
-        ch = (Float) clipPlanes.elementAt(clipPlanes.size()-2);
-        cw = (Float) clipPlanes.elementAt(clipPlanes.size()-3);
-        cy = (Float) clipPlanes.elementAt(clipPlanes.size()-4);
-        cx = (Float) clipPlanes.elementAt(clipPlanes.size()-5);
-        
-        clipPlanes.removeElementAt(clipPlanes.size()-1);
-        clipPlanes.removeElementAt(clipPlanes.size()-1);
-        clipPlanes.removeElementAt(clipPlanes.size()-1);
-        clipPlanes.removeElementAt(clipPlanes.size()-1);
-        clipPlanes.removeElementAt(clipPlanes.size()-1);
-        
-        if(clipEnabled) clip(cx, cy, cw, ch);
-        else disableClip();
+    public Shader getShader(String path) {
+        return getShader(path, null);
     }
     
-    public void disableClip() {
-	GL11.glDisable(GL11.GL_CLIP_PLANE0);
-	GL11.glDisable(GL11.GL_CLIP_PLANE1);
-	GL11.glDisable(GL11.GL_CLIP_PLANE2);
-	GL11.glDisable(GL11.GL_CLIP_PLANE3);
-        clipEnabled = false;
+    public Shader getShader(String path, String[] defs) {
+        String defsName = (defs != null) ? String.valueOf(Arrays.hashCode(defs)) : "";
+        
+        Shader shader = (Shader) AssetManager.get("SHRD_" + path + defsName);
+        
+        if(shader == null) {
+            shader = new Shader(path, defs);
+            AssetManager.add("SHRD_" + path + defsName, shader);
+        }
+        
+        return shader;
+    }
+    
+    public ShaderPack getShaderPack(String path, String[][] defs) {
+        String defsName = (defs != null) ? String.valueOf(Arrays.hashCode(defs)) : "";
+        
+        ShaderPack shaderPack = (ShaderPack) AssetManager.get("SHDRPCK_" + path + defsName);
+        if(shaderPack != null) return shaderPack;
+        
+        shaderPack = new ShaderPack(this, path, defs);
+        AssetManager.add("SHDRPCK_" + path + defsName, shaderPack);
+        
+        return shaderPack;
+    }
+    
+    public Texture getTexture(String name) {
+        Texture tex = (Texture) AssetManager.get("TEX_" + name);
+        if(tex != null) return tex;
+        
+        if(name.equals("null")) {
+            tex = new Texture(0, 1, 1);
+            tex.lock();
+        } else {
+            tex = Texture.loadTexture(name);
+        }
+        
+        if(tex != null) {
+            AssetManager.add("TEX_" + name, tex);
+            return tex;
+        }
+        
+        return getTexture("null");
+    }
+    
+    public Material getMaterial(String name) {
+        return getMaterial(name, null);
+    }
+    
+    public Material getMaterial(String name, Hashtable<String,String> replace) {
+        Material mat = (Material) AssetManager.get("MAT_" + name);
+        if(mat != null) return mat;
+        
+        String[] lines = StringTools.cutOnStrings(name, ';');
+        
+        String path = lines[0];
+        String replaced = replace != null ? replace.get(path) : null;
+        if(replaced != null) path = replaced;
+        
+        Texture tex = getTexture(path);
+        mat = new WorldMaterial(this, tex);
+        mat.load(new IniFile(lines, false));
+        
+        AssetManager.add("MAT_" + name, mat);
+        
+        return mat;
     }
 
 }

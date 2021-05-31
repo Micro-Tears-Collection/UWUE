@@ -1,12 +1,14 @@
 package code.game;
 
-import code.engine.Engine;
+import code.engine.Window;
 import code.engine.Screen;
 
 import code.audio.AudioEngine;
 import code.audio.SoundSource;
+import code.engine.Engine;
 
 import code.engine3d.E3D;
+import code.engine3d.HudRender;
 
 import code.game.world.entities.Player;
 
@@ -35,12 +37,14 @@ public class Main extends Screen {
     
     //bilding
     static int TILDE, ERASE;
-    private static Main main;
-
+    
     public IniFile gamecfg;
     public Configuration conf;
     
+    public Window window;
     public E3D e3d;
+    public HudRender hudRender;
+    
     public SoundSource musPlayer;
     public Globals lua;
     public LuaTable luasave;
@@ -57,9 +61,9 @@ public class Main extends Screen {
     private TextBox console;
     
     public static void main(String[] args) {
-        int sizes[] = Engine.init();
-        main = new Main();
-        Engine.setListener(main);
+        Engine.init();
+        int sizes[] = Engine.getMonitorSize();
+        Main main = new Main();
         
         main.gamecfg = AssetManager.loadIni("game.ini", true);
         main.conf = new Configuration(sizes[0], sizes[1]);
@@ -81,41 +85,46 @@ public class Main extends Screen {
         int w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
         int h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
         
-        Engine.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
-        Engine.setTitle(main.gamecfg.get("game", "name"));
+        main.window = Window.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
+        main.window.setTitle(main.gamecfg.get("game", "name"));
+        main.window.setListener(main);
+        main.window.bind();
+        
         AudioEngine.init();
         AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
-        main.conf.apply(false);
+        main.conf.apply(main.window, false);
         
         main.init();
     }
 
     private void init() {
-        musPlayer = ((SoundSource) SoundSource.get().lock()).beMusicPlayer();
+        musPlayer = (new SoundSource()).beMusicPlayer();
         musPlayer.setSoundType(Configuration.MUSIC);
         
-        selectedS = (SoundSource) SoundSource.get("/sounds/select.ogg").lock();
+        selectedS = new SoundSource("/sounds/select.ogg");
         selectedS.set3D(false);
         selectedS.buffer.neverUnload = true;
         
-        clickedS = (SoundSource) SoundSource.get("/sounds/click.ogg").lock();
+        clickedS = new SoundSource("/sounds/click.ogg");
         clickedS.set3D(false);
         clickedS.buffer.neverUnload = true;
         
-        gameStartS = (SoundSource) SoundSource.get("/sounds/game start.ogg").lock();
+        gameStartS = new SoundSource("/sounds/game start.ogg");
         gameStartS.set3D(false);
         gameStartS.buffer.neverUnload = true;
         
+        e3d = new E3D(window);
+        hudRender = new HudRender(e3d);
+        
         font = BMFont.loadFont(gamecfg.get("hud", "font"));
-        font.setInterpolation(false);
         setFontScale(getHeight());
         
         fontColor = StringTools.getRGB(gamecfg.getDef("hud", "font_color", "255,255,255"), ',');
         fontSelColor = StringTools.getRGB(gamecfg.getDef("hud", "font_selected_color", "221,136,149"), ',');
         
-        e3d = new E3D();
-        
         clearLua();
+        
+        final Main main = this;
         
         console = new TextBox(this, font) {
             public void onCancel() {
@@ -147,12 +156,18 @@ public class Main extends Screen {
         
         Scripting.save(luasave);
         
+        hudRender.destroy();
         e3d.destroy();
         font.destroy();
         
+        musPlayer.destroy();
+        selectedS.destroy();
+        clickedS.destroy();
+        gameStartS.destroy();
+        
         AssetManager.destroyThings(AssetManager.ALL);
         
-        Engine.destroy();
+        window.destroy();
         AudioEngine.close();
     }
     
@@ -168,40 +183,45 @@ public class Main extends Screen {
     }
 
     private void run() {
-        while(run) {
-            //Change screen to next screen
-            if(nextScreen != null) {
-                if(screen != null && needToDestroyScreen) {
-                    needToDestroyScreen = false;
-                    screen.destroy();
+        try {
+            while(run) {
+                //Change screen to next screen
+                if(nextScreen != null) {
+                    if(screen != null && needToDestroyScreen) {
+                        needToDestroyScreen = false;
+                        screen.destroy();
+                    }
+
+                    screen = nextScreen;
+                    nextScreen = null;
+                    screen.show();
                 }
 
-                screen = nextScreen;
-                nextScreen = null;
-                screen.show();
-            }
-            
-            FPS.frame();
+                FPS.frame();
 
-            if(screen != null) {
-                screen.tick();
-            }
-            
-            if(textBox == console) {
-                if(!e3d.mode2D) e3d.prepare2D(0, 0, getWidth(), getHeight());
-                console.draw(e3d, false, fontSelColor);
-            }
-            
-            Engine.flush();
+                if(screen != null) {
+                    screen.tick();
+                }
 
-            if(!conf.vsync) try {
-                Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
-                //max 125 fps (todo: add support of 144hz monitors??)
-            } catch (Exception e) {}
-            
-            if(userTryingToCloseApp()) {
-                stop();
+                if(textBox == console) {
+                    if(!e3d.mode2D) e3d.prepare2D(0, 0, getWidth(), getHeight());
+                    console.draw(hudRender, false, fontSelColor);
+                }
+
+                window.flush();
+
+                if(!conf.vsync) try {
+                    Thread.sleep(Math.max(1, 8 - (System.currentTimeMillis() - FPS.previousFrame)));
+                    //max 125 fps (todo: add support of 144hz monitors??)
+                } catch (Exception e) {
+                }
+
+                if(window.isShouldClose()) {
+                    stop();
+                }
             }
+        } catch(Throwable t) {
+            t.printStackTrace();
         }
 
         destroy();
@@ -218,6 +238,22 @@ public class Main extends Screen {
 
     public Screen getScreen() {
         return screen;
+    }
+    
+    public int getWidth() {
+        return window.getWidth();
+    }
+    
+    public int getHeight() {
+        return window.getHeight();
+    }
+    
+    public int getMouseX() {
+        return window.getMouseX();
+    }
+    
+    public int getMouseY() {
+        return window.getMouseY();
     }
 
     public Game getGame() {
@@ -251,11 +287,11 @@ public class Main extends Screen {
 
     public void keyPressed(int key) {
         if(key == GLFW.GLFW_KEY_F11) {
-            boolean fullscr = !Engine.isFullscr();
-            Engine.setWindow(fullscr, fullscr ? conf.fw : conf.ww, fullscr ? conf.fh : conf.wh, conf.vsync);
+            boolean fullscr = !window.isFullscr();
+            window.setWindow(fullscr, fullscr ? conf.fw : conf.ww, fullscr ? conf.fh : conf.wh, conf.vsync);
             return;
         } else if(key == GLFW.GLFW_KEY_F2) {
-            Engine.takeScreenshot();
+            e3d.takeScreenshot();
             return;
         }
         

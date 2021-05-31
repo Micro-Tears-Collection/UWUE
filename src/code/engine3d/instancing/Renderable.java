@@ -1,5 +1,6 @@
-package code.engine3d;
+package code.engine3d.instancing;
 
+import code.engine3d.E3D;
 import code.engine3d.Lighting.LightGroup;
 import code.math.Vector3D;
 import code.utils.IniFile;
@@ -83,9 +84,9 @@ public class Renderable {
     
     public static Matrix4f buildMatrix(Vector3D pos, Vector3D rot, Matrix4f tmp) {
         if(rot != null) {
+            tmp.rotateZ((float) Math.toRadians(rot.z));
             tmp.rotateX((float) Math.toRadians(rot.x));
             tmp.rotateY((float) Math.toRadians(rot.y));
-            tmp.rotateZ((float) Math.toRadians(rot.z));
         }
         tmp.setTranslation(pos.x, pos.y, pos.z);
         

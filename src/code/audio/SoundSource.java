@@ -2,14 +2,11 @@ package code.audio;
 
 import code.math.Vector3D;
 
-import code.utils.assetManager.AssetManager;
-import code.utils.assetManager.DisposableContent;
-
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.EXTEfx;
 
-public class SoundSource extends DisposableContent {
+public class SoundSource {
     public static final float defRefDist = 1, defMaxDist = 1000;
 
     public String soundName;
@@ -21,33 +18,18 @@ public class SoundSource extends DisposableContent {
     private static final float[] sourcePos = new float[3], sourceSpeed = new float[3];
     private boolean use3D = true;
     
-    /**
-     * Should be destoroyed after using!
-     */
     public SoundSource() {
         init();
     }
     
-    /**
-     * Should be destoroyed after using!
-     */
     public SoundSource(String file) {
         init();
         loadFile(file);
     }
     
-    public static SoundSource get() {
-        return get(null);
-    }
-    
-    public static SoundSource get(String file) {
-        SoundSource source = file==null?new SoundSource():new SoundSource(file);
-        AssetManager.addDisposable(source);
-        return source;
-    }
-    
     private void init() {
         // Bind the buffer with the source.
+        AudioEngine.sources.add(this);
         soundSource = AL10.alGenSources();
         
         set3D(true);
@@ -57,6 +39,12 @@ public class SoundSource extends DisposableContent {
         //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.4f);
         
         setDistance(defRefDist, defMaxDist);
+    }
+    
+    public void destroy() {
+        AudioEngine.sources.remove(this);
+        free();
+        AL10.alDeleteSources(soundSource);
     }
     
     public SoundSource beMusicPlayer() {
@@ -69,8 +57,10 @@ public class SoundSource extends DisposableContent {
     public void loadFile(String file) {
         soundName = null;
         
+        if(buffer != null) free();
         buffer = SoundBuffer.get(file);
         if(buffer != null) {
+            buffer.use();
             AL10.alSourcei(soundSource, AL10.AL_BUFFER, buffer.id);
             soundName = file;
         } else AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
@@ -170,13 +160,9 @@ public class SoundSource extends DisposableContent {
         AL10.alSourcePlay(soundSource);
     }
     
-    public void destroy() {
-        AL10.alDeleteSources(soundSource);
-    }
-    
     public void free() {
-        if(buffer != null) buffer.free();
         AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
+        if(buffer != null) buffer.free();
         buffer = null;
     }
 

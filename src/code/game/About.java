@@ -23,7 +23,7 @@ public class About extends Screen {
         
         loadedText = AssetManager.loadString("about.txt");
         
-        text = new TextView(getWidth(), getHeight(), main.font);
+        text = new TextView(main.getWidth(), main.getHeight(), main.font);
         text.setHCenter(true);
         text.setVCenter(true);
         setText();
@@ -38,15 +38,15 @@ public class About extends Screen {
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
-        text.setSize(getWidth(), getHeight());
+        text.setSize(main.getWidth(), main.getHeight());
         setText();
         menu.sizeChanged(w, h, this);
     }
     
     public void tick() {
         menu.drawBackground();
-        main.e3d.drawRect(null, 0, 0, getWidth(), getHeight(), 0, 0.5f);
-        text.draw(main.e3d, 0, 0, main.fontColor);
+        main.hudRender.drawRect(0, 0, main.getWidth(), main.getHeight(), 0, 0.5f);
+        text.draw(main.hudRender, 0, 0, main.fontColor);
         
         step();
     }
@@ -65,7 +65,6 @@ public class About extends Screen {
     
     public void mouseAction(int key, boolean pressed) {
         if(key == Screen.MOUSE_LEFT && !pressed) {
-            Keys.reset();
             main.clickedS.play();
             main.setScreen(menu);
         }

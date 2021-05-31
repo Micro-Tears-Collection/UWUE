@@ -3,6 +3,7 @@ package code.engine3d.collision;
 import code.engine3d.Mesh;
 import code.math.MathUtils;
 import code.math.Vector3D;
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -100,9 +101,7 @@ public class RayCast {
         RayCast.rayCast(mesh, null, ray);
     }
 
-    public static void rayCast(Mesh mesh, float[] mat, Ray ray) {
-        if(!mesh.collision) return;
-        
+    public static void rayCast(Mesh mesh, FloatBuffer mat, Ray ray) {
         float[][] xyz = mesh.physicsVerts;
         float[][] normals = mesh.normalsPerFace;
         
@@ -122,9 +121,9 @@ public class RayCast {
             float[] norms = normals[t];
 
             for(int i = 0; i < verts.length; i += 9) {
-                float cx = verts[i], cy = verts[i + 1], cz = verts[i + 2];
+                float ax = verts[i], ay = verts[i + 1], az = verts[i + 2];
                 float bx = verts[i + 3], by = verts[i + 4], bz = verts[i + 5];
-                float ax = verts[i + 6], ay = verts[i + 7], az = verts[i + 8];
+                float cx = verts[i + 6], cy = verts[i + 7], cz = verts[i + 8];
 
                 v1.set(ax, ay, az);
                 v2.set(bx, by, bz);
@@ -143,7 +142,7 @@ public class RayCast {
                 if(MathUtils.min(v1.z, v2.z, v3.z) > z2) continue;
 
                 normal.set(norms[i / 3], norms[i / 3 + 1], norms[i / 3 + 2]);
-                if(mat != null) normal.transformNoOffset(mat);
+                if(mat != null) normal.transform(mat, false);
                 float dis = MathUtils.rayCast(v1, v2, v3, normal, start, dir, colPoint);
 
                 if(dis != Float.MAX_VALUE) {

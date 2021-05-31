@@ -5,10 +5,10 @@ import code.audio.SoundSource;
 
 import code.engine3d.Lighting.Light;
 import code.engine3d.Lighting.LightGroup;
+import code.engine3d.materials.WorldMaterial;
+import code.engine3d.instancing.Sprite;
+import code.engine3d.instancing.MeshInstance;
 import code.engine3d.Material;
-import code.engine3d.Mesh;
-import code.engine3d.Sprite;
-import code.engine3d.MeshLoader;
 
 import code.utils.assetManager.AssetManager;
 
@@ -38,8 +38,7 @@ public class WorldLoader {
 
     public static void loadWorld(Game game, String map, 
             Vector3D newPlayerPos, float nextRotX, float nextRotY) {
-        AssetManager.destroyThings(AssetManager.DISPOSABLE);
-        AssetManager.free();
+        if(game.world != null) game.world.destroy();
         AudioEngine.suspend();
         
         LightGroup.clear(true);
@@ -69,29 +68,31 @@ public class WorldLoader {
         if(nextRotX != Float.MAX_VALUE) game.player.rotX = nextRotX;
         World.updateListener(game.player);
         
-        Mesh[] skybox = null;
+        MeshInstance[] skybox = null;
         int skyColor = 0;
         if(lvl.groupExists("sky")) {
             
             String tmp = lvl.get("sky", "model");
-            if(tmp!=null) skybox = MeshLoader.loadObj(tmp);
+            if(tmp!=null) {
+                skybox = MeshInstance.get(game.e3d.getModel(tmp, null, null).getMeshes());
+            }
             
             tmp = lvl.get("sky", "color");
             if(tmp!=null) skyColor = StringTools.getRGB(tmp,',');
             
         }
         
-        Mesh[] worldMeshes = null;
+        MeshInstance[] worldMeshes = null;
         if(lvl.groupExists("world")) {
             String prefix = null, postfix = null;
             if(lvl.getInt("world", "trenchbroom", 0) == 1) {
                 prefix = "/textures/";
                 postfix = ".png";
             }
-            worldMeshes = MeshLoader.loadObj(lvl.get("world", "model"), true, prefix, postfix);
+            worldMeshes = MeshInstance.get(game.e3d.getModel(lvl.get("world", "model"), prefix, postfix).getMeshes());
         }
         
-        World world = new World(worldMeshes, skyColor, skybox, game.main.conf.debug);
+        World world = new World(game.e3d, worldMeshes, skyColor, skybox, game.main.conf.debug);
         
         world.fallDeath = lvl.getInt("world", "fall_death", world.fallDeath?1:0) == 1;
         
@@ -151,7 +152,6 @@ public class WorldLoader {
             tmp = lvl.get("music", "path");
             if(tmp != null && !(playing && (dontChange || tmp.equals(player.soundName)))) {
                 player.stop();
-                if(player.buffer != null) player.free();
                 if(!pitchWasSet) player.setPitch(1);
                 player.loadFile(tmp);
                 sourcesToPlay.add(player.getID());
@@ -163,9 +163,8 @@ public class WorldLoader {
             
             if(lvl.getInt("music", "rewind", 0) == 1) player.rewind();
         }
-        if(game.main.musPlayer.buffer != null) game.main.musPlayer.buffer.using = true;
         
-        AssetManager.destroyThings(AssetManager.REUSABLE);
+        AssetManager.destroyThings(AssetManager.CONTENT);
         AudioEngine.process();
         
         if(!sourcesToPlay.isEmpty()) {
@@ -258,6 +257,7 @@ public class WorldLoader {
     private static void loadObject(Game game, World world, String objType, String name, IniFile ini, 
             float[] pos, Vector lightgroupdata, Vector<Integer> sourcesToPlay) {
         //yeah...
+        //todo maybe move code to objects?
         
         Entity obj = null;
         if(objType.equals("spr")) {
@@ -323,12 +323,11 @@ public class WorldLoader {
         }
         
         if(obj != null) world.objects.add(obj);
-        
     }
 
     private static SoundSourceEntity loadSoundSourceEntity(String name, float[] pos,
             Game game, World world, IniFile ini, Vector<Integer> sourcesToPlay) {
-        SoundSource source = SoundSource.get(ini.get("sound"));
+        SoundSource source = new SoundSource(ini.get("sound"));
         
         source.setVolume(ini.getFloat("volume", 1));
         source.setPitch(ini.getFloat("pitch", 1));
@@ -389,7 +388,7 @@ public class WorldLoader {
     }
 
     private static MeshObject loadMesh(String name, float[] pos, Game game, World world, IniFile ini) {
-        MeshObject mesh = new MeshObject(MeshLoader.loadObj(ini.get("model"), true, null, null));
+        MeshObject mesh = new MeshObject(game.e3d.getModel(ini.get("model"), null, null));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
         mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;
@@ -400,9 +399,13 @@ public class WorldLoader {
     }
 
     private static SpriteObject loadSprite(String name, float[] pos, Game game, World world, IniFile ini, boolean billboard) {
-        SpriteObject spr = new SpriteObject();
+        Material loadedMat = game.e3d.getMaterial(ini.get("tex"));
+        if(!(loadedMat instanceof WorldMaterial)) {
+            System.out.println("wrong material???");
+            return null;
+        }
         
-        Material mat = Material.get(ini.get("tex"));
+        WorldMaterial mat = (WorldMaterial) loadedMat;
         float w = 100, h = 100;
         
         float ww = ini.getFloat("width", Float.MAX_VALUE);
@@ -423,14 +426,16 @@ public class WorldLoader {
         if(tmp.equals("center")) align = Sprite.CENTER;
         else if(tmp.equals("top")) align = Sprite.TOP;
         
-        spr.spr = new Sprite(mat, billboard, w, h, align);
-        spr.spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
+        Sprite spr = new Sprite(mat, billboard, w, h, align);
+        spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
         
-        spr.visible = ini.getInt("visible", spr.visible?1:0) == 1;
+        SpriteObject sprObj = new SpriteObject(spr);
         
-        loadDefEntity(spr, pos, name, game, world, ini);
+        sprObj.visible = ini.getInt("visible", sprObj.visible?1:0) == 1;
         
-        return spr;
+        loadDefEntity(sprObj, pos, name, game, world, ini);
+        
+        return sprObj;
     }
     
     private static void loadPhysEntity(PhysEntity obj, float[] pos, String name, Game game, World world, IniFile ini) {

@@ -1,15 +1,12 @@
 package code.game;
 
-import code.engine.Engine;
 import code.engine.Screen;
-
-import code.engine3d.Material;
+import code.engine3d.Texture;
 
 import code.ui.itemList.ItemList;
 import code.ui.itemList.TextItem;
 import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
-import code.utils.Keys;
 
 /**
  *
@@ -18,34 +15,37 @@ import code.utils.Keys;
 public class Menu extends Screen {
     
     private boolean initialized;
+    private int w, h;
     
     private Main main;
     private ItemList menu;
-    public Material background, logo, shadow;
+    public Texture background, logo, shadow;
     
     public Menu(Main main) {
         this.main = main;
+        
+        w = main.getWidth(); h = main.getHeight();
     }
     
     public void show() {
         if(initialized) return;
         initialized = true;
         
-        background = Material.get("/images/menu.png");
-        logo = Material.get("/images/lsddejfg.png;alpha_test=1");
-        shadow = Material.get("/images/menushadow.png;blend=blend");
+        background = main.e3d.getTexture("/images/menu.png");
+        logo = main.e3d.getTexture("/images/lsddejfg.png");
+        shadow = main.e3d.getTexture("/images/menushadow.png");
         
         main.musPlayer.loadFile("/music/menu.ogg");
         main.musPlayer.play();
         
-        menu = ItemList.createItemList(getWidth()/2, getHeight(), main.font, main.selectedS);
+        menu = ItemList.createItemList(w/2, h, main.font, main.selectedS);
         setMenuText();
     }
     
     public void destroy() {
         main.musPlayer.stop();
         main.musPlayer.free();
-        AssetManager.destroyThings(AssetManager.ALL_EXCEPT_LOCKED);
+        AssetManager.destroyThings(AssetManager.CONTENT);
     }
 
     private void setMenuText() {
@@ -58,7 +58,7 @@ public class Menu extends Screen {
                 main.musPlayer.stop();
                 main.gameStartS.play();
 
-                Engine.showCursor(false);
+                main.window.showCursor(false);
 
                 BlankScreen blank = new BlankScreen(main, 5000, 0) {
 
@@ -96,14 +96,15 @@ public class Menu extends Screen {
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
-        menu.setSize(getWidth()/2, getHeight());
+        this.w = w; this.h = h;
+        menu.setSize(w/2, h);
         setMenuText();
     }
     
     public void drawBackground() {
-        main.e3d.prepare2D(0, 0, getWidth(), getHeight());
+        main.e3d.prepare2D(0, 0, w, h);
         
-        int sizeb = Math.min(getWidth(), getHeight());
+        int sizeb = Math.min(w, h);
         
         long scrollXX = FPS.currentTime*(-10)/1000;
         scrollXX -= (scrollXX/sizeb)*sizeb;
@@ -114,15 +115,15 @@ public class Menu extends Screen {
         int by = (int)(scrollYY % sizeb);
         while(bx>0) bx-=sizeb;
         while(by>0) by-=sizeb;
-        bx %= getWidth();
-        by %= getHeight();
+        bx %= w;
+        by %= h;
         
         int sby = by;
         
-        while(bx < getWidth()) {
+        while(bx < w) {
             by = sby;
-            while(by < getHeight()) {
-                main.e3d.drawRect(background, bx, by, sizeb, sizeb, 0xffffff, 1);
+            while(by < h) {
+                main.hudRender.drawRect(background, bx, by, sizeb, sizeb, 0xffffff, 1);
                 by += sizeb;
             }
             bx += sizeb;
@@ -132,23 +133,23 @@ public class Menu extends Screen {
     public void tick() {
         drawBackground();
         
-        main.e3d.drawRect(shadow, 0, 0, getWidth(), getHeight(), 0xffffff, 1);
+        main.hudRender.drawRect(shadow, 0, 0, w, h, 0xffffff, 1);
         
-        int logow = Math.min(getHeight(), getWidth()/2) * 3 / 4;
-        int lx = (getWidth()/2 - logow) / 2;
-        int ly = (getHeight() - logow) / 2;
+        int logow = Math.min(h, w/2) * 3 / 4;
+        int lx = (w/2 - logow) / 2;
+        int ly = (h - logow) / 2;
         
         float sin = (float)Math.sin(FPS.currentTime / 200f) * logow * 0.05f;
         float cos = (float)Math.cos(FPS.currentTime / 200f) * logow * 0.05f;
         
-        main.e3d.drawRect(logo, lx+sin*2, ly+cos*2, logow, logow, 0, 1);
-        main.e3d.drawRect(logo, lx+sin, ly+cos, logow, logow, 0xffff00, 1);
+        main.hudRender.drawRect(logo, lx+sin*2, ly+cos*2, logow, logow, 0, 1);
+        main.hudRender.drawRect(logo, lx+sin, ly+cos, logow, logow, 0xffff00, 1);
         
-        main.e3d.drawRect(logo, lx, ly, logow, logow, 0xffffff, 1);
+        main.hudRender.drawRect(logo, lx, ly, logow, logow, 0xffffff, 1);
 
-        menu.mouseUpdate(getWidth() / 2, 0, getMouseX(), getMouseY());
+        menu.mouseUpdate(w / 2, 0, main.getMouseX(), main.getMouseY());
         
-        menu.draw(main.e3d, getWidth() / 2, 0, main.fontColor, main.fontSelColor);
+        menu.draw(main.hudRender, w / 2, 0, main.fontColor, main.fontSelColor);
     }
     
     public void keyPressed(int key) {
@@ -166,7 +167,7 @@ public class Menu extends Screen {
     
     public void mouseAction(int button, boolean pressed) {
         if(button == Screen.MOUSE_LEFT) 
-            menu.mouseAction(getWidth()/2, 0, getMouseX(), getMouseY(), pressed);
+            menu.mouseAction(w/2, 0, main.getMouseX(), main.getMouseY(), pressed);
     }
 
 }

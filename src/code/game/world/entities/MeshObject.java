@@ -1,7 +1,7 @@
 package code.game.world.entities;
 
 import code.engine3d.E3D;
-import code.engine3d.Mesh;
+import code.engine3d.Model;
 
 import code.game.world.World;
 
@@ -9,6 +9,7 @@ import code.engine3d.collision.Ray;
 import code.engine3d.collision.RayCast;
 import code.engine3d.collision.Sphere;
 import code.engine3d.collision.SphereCast;
+import code.engine3d.instancing.MeshInstance;
 import code.math.Vector3D;
 
 import code.utils.FPS;
@@ -19,16 +20,22 @@ import code.utils.FPS;
  */
 public class MeshObject extends PhysEntity {
     
-    public Mesh mesh;
+    public MeshInstance mesh;
     public boolean meshCollision = true;
     public boolean visible = true;
     
-    public MeshObject(Mesh[] meshes) {
-        this.mesh = meshes[0];
+    public MeshObject(Model model) {
+        this.mesh = MeshInstance.get(model.get(0));
         setSize(Math.max(Math.max(mesh.max.z,-mesh.min.z), Math.max(mesh.max.x,-mesh.min.x)), Math.max(0, mesh.max.y));
         physics = false;
         pushable = false;
         canPush = false;
+    }
+    
+    public void destroy() {
+        super.destroy();
+        mesh.destroy();
+        mesh = null;
     }
     
     public void physicsUpdate(World world) {
@@ -36,30 +43,30 @@ public class MeshObject extends PhysEntity {
     }
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
-        if(!meshCollision) return super.rayCast(ray, onlyMeshes);
+        if(!meshCollision || !mesh.collision) return super.rayCast(ray, onlyMeshes);
         
         mesh.setTransformation(pos, new Vector3D(0, rotY, 0));
         if(RayCast.isRayAABBCollision(ray, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
-            RayCast.rayCast(mesh, mesh.modelMatrix, ray);
+            RayCast.rayCast(mesh.mesh, mesh.modelMatrix, ray);
             
-            if(ray.mesh == mesh) return true;
+            if(ray.mesh == mesh.mesh) return true;
         }
         
         return false;
     }
     
     public boolean meshSphereCast(Sphere sphere) {
-        if(!meshCollision) return false;
+        if(!meshCollision || !mesh.collision) return false;
         
         mesh.setTransformation(pos, new Vector3D(0, rotY, 0));
         if(SphereCast.isSphereAABBCollision(sphere, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
-            SphereCast.sphereCast(mesh, mesh.modelMatrix, sphere);
+            SphereCast.sphereCast(mesh.mesh, mesh.modelMatrix, sphere);
             
-            if(sphere.mesh == mesh) return true;
+            if(sphere.mesh == mesh.mesh) return true;
         }
         
         return false;

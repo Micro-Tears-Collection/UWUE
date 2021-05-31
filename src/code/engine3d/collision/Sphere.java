@@ -21,9 +21,9 @@ public class Sphere {
     }
 
     public void set(Mesh mesh, int submesh, int polID) {
-        this.collision = true;
-        this.submesh = submesh;
+        collision = true;
         this.mesh = mesh;
+        this.submesh = submesh;
         this.polID = polID;
     }
 

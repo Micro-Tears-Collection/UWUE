@@ -1,7 +1,7 @@
 package code.ui.itemList;
 
 import code.engine.Screen;
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.ui.TextBox;
 import code.utils.font.BMFont;
 
@@ -66,7 +66,7 @@ public class TextBoxItem extends ListItem {
         height = boxes[0].getHeight();
     }
     
-    public void draw(E3D e3d, int windowX, int windowY, int windowW, int windowH, 
+    public void draw(HudRender hudRender, int windowX, int windowY, int windowW, int windowH, 
             int yScroll, boolean selected, int color, int selColor) {
         int divW = font.stringWidth("x");
             
@@ -75,9 +75,9 @@ public class TextBoxItem extends ListItem {
             
             box.x = windowX+(box.w+divW)*i;
             box.y = windowY+y+yScroll;
-            box.draw(e3d, selected && i == selectedBox, selColor);
+            box.draw(hudRender, selected && i == selectedBox, selColor);
             
-            if(i != boxes.length-1) font.drawString("x", box.x+box.w, box.y, 1, color);
+            if(i != boxes.length-1) font.drawString(hudRender, "x", box.x+box.w, box.y, 1, color);
         }
     }
     

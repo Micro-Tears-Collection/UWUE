@@ -1,9 +1,12 @@
-package code.engine3d;
+package code.engine3d.instancing;
 
+import code.engine3d.E3D;
+import code.engine3d.Material;
 import code.math.Vector3D;
+import java.nio.FloatBuffer;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.system.MemoryUtil;
 
 /**
  *
@@ -13,7 +16,7 @@ public class Sprite extends Renderable {
     
     public static final int BOTTOM = 0, CENTER = -1, TOP = -2;
     
-    private float[] drawMatrix = new float[16];
+    private FloatBuffer drawMatrix;
     
     public Material mat;
     public float w = 200, h = 200;
@@ -24,10 +27,20 @@ public class Sprite extends Renderable {
     
     public Sprite(Material mat, boolean billboard, float w, float h, int align) {
         this.mat = mat;
+        this.mat.use();
         this.w = w;
         this.h = h;
         this.billboard = billboard;
         this.align = align;
+        
+        drawMatrix = MemoryUtil.memAllocFloat(16);
+    }
+    
+    public void destroy() {
+        mat.free();
+        mat = null;
+        MemoryUtil.memFree(drawMatrix);
+        drawMatrix = null;
     }
 
     public void setTransformation(Vector3D pos, Vector3D rot) {
@@ -52,46 +65,26 @@ public class Sprite extends Renderable {
             tmpMat.set(1, 2, 0);
         }
         
-        tmpMat.scale(w, h, w);
+        tmpMat.translate(-w/2, billboard?0:h*align/2, 0);
+        tmpMat.scale(w, h, 1);
         tmpMat.get(drawMatrix);
-        drawMatrix[12] -= w/2;
-        if(!billboard) drawMatrix[13] += h*align/2f;
         
-        sortZ = 0.5f * drawMatrix[2] + 0.5f * drawMatrix[6] + drawMatrix[14];
+        sortZ = 0.5f * drawMatrix.get(2) + 0.5f * drawMatrix.get(6) + drawMatrix.get(14);
     }
     
     public void renderImmediate(E3D e3d) {
-        GL11.glEnable(GL11.GL_NORMALIZE);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadMatrixf(drawMatrix);
-            
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        GL15.glEnableClientState(GL15.GL_NORMAL_ARRAY);
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectCoordVBO);
-        GL15.glVertexPointer(3, GL15.GL_SHORT, 0, 0);
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectNormals);
-        GL15.glNormalPointer(GL15.GL_SHORT, 0, 0);
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, e3d.rectuvMVBO);
-        GL15.glTexCoordPointer(2, GL15.GL_SHORT, 0, 0);
-
+        mat.bind(e3d, time);
+        //todo same thing with light as in meshinstance
         bindLight(e3d, xx, yy, zz, 0, 0, 0);
-        mat.animate(time);
-        mat.bind();
         
-        GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
+        e3d.setModelView(drawMatrix);
+        
+        GL33C.glBindVertexArray(e3d.spriteVAO);
+        GL33C.glDrawArrays(GL33C.GL_TRIANGLE_FAN, 0, 4);
+        GL33C.glBindVertexArray(0);
 
-        mat.unbind();
         unbindLight();
-        
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        GL15.glDisableClientState(GL15.GL_NORMAL_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glDisable(GL11.GL_NORMALIZE);
+        mat.unbind();
     }
 
 }

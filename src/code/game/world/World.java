@@ -3,9 +3,7 @@ package code.game.world;
 import code.audio.AudioEngine;
 
 import code.engine3d.E3D;
-import code.engine3d.Material;
-import code.engine3d.Mesh;
-import code.engine3d.Sprite;
+import code.engine3d.instancing.Sprite;
 
 import code.game.Main;
 import code.game.world.entities.Entity;
@@ -14,12 +12,15 @@ import code.game.world.entities.SpriteObject;
 
 import code.engine3d.collision.Ray;
 import code.engine3d.collision.Sphere;
+import code.engine3d.instancing.MeshInstance;
 import code.math.Culling;
 
 import code.utils.FPS;
+import java.nio.FloatBuffer;
 
 import java.util.Vector;
 import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryUtil;
 
 /**
  *
@@ -27,9 +28,12 @@ import org.joml.Matrix4f;
  */
 public class World {
     
+    public Matrix4f m; 
+    public FloatBuffer tmp;
+    
     Vector<Entity> objects;
     Vector<Node> renderNodes;
-    Mesh[] allMeshes, skybox;
+    MeshInstance[] allMeshes, skybox;
     int skyColor;
     
     public static final int LINEAR = 1, EXP = 2;
@@ -42,20 +46,36 @@ public class World {
     long renderTime;
     SpriteObject sobj;
     
-    public World(Mesh[] meshes, int skyColor, Mesh[] skybox, boolean debug) {
+    public World(E3D e3d, MeshInstance[] meshes, int skyColor, MeshInstance[] skybox, boolean debug) {
         allMeshes = meshes;
         makeNodes();
-        this.skybox = skybox;
         
+        this.skybox = skybox;
         this.skyColor = skyColor;
         
         objects = new Vector();
         
         if(debug) {
-            sobj = new SpriteObject();
-            sobj.spr = new Sprite(Material.get("/images/test.png;alpha_test=1;lightgroup=0"), 
-                    false, 20, 20, Sprite.CENTER);
+            sobj = new SpriteObject(new Sprite(e3d.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), 
+                    false, 20, 20, Sprite.CENTER));
         }
+        
+        m = new Matrix4f();
+        tmp = MemoryUtil.memAllocFloat(4*4);
+    }
+
+    public void destroy() {
+        for(MeshInstance mesh : allMeshes) mesh.destroy();
+        if(skybox != null) for(MeshInstance mesh : skybox) mesh.destroy();
+        
+        for(Entity obj : objects) {
+            if(!(obj instanceof Player)) obj.destroy();
+        }
+        
+        sobj.destroy();
+        MemoryUtil.memFree(tmp);
+        m = null;
+        tmp = null;
     }
     
     void makeNodes() {
@@ -68,7 +88,7 @@ public class World {
         
         for(int i=0; i<allNodes.length; i++) {
             Node node = allNodes[i];
-            Mesh mesh = node.mesh;
+            MeshInstance mesh = node.mesh;
             
             float minSize = Float.MAX_VALUE;
             Node selected = null;
@@ -76,7 +96,7 @@ public class World {
                 if(x == i) continue;
                 Node node2 = allNodes[x];
                 if(node.hasChild(node2)) continue;
-                Mesh mesh2 = node2.mesh;
+                MeshInstance mesh2 = node2.mesh;
                 
                 if(mesh.min.x < mesh2.min.x || mesh.max.x > mesh2.max.x ||
                         mesh.min.y < mesh2.min.y || mesh.max.y > mesh2.max.y ||
@@ -170,16 +190,11 @@ public class World {
         return got;
     }
     
-    public final Matrix4f m = new Matrix4f(); 
-    public final float[] tmp = new float[16];
-    
     public void render(E3D e3d, int w, int h) {
-        e3d.prepareRender(0, 0, w, h);
+        e3d.prepare3D(0, 0, w, h);
         
         e3d.clearZbuffer();
         e3d.clearColor(skyColor);
-        
-        e3d.proj();
         
         //Draw skybox
         if(skybox != null) {
@@ -187,7 +202,7 @@ public class World {
             m.setTranslation(0, 0, 0);
             m.get(tmp);
 
-            for(Mesh mesh : skybox) {
+            for(MeshInstance mesh : skybox) {
                 mesh.fastIdentityCamera(tmp);
                 mesh.animate(renderTime, true);
                 mesh.renderImmediate(e3d);
@@ -201,9 +216,10 @@ public class World {
         else if(fogMode == EXP) e3d.setExpFog(fogDensity, fogColor);
         
         //Check all location meshes
-        Culling.set(e3d.invCamf, e3d.fovX, e3d.fovY, 1, 40000);
+        e3d.invCam.get(tmp);
+        Culling.set(tmp, e3d.fovX, e3d.fovY, 1, 40000);
         
-        for(Node node : renderNodes) node.render(e3d, e3d.invCamf, this, renderTime);
+        for(Node node : renderNodes) node.render(e3d, tmp, this, renderTime);
         
         //Check objects
         for(Entity object : objects) object.render(e3d, this);

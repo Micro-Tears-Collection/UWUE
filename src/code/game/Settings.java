@@ -1,6 +1,5 @@
 package code.game;
 
-import code.engine.Engine;
 import code.engine.Screen;
 
 import code.ui.itemList.ItemList;
@@ -23,6 +22,7 @@ public class Settings extends Screen {
     
     private final Main main;
     private final Screen previous;
+    private int w, h;
     
     private final Configuration mconf;
     private final int maxAA;
@@ -41,8 +41,10 @@ public class Settings extends Screen {
         this.main = main;
         this.previous = previous;
         
+        w = main.getWidth(); h = main.getHeight();
+        
         mconf = new Configuration(main.conf);
-        maxAA = Engine.getMaxAA();
+        maxAA = main.e3d.getMaxAA();
         
         createList();
         setList(AUDIO);
@@ -55,14 +57,14 @@ public class Settings extends Screen {
     private void createList() {
         BMFont font = main.font;
         if(list == null) {
-            list = ItemList.createItemList(getWidth()/2, getHeight(), font, main.selectedS);
+            list = ItemList.createItemList(w/2, h, font, main.selectedS);
         } else {
-            list.setSize(getWidth()/2, getHeight());
+            list.setSize(w/2, h);
             list.updateList();
         }
         
         if(applyConfirm == null) {
-            applyConfirm = ItemList.createItemList(getWidth(), getHeight(), font, main.selectedS);
+            applyConfirm = ItemList.createItemList(w, h, font, main.selectedS);
         
             applyConfirm.add((new TextItem("Save current settings?", font)).setHCenter(true).setSkip(true));
             applyConfirm.add((new TextItem("Antialiasing will be applied after restart", font))
@@ -84,18 +86,18 @@ public class Settings extends Screen {
             applyConfirm.add(new TextItem("No", font) {
                 public void onEnter() {
                     main.clickedS.play();
-                    main.conf.apply(true);
+                    main.conf.apply(main.window, true);
                     setList(VIDEO);
                 }
                 
             }.setHCenter(true));
         } else {
-            applyConfirm.setSize(getWidth(), getHeight());
+            applyConfirm.setSize(w, h);
         }
         applyConfirm.updateList();
         
         if(resetConfirm == null) {
-            resetConfirm = ItemList.createItemList(getWidth(), getHeight(), font, main.selectedS);
+            resetConfirm = ItemList.createItemList(w, h, font, main.selectedS);
             
             resetConfirm.add((new TextItem("Remove progress?", font)).setHCenter(true).setSkip(true));
             resetConfirm.add(new TextItem("Yes", font) {
@@ -126,12 +128,12 @@ public class Settings extends Screen {
                 }
             }).setHCenter(true));
         } else {
-            resetConfirm.setSize(getWidth(), getHeight());
+            resetConfirm.setSize(w, h);
         }
         resetConfirm.updateList();
         
         if(message == null) {
-            message = ItemList.createItemList(getWidth(), getHeight(), font, main.selectedS);
+            message = ItemList.createItemList(w, h, font, main.selectedS);
             
             messageText = new TextItem("", font).setHCenter(true);
             message.add(messageText);
@@ -141,7 +143,7 @@ public class Settings extends Screen {
                 }
             }.setHCenter(true));
         } else {
-            message.setSize(getWidth(), getHeight());
+            message.setSize(w, h);
         }
         message.updateList();
         
@@ -400,7 +402,7 @@ public class Settings extends Screen {
                         currentList = message;
                         messageText.setText("Unsupported videomode :(", message);
                     } else {
-                        mconf.apply(true);
+                        mconf.apply(main.window, true);
                         
                         if(mconf.isNeedToConfirm(main.conf)) {
                             applyBegin = System.currentTimeMillis();
@@ -431,13 +433,14 @@ public class Settings extends Screen {
     }
     
     public void sizeChanged(int w, int h, Screen scr) {
+        this.w = w; this.h = h;
         createList();
         previous.sizeChanged(w, h, this);
     }
     
     public void tick() {
         if(currentList == applyConfirm && System.currentTimeMillis() - applyBegin >= 10000) {
-            main.conf.apply(true);
+            main.conf.apply(main.window, true);
             setList(VIDEO);
         }
         
@@ -449,7 +452,7 @@ public class Settings extends Screen {
             game.world.pausedAnimate(null);
             game.render();
         }
-        main.e3d.drawRect(null, 0, 0, getWidth(), getHeight(), 0, 0.5f);
+        main.hudRender.drawRect(0, 0, w, h, 0, 0.5f);
         
         if(currentList == applyConfirm) {
             applyConfirmText.setText(
@@ -457,16 +460,16 @@ public class Settings extends Screen {
                     + " seconds before restoring settings", applyConfirm);
         }
 
-        int listX = currentList == list ? getWidth()/4 : 0;
-        currentList.mouseUpdate(listX, 0, getMouseX(), getMouseY());
-        currentList.draw(main.e3d, listX, 0, main.fontColor, main.fontSelColor);
+        int listX = currentList == list ? w/4 : 0;
+        currentList.mouseUpdate(listX, 0, main.getMouseX(), main.getMouseY());
+        currentList.draw(main.hudRender, listX, 0, main.fontColor, main.fontSelColor);
     }
     
     public void mouseAction(int key, boolean pressed) {
         if(key == Screen.MOUSE_LEFT) {
             currentList.mouseAction( 
-                    currentList == list ? getWidth()/4 : 0, 0, 
-                    getMouseX(), getMouseY(),
+                    currentList == list ? w/4 : 0, 0, 
+                    main.getMouseX(), main.getMouseY(),
                     pressed);
         }
     }

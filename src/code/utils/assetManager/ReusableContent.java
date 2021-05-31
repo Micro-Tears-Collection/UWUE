@@ -4,11 +4,21 @@ package code.utils.assetManager;
  *
  * @author Roman Lahin
  */
-public class ReusableContent extends DisposableContent {
+public class ReusableContent {
     
-    public boolean using = true;
+    protected int using = 0;
+    public boolean neverUnload = false;
     
-    public ReusableContent use() {using = true; return this;}
-    public ReusableContent free() {using = false; return this;}
+    public void destroy() {}
+    
+    public ReusableContent lock() {neverUnload = true; return this;}
+    public ReusableContent unlock() {neverUnload = false; return this;}
+    
+    public ReusableContent use() {using++; return this;}
+    public ReusableContent free() {using--; return this;}
+    
+    public int getUsingCount() {
+        return using;
+    }
 
 }

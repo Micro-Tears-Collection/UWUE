@@ -1,6 +1,7 @@
 package code.ui.itemList;
 
 import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.utils.font.BMFont;
 
 /**
@@ -62,21 +63,21 @@ public class TabsItem extends ListItem {
         limitScroll();
     }
     
-    public void draw(E3D e3d, int windowX, int windowY, int windowW, int windowH, 
+    public void draw(HudRender hudRender, int windowX, int windowY, int windowW, int windowH, 
             int yScroll, boolean selected, int color, int selColor) {
         
-        e3d.drawRect(null, windowX, windowY+yScroll+y, windowW, height, 0, 0.5f);
+        hudRender.drawRect(windowX, windowY+yScroll+y, windowW, height, 0, 0.5f);
         
         if(selectedTab != -1 && selected) {
             int x = windowX + tabX[selectedTab] + xScroll;
             int w = tabW[selectedTab];
             int y = windowY + this.y + yScroll; 
             
-            e3d.drawRect(null, x, y, w, 1, selColor, 0.5f);
-            e3d.drawRect(null, x, y+height-1, w, 1, selColor, 0.5f);
+            hudRender.drawRect(x, y, w, 1, selColor, 0.5f);
+            hudRender.drawRect(x, y+height-1, w, 1, selColor, 0.5f);
             
-            e3d.drawRect(null, x, y+1, 1, height-2, selColor, 0.5f);
-            e3d.drawRect(null, x+w-1, y+1, 1, height-2, selColor, 0.5f);
+            hudRender.drawRect(x, y+1, 1, height-2, selColor, 0.5f);
+            hudRender.drawRect(x+w-1, y+1, 1, height-2, selColor, 0.5f);
         }
         
         for(int i=0; i<tabs.length; i++) {
@@ -92,7 +93,7 @@ public class TabsItem extends ListItem {
             boolean tabSelected = (selected&&selectedTab==i);
             boolean tabIsCurrent = currentTab == i;
             
-            font.drawString(tab, 
+            font.drawString(hudRender, tab, 
                     windowX + tabX + xScroll + offsetX, 
                     windowY + y + yScroll, 
                     1, tabSelected?selColor:color, (tabIsCurrent||tabSelected)?1:0.5f);
