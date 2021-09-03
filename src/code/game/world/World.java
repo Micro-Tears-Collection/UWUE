@@ -10,8 +10,8 @@ import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 import code.game.world.entities.SpriteObject;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.Sphere;
+import code.math.collision.Ray;
+import code.math.collision.Sphere;
 import code.engine3d.instancing.MeshInstance;
 import code.math.Culling;
 

@@ -1,4 +1,4 @@
-package code.engine3d.shaders;
+package code.engine3d.game;
 
 import code.engine3d.E3D;
 import code.engine3d.Shader;
@@ -12,21 +12,25 @@ import java.util.Arrays;
  */
 public class WorldShaderPack extends ShaderPack {
     
-    public int uvOffset;
+    public int uvOffset, glow, alphaThreshold;
     
     protected WorldShaderPack(E3D e3d, String path, String[][] defs) {
         super(e3d, path, defs);
         
         for(Shader shader : shaders) {
-            shader.addUniformBlock(e3d.matrices, "Mats");
+            shader.addUniformBlock(e3d.matrices, "mats");
             
             shader.bind();
             shader.addTextureUnit(0);
+			shader.addUniformBlock(e3d.lights, "lights");
+			shader.addUniformBlock(e3d.fog, "fog");
             shader.unbind();
         }
         
         shaders[0].bind();
         uvOffset = shaders[0].getUniformIndex("uvOffset");
+        glow = shaders[0].getUniformIndex("glow");
+        alphaThreshold = shaders[0].getUniformIndex("alphaThreshold");
         shaders[0].unbind();
     }
     

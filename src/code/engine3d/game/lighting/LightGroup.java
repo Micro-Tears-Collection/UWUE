@@ -1,9 +1,7 @@
-package code.engine3d.Lighting;
+package code.engine3d.game.lighting;
 
 import code.engine3d.E3D;
-import java.nio.FloatBuffer;
 import java.util.Vector;
-import org.lwjgl.system.MemoryUtil;
 
 /**
  *
@@ -19,7 +17,7 @@ public class LightGroup {
     
     public String name;
     public Vector<Light> lights;
-    private FloatBuffer ambient;
+    private float[] ambient;
     
     public static void clear(boolean recreate) {
         for(LightGroup group : lightgroups) {
@@ -43,13 +41,10 @@ public class LightGroup {
         this.name = name;
         lights = new Vector();
         
-        ambient = MemoryUtil.memAllocFloat(4);
-        ambient.put(new float[] {0, 0, 0, 1});
-        ambient.rewind();
+        ambient = new float[] {0, 0, 0, 1};
     }
     
     public void destroy() {
-        MemoryUtil.memFree(ambient);
         ambient = null;
     }
     
@@ -57,36 +52,30 @@ public class LightGroup {
         float[] arr = new float[] {0, 0, 0, 1};
         if(ambient.length == 1) {
             arr[0] = ambient[0]/255f;
-            arr[0] = ambient[0]/255f;
-            arr[0] = ambient[0]/255f;
+            arr[1] = ambient[0]/255f;
+            arr[2] = ambient[0]/255f;
         } else if(ambient.length == 3) {
             arr[0] = ambient[0]/255f;
             arr[1] = ambient[1]/255f;
             arr[2] = ambient[2]/255f;
         }
         
-        this.ambient.clear();
-        this.ambient.put(arr);
-        this.ambient.rewind();
+        this.ambient = arr;
     }
     
     public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
-        /*GL33C.glMatrixMode(GL33C.GL_MODELVIEW);
-        GL33C.glPushMatrix();
-        GL33C.glLoadMatrixf(e3d.invCamf);
-        
-        GL33C.glEnable(GL33C.GL_LIGHTING);*/
+        e3d.setAmbientLight(ambient[0], ambient[1], ambient[2]);
             
         activeLightsCount = 0;
         for(Light light : lights) {
-            if(light.point) {
+            if(light.isPoint) {
                 //point source
                 //calculate distance square
-                float d = Math.max(Math.abs(x - light.posOrDir.get(0)) - xs, 0);
+                float d = Math.max(Math.abs(x - light.posOrDir.x) - xs, 0);
                 d *= d;
-                float t = Math.max(Math.abs(y - light.posOrDir.get(1)) - ys, 0);
+                float t = Math.max(Math.abs(y - light.posOrDir.y) - ys, 0);
                 d += t*t;
-                t = Math.max(Math.abs(z - light.posOrDir.get(2)) - zs, 0);
+                t = Math.max(Math.abs(z - light.posOrDir.z) - zs, 0);
                 d += t*t;
                 
                 if(d != 0) light.influence = light.absLit * 10000 * 10 / d;
@@ -102,39 +91,34 @@ public class LightGroup {
             activeLightsCount++;
         }
         
-        //if(renderLights.size() > e3d.maxLights) sort(renderLights);
+        if(renderLights.size() > E3D.MAX_LIGHTS) sort(renderLights);
         
-        //activeLightsCount = Math.min(activeLightsCount, e3d.maxLights);
+        activeLightsCount = Math.min(activeLightsCount, E3D.MAX_LIGHTS);
         
         for(int ii=0; ii<activeLightsCount; ii++) {
             Light light = renderLights.elementAt(ii);
             
-            //GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_DIFFUSE, light.color);
-            ////GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_SPECULAR, light.color);
-            //GL33C.glLightfv(GL33C.GL_LIGHT0+ii, GL33C.GL_POSITION, light.posOrDir);
-            
-            /*if(light.spotDir != null) {
-                GL33C.glLightf(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_CUTOFF, light.cutoff);
-                GL33C.glLightfv(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_DIRECTION, light.spotDir);
-            } else {
-                GL33C.glLighti(GL33C.GL_LIGHT0 + ii, GL33C.GL_SPOT_CUTOFF, 180);
-            }*/
-            
-            //GL33C.glEnable(GL33C.GL_LIGHT0+ii);
+			if(light.isSpot) {
+				e3d.setSpotLight(ii, light.posOrDir, light.spotDir, light.cutoff, light.color);
+			} else if(light.isPoint) {
+				e3d.setPointLight(ii, light.posOrDir, light.color);
+			} else {
+				e3d.setDirectionalLight(ii, light.posOrDir, light.color);
+			}
         }
         renderLights.removeAllElements();
-        
-        /*GL33C.glMaterialfv(GL33C.GL_FRONT, GL33C.GL_AMBIENT, ambient);
-
-        GL33C.glPopMatrix();*/
+		
+		e3d.sendLights();
     }
     
-    public void unbind() {
-        //GL33C.glDisable(GL33C.GL_LIGHTING);
+    public void unbind(E3D e3d) {
+        e3d.setAmbientLight(1, 1, 1);
         
         for(int i=0; i<activeLightsCount; i++) {
-            //GL33C.glDisable(GL33C.GL_LIGHT0+i);
+			e3d.disableLight(i);
         }
+		
+		e3d.sendLights();
     }
     
     private static void sort(Vector<Light> list) {

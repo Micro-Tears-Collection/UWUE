@@ -28,6 +28,8 @@ import java.util.Vector;
  * @author Roman Lahin
  */
 public class Game extends Screen {
+	
+	public static final float DONT_ROTATE = Float.MAX_VALUE;
     
     public Main main;
     
@@ -109,7 +111,7 @@ public class Game extends Screen {
         ditherShader.bind();
         ditherShader.addTextureUnit(0);
         ditherShader.addTextureUnit(1);
-        ditherShader.addUniformBlock(e3d.matrices, "Mats");
+        ditherShader.addUniformBlock(e3d.matrices, "mats");
         
         ditherUniW = ditherShader.getUniformIndex("ditherW");
         ditherUniH = ditherShader.getUniformIndex("ditherH");
@@ -146,7 +148,7 @@ public class Game extends Screen {
     }
     
     public void loadMap(String nextMap) {
-        loadMap(nextMap, null, Float.MAX_VALUE, Float.MAX_VALUE);
+        loadMap(nextMap, null, DONT_ROTATE, DONT_ROTATE);
     }
     
     public void loadMap(String nextMap, Vector3D newPlayerPos, float rotX, float rotY) {
@@ -307,7 +309,7 @@ public class Game extends Screen {
         
         float py = player.pos.y;
         player.pos.y += player.eyeHeight;
-        e3d.setInvCam(player.pos, player.rotX, player.rotY);
+        e3d.setCam(player.pos, player.rotX, player.rotY);
         player.pos.y = py;
         e3d.setProjectionPers(main.conf.fov, drawW, drawH);
         

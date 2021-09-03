@@ -8,11 +8,11 @@ schill/wind
 
 IKBASE ебучий:
 (может авторам уже похуй и если спросить их то они разрешат юзать свои текстуры в платном продукте?)
-flatpack/wallbrick.png
-flatpack/wallsmall.png
+flatpack/wallbrick
+flatpack/wallsmall
 grassy/carpet
 
-Soviettexture.com, неизвестно, как авторка отнесЄтс¤ к продаже игры с еЄ текстурами:
+Soviettexture.com, неизвестно, как авторка отнесётся к продаже игры с её текстурами:
 soviet_period1/
 soviet_period2/
 soviet_period3/

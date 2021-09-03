@@ -1,9 +1,8 @@
 package code.engine3d;
 
-import code.engine3d.instancing.Renderable;
 import code.engine.Window;
-import code.engine3d.Lighting.LightGroup;
-import code.engine3d.materials.WorldMaterial;
+import code.engine3d.game.WorldMaterial;
+import code.engine3d.instancing.RenderInstance;
 import code.math.Vector3D;
 import code.utils.IniFile;
 import code.utils.StringTools;
@@ -27,7 +26,18 @@ import org.lwjgl.system.MemoryUtil;
  * @author Roman Lahin
  */
 public class E3D {
-    
+    //todo split game stuff from e3d somehow
+	
+	/*
+	4 AMBIENT COLOR + padding
+
+	8X:
+	4 POSITION + DIR/POINT
+	4 COLOR + padding
+	4 SPOT_DIR + SPOT_CUTOFF
+	*/
+	public static final int LIGHT_SIZE = 12, MAX_LIGHTS = 8;
+	
     private Window win;
     
     public boolean mode2D;
@@ -41,21 +51,16 @@ public class E3D {
     public int rectVAO, spriteVAO;
     
     public UniformBlock matrices;
-    private final Vector<Renderable> postDraw;
-    
+	private FloatBuffer fogf;
+    public UniformBlock fog;
+	private FloatBuffer lightsf;
+    public UniformBlock lights;
+	
+    private final Vector<RenderInstance> postDraw;
+	
     public E3D(Window win) {
         this.win = win;
         postDraw = new Vector();
-        
-        /*GL33C.glLightModelfv(GL33C.GL_LIGHT_MODEL_AMBIENT, new float[]{1,1,1,1});
-        GL33C.glLightModeli(GL33C.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-        GL33C.glMaterialfv(GL33C.GL_FRONT, GL33C.GL_DIFFUSE, new float[]{1,1,1,1});
-        maxLights = GL33C.glGetInteger(GL33C.GL_MAX_LIGHTS);*/
-        
-        /*for(int i=0; i<maxLights; i++) {
-            GL33C.glLightf(GL33C.GL_LIGHT0+i, GL33C.GL_CONSTANT_ATTENUATION, 0);
-            GL33C.glLightf(GL33C.GL_LIGHT0+i, GL33C.GL_QUADRATIC_ATTENUATION, 0.0001F * 0.1f);
-        }*/
         
         tmpM = new Matrix4f();
         tmpMf = MemoryUtil.memAllocFloat(4*4);
@@ -69,6 +74,7 @@ public class E3D {
         proj = new Matrix4f();
         projf = MemoryUtil.memAllocFloat(4*4);
         
+		//Create stuff for sprites/billboards and 2d rendering
         //Rectangle data
         rectVAO = GL33C.glGenVertexArrays();
         GL33C.glBindVertexArray(rectVAO);
@@ -80,7 +86,7 @@ public class E3D {
                     0, 0, 0, 1, 0, 0,
                     1, 1, 0, 0, 1, 0
                 }, GL33C.GL_STATIC_DRAW);
-            
+		
         GL33C.glVertexAttribPointer(0, 3, GL33C.GL_SHORT, false, 0, 0);
         
         rectuvVBO = GL33C.glGenBuffers(); //Creates a VBO ID
@@ -92,6 +98,8 @@ public class E3D {
                 }, GL33C.GL_STATIC_DRAW);
 
         GL33C.glVertexAttribPointer(1, 2, GL33C.GL_SHORT, false, 0, 0);
+		
+        GL33C.glEnableVertexAttribArray(0);
         
         //Sprite data
         spriteVAO = GL33C.glGenVertexArrays();
@@ -128,6 +136,16 @@ public class E3D {
         GL33C.glBindVertexArray(0);
         
         matrices = new UniformBlock((4*4 * 2) * 4, 0);
+		
+		fog = new UniformBlock((6) * 4, 1);
+        fogf = MemoryUtil.memAllocFloat(6);
+		disableFog();
+		
+		lights = new UniformBlock((4 + LIGHT_SIZE * MAX_LIGHTS) * 4, 2);
+        lightsf = MemoryUtil.memAllocFloat(4 + LIGHT_SIZE * MAX_LIGHTS);
+		for(int i=0; i<lightsf.capacity(); i++) {
+			lightsf.put(i, 0);
+		}
     }
     
     public void destroy() {
@@ -140,7 +158,15 @@ public class E3D {
         matrices.destroy();
         matrices = null;
         
-        LightGroup.clear(false);
+        fog.destroy();
+        fog = null;
+		MemoryUtil.memFree(fogf);
+		fogf = null;
+		
+		lights.destroy();
+		lights = null;
+		MemoryUtil.memFree(lightsf);
+		lightsf = null;
         
         GL33C.glDeleteVertexArrays(rectVAO);
         GL33C.glDeleteVertexArrays(spriteVAO);
@@ -151,7 +177,7 @@ public class E3D {
         GL33C.glDeleteBuffers(rectNormals);
     }
     
-    public void setInvCam(Vector3D camera, float rotX, float rotY) {
+    public void setCam(Vector3D camera, float rotX, float rotY) {
         invCam.identity();
         invCam.rotateY((float) Math.toRadians(rotY));
         invCam.rotateX((float) Math.toRadians(rotX));
@@ -223,45 +249,128 @@ public class E3D {
     }
     
     public void disableFog() {
-        //GL33C.glDisable(GL33C.GL_FOG);
+		fogf.put(3, 0);
+        fogf.put(4, 1);
+		fogf.put(5, 0);
+		
+		fog.bind();
+		fog.sendData(fogf, 0);
+		fog.unbind();
     }
     
-    public void setLinearFog(float start, float end, float[] color) {
-        /*GL33C.glEnable(GL33C.GL_FOG);
-        GL33C.glFogfv(GL33C.GL_FOG_COLOR, color);
-
-        GL33C.glFogi(GL33C.GL_FOG_MODE, GL33C.GL_LINEAR);
-        GL33C.glFogf(GL33C.GL_FOG_START, start);
-        GL33C.glFogf(GL33C.GL_FOG_END, end);*/
+    public void setLinearFog(float start, float end, float[] col) {
+		for(int x=0; x<3; x++) fogf.put(x, col[x]);
+		fogf.put(3, 0);
+		
+        fogf.put(4, end / (end - start));
+		fogf.put(5, 1 / (end - start));
+		
+		fog.bind();
+		fog.sendData(fogf, 0);
+		fog.unbind();
     }
     
-    public void setExpFog(float density, float[] color) {
-        /*GL33C.glEnable(GL33C.GL_FOG);
-        GL33C.glFogfv(GL33C.GL_FOG_COLOR, color);
-
-        GL33C.glFogi(GL33C.GL_FOG_MODE, GL33C.GL_EXP);
-        GL33C.glFogf(GL33C.GL_FOG_DENSITY, density);*/
+    public void setExpFog(float density, float[] col) {
+		for(int x=0; x<3; x++) fogf.put(x, col[x]);
+		fogf.put(3, 1);
+		
+        fogf.put(4, density);
+		
+		fog.bind();
+		fog.sendData(fogf, 0);
+		fog.unbind();
     }
+	
+	public void setAmbientLight(float r, float g, float b) {
+		lightsf.put(0, r);
+		lightsf.put(1, g);
+		lightsf.put(2, b);
+	}
+	
+	public void setPointLight(int i, Vector3D pos, float[] col) {
+		int offset = 4 + i * LIGHT_SIZE;
+		
+		Vector3D tmp = new Vector3D(pos);
+		tmp.transform(invCamf);
+		
+		lightsf.put(offset + 0, tmp.x);
+		lightsf.put(offset + 1, tmp.y);
+		lightsf.put(offset + 2, tmp.z);
+		lightsf.put(offset + 3, 1);
+		
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
+		
+		lightsf.put(offset + 8 + 3, -1);
+	}
+	
+	public void setSpotLight(int i, Vector3D pos, Vector3D dir, float spotCutOff, float[] col) {
+		int offset = 4 + i * LIGHT_SIZE;
+		
+		Vector3D tmp = new Vector3D(pos);
+		tmp.transform(invCamf);
+		
+		lightsf.put(offset + 0, tmp.x);
+		lightsf.put(offset + 1, tmp.y);
+		lightsf.put(offset + 2, tmp.z);
+		lightsf.put(offset + 3, 1);
+		
+		for(int x=0; x<3; x++) lightsf.put(offset + 4 + x, col[x]);
+		
+		tmp.set(dir);
+		tmp.transform(invCamf, false);
+		
+		lightsf.put(offset + 8 + 0, tmp.x);
+		lightsf.put(offset + 8 + 1, tmp.y);
+		lightsf.put(offset + 8 + 2, tmp.z);
+		lightsf.put(offset + 8 + 3, (float) Math.cos(Math.toRadians(spotCutOff)));
+	}
+	
+	public void setDirectionalLight(int i, Vector3D dir, float[] col) {
+		int offset = 4 + i * LIGHT_SIZE;
+		
+		Vector3D tmp = new Vector3D(dir);
+		tmp.transform(invCamf, false);
+		
+		lightsf.put(offset + 0, tmp.x);
+		lightsf.put(offset + 1, tmp.y);
+		lightsf.put(offset + 2, tmp.z);
+		lightsf.put(offset + 3, 0);
+		
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
+	}
+	
+	public void disableLight(int i) {
+		int offset = 4 + i * LIGHT_SIZE;
+		
+		lightsf.put(offset + 3, 0);
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, 0);
+	}
+	
+	public void sendLights() {
+		lights.bind();
+		lights.sendData(lightsf, 0);
+		lights.unbind();
+	}
     
-    public void add(Renderable obj) {
+    public void add(RenderInstance obj) {
         postDraw.add(obj);
     }
     
     public void postRender() {
         //Finally draw 3d
         sort(postDraw);
-        for(Renderable object : postDraw) object.renderImmediate(this);
+        for(RenderInstance object : postDraw) object.renderImmediate(this);
         
         postDraw.removeAllElements();
     }
     
-    private static void sort(Vector<Renderable> list) {
+    private static void sort(Vector<RenderInstance> list) {
         for(int i=list.size()-1; i>=1; i--) {
-            Renderable nearest = null;
+            RenderInstance nearest = null;
             int pos = 0;
             
             for(int x=0; x<=i; x++) {
-                Renderable m1 = list.elementAt(x);
+                RenderInstance m1 = list.elementAt(x);
                 
                 //m1 ближе чем m2
                 if(nearest == null || 
@@ -291,12 +400,10 @@ public class E3D {
 
         GL33C.glBindVertexArray(rectVAO);
 
-        GL33C.glEnableVertexAttribArray(0); //pos
         if(sendUVM) GL33C.glEnableVertexAttribArray(1); //uvm
         
         GL33C.glDrawArrays(GL33C.GL_TRIANGLE_FAN, 0, 4);
         
-        GL33C.glDisableVertexAttribArray(0); //pos
         if(sendUVM) GL33C.glDisableVertexAttribArray(1); //uvm
 
         GL33C.glBindVertexArray(0);
@@ -422,7 +529,7 @@ public class E3D {
         
         Texture tex = getTexture(path);
         mat = new WorldMaterial(this, tex);
-        mat.load(new IniFile(lines, false));
+        mat.load(name, new IniFile(lines, false));
         
         AssetManager.add("MAT_" + name, mat);
         

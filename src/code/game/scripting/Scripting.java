@@ -4,8 +4,8 @@ import code.engine.Screen;
 
 import code.audio.AudioEngine;
 
-import code.engine3d.Lighting.Light;
-import code.engine3d.Lighting.LightGroup;
+import code.engine3d.game.lighting.Light;
+import code.engine3d.game.lighting.LightGroup;
 import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
@@ -118,8 +118,8 @@ public class Scripting {
         Game game = main.getGame();
 
         Vector3D newPlayerPos = null;
-        float rotX = Float.MAX_VALUE;
-        float rotY = Float.MAX_VALUE;
+        float rotX = Game.DONT_ROTATE;
+        float rotY = Game.DONT_ROTATE;
         
         if(!data.isnil() && data.istable()) {
             LuaValue pos = data.get("pos");
@@ -442,9 +442,9 @@ public class Scripting {
                         }
 
                         return LuaTable.listOf(new LuaValue[]{
-                            LuaValue.valueOf(light.color.get(0)*255),
-                            LuaValue.valueOf(light.color.get(1)*255),
-                            LuaValue.valueOf(light.color.get(2)*255)
+                            LuaValue.valueOf(light.color[0]*255),
+                            LuaValue.valueOf(light.color[1]*255),
+                            LuaValue.valueOf(light.color[2]*255)
                         });
                     }
                     

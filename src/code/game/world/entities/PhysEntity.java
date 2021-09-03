@@ -2,8 +2,8 @@ package code.game.world.entities;
 
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.Sphere;
+import code.math.collision.Ray;
+import code.math.collision.Sphere;
 import code.math.Vector3D;
 
 import code.utils.FPS;

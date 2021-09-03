@@ -5,10 +5,10 @@ import code.engine3d.Model;
 
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.RayCast;
-import code.engine3d.collision.Sphere;
-import code.engine3d.collision.SphereCast;
+import code.math.collision.Ray;
+import code.math.collision.RayCast;
+import code.math.collision.Sphere;
+import code.math.collision.SphereCast;
 import code.engine3d.instancing.MeshInstance;
 import code.math.Vector3D;
 
@@ -49,7 +49,10 @@ public class MeshObject extends PhysEntity {
         if(RayCast.isRayAABBCollision(ray, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
-            RayCast.rayCast(mesh.mesh, mesh.modelMatrix, ray);
+			
+            RayCast.rayCast(mesh.mesh, 
+					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, 
+					mesh.modelMatrix, ray);
             
             if(ray.mesh == mesh.mesh) return true;
         }
@@ -64,7 +67,10 @@ public class MeshObject extends PhysEntity {
         if(SphereCast.isSphereAABBCollision(sphere, 
                 mesh.min.x, mesh.min.y,  mesh.min.z, 
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
-            SphereCast.sphereCast(mesh.mesh, mesh.modelMatrix, sphere);
+			
+            SphereCast.sphereCast(mesh.mesh, 
+					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace,
+					mesh.modelMatrix, sphere);
             
             if(sphere.mesh == mesh.mesh) return true;
         }

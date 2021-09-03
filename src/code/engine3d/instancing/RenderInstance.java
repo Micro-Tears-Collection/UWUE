@@ -1,7 +1,7 @@
 package code.engine3d.instancing;
 
 import code.engine3d.E3D;
-import code.engine3d.Lighting.LightGroup;
+import code.engine3d.game.lighting.LightGroup;
 import code.math.Vector3D;
 import code.utils.IniFile;
 import org.joml.Matrix4f;
@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
  *
  * @author Roman Lahin
  */
-public class Renderable {
+public class RenderInstance {
     
     public static final int NORMALDRAW = Integer.MAX_VALUE;
     
@@ -52,7 +52,7 @@ public class Renderable {
     public void renderImmediate(E3D e3d) {}
     
     public void bindLight(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
-        if(!LightGroup.lightgroups.isEmpty() && lightGroupName != null) {
+        if(lightGroupName != null && !LightGroup.lightgroups.isEmpty()) {
             
             if(lightGroup == null) {
                 for(LightGroup lightGroup2 : LightGroup.lightgroups) {
@@ -72,8 +72,8 @@ public class Renderable {
         }
     }
     
-    public void unbindLight() {
-        if(lightGroup != null) lightGroup.unbind();
+    public void unbindLight(E3D e3d) {
+        if(lightGroup != null) lightGroup.unbind(e3d);
     }
     
     public static final Matrix4f tmpMat = new Matrix4f();

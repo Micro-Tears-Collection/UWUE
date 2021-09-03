@@ -3,9 +3,9 @@ package code.game.world;
 import code.audio.AudioEngine;
 import code.audio.SoundSource;
 
-import code.engine3d.Lighting.Light;
-import code.engine3d.Lighting.LightGroup;
-import code.engine3d.materials.WorldMaterial;
+import code.engine3d.game.lighting.Light;
+import code.engine3d.game.lighting.LightGroup;
+import code.engine3d.game.WorldMaterial;
 import code.engine3d.instancing.Sprite;
 import code.engine3d.instancing.MeshInstance;
 import code.engine3d.Material;
@@ -61,11 +61,11 @@ public class WorldLoader {
         }
         
         if(newPlayerPos != null) game.player.pos.set(newPlayerPos);
-        if(nextRotY != Float.MAX_VALUE) {
+        if(nextRotY != Game.DONT_ROTATE) {
             game.player.rotX = 0;
             game.player.rotY = nextRotY;
         }
-        if(nextRotX != Float.MAX_VALUE) game.player.rotX = nextRotX;
+        if(nextRotX != Game.DONT_ROTATE) game.player.rotX = nextRotX;
         World.updateListener(game.player);
         
         MeshInstance[] skybox = null;
@@ -279,28 +279,25 @@ public class WorldLoader {
             
             float[] color = StringTools.cutOnFloats(ini.getDef("color", "255,255,255"), ',');
 
+			Vector3D position = null;
             Vector3D dir = new Vector3D();
             dir.setDirection(ini.getFloat("rot_x", 0), ini.getFloat("rot_y", 0));
-            
-            float[] spot = new float[]{dir.x, dir.y, dir.z, 1};
 
             String tmp = ini.getDef("type", "point");
             boolean isSpot = tmp.equals("spot");
+			boolean isPoint = true;
             
             if(tmp.equals("point") || isSpot) {
-                pos = new float[]{pos[0], pos[1], pos[2], 1};
+                position = new Vector3D(pos[0], pos[1], pos[2]);
 
-                if(!isSpot) spot = null;
+                if(!isSpot) dir = null;
             } else if(tmp.equals("dir")) {
-                pos = spot;
-                pos[0] = -spot[0];
-                pos[1] = -spot[1];
-                pos[2] = -spot[2];
-                pos[3] = 0;
-                spot = null;
+                position = dir;
+				dir = null;
+				isPoint = false;
             }
 
-            Light light = new Light(name, pos, color, spot);
+            Light light = new Light(name, position, isPoint, dir, color);
 
             if(isSpot) light.cutoff = ini.getFloat("cutoff", light.cutoff);
 

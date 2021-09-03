@@ -5,7 +5,7 @@ import code.engine3d.instancing.Sprite;
 
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
+import code.math.collision.Ray;
 import code.math.Vector3D;
 
 import code.utils.FPS;

@@ -4,10 +4,10 @@ layout(location = 0) in vec3 inPos;
 noperspective out vec2 uv;
 noperspective out vec2 uv2;
 
-layout(std140) uniform Mats
+layout(std140) uniform mats
 {
-	mat4 modelViewMatrix;
-	mat4 projectMatrix;
+	mat4 modelView;
+	mat4 project;
 };
 
 uniform float ditherW;
@@ -15,7 +15,7 @@ uniform float ditherH;
 
 void main()
 {
-    gl_Position = projectMatrix * modelViewMatrix * vec4(inPos, 1.);
+    gl_Position = project * modelView * vec4(inPos, 1.);
 	
 	uv = inPos.xy;
 	uv2.x = inPos.x*ditherW;

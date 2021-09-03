@@ -1,6 +1,5 @@
-package code.engine3d.collision;
+package code.math.collision;
 
-import code.engine3d.Mesh;
 import code.math.MathUtils;
 import code.math.Vector3D;
 import java.nio.FloatBuffer;
@@ -97,13 +96,15 @@ public class RayCast {
         return false;
     }
 
-    public static void rayCast(Mesh mesh, Ray ray) {
-        RayCast.rayCast(mesh, null, ray);
+    public static void rayCast(Object mesh, 
+			float[][] vertsAll, float[][] facesNormals,
+			Ray ray) {
+        RayCast.rayCast(mesh, vertsAll, facesNormals, null, ray);
     }
 
-    public static void rayCast(Mesh mesh, FloatBuffer mat, Ray ray) {
-        float[][] xyz = mesh.physicsVerts;
-        float[][] normals = mesh.normalsPerFace;
+    public static void rayCast(Object mesh, 
+			float[][] vertsAll, float[][] facesNormals,
+			FloatBuffer mat, Ray ray) {
         
         final Vector3D start = ray.start;
         final Vector3D dir = ray.dir;
@@ -116,9 +117,9 @@ public class RayCast {
         
         final float dirLen = dir.length();
 
-        for(int t = 0; t < xyz.length; t++) {
-            float[] verts = xyz[t];
-            float[] norms = normals[t];
+        for(int t = 0; t < vertsAll.length; t++) {
+            float[] verts = vertsAll[t];
+            float[] norms = facesNormals[t];
 
             for(int i = 0; i < verts.length; i += 9) {
                 float ax = verts[i], ay = verts[i + 1], az = verts[i + 2];

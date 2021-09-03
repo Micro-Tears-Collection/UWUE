@@ -6,8 +6,8 @@ import code.game.Main;
 import code.game.scripting.Scripting;
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.Sphere;
+import code.math.collision.Ray;
+import code.math.collision.Sphere;
 import code.math.MathUtils;
 import code.math.Vector3D;
 

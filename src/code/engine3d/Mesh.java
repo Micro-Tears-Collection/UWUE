@@ -27,6 +27,7 @@ public class Mesh extends ReusableContent {
 
     public Mesh() {}
     
+	//todo create vaos vbos here, not in model loader
     public Mesh(int[] vaos, int[] vbos, int[] vertsCount, 
             Material[] mats, Vector3D min, Vector3D max) {
         set(vaos, vbos, vertsCount, mats, min, max);
@@ -99,6 +100,11 @@ public class Mesh extends ReusableContent {
     }
     
     public void renderImmediate(E3D e3d, long time, FloatBuffer modelView) {
+        renderImmediate(e3d, mats, time, modelView);
+    }
+    
+	//render with custom materials
+    public void renderImmediate(E3D e3d, Material[] mats, long time, FloatBuffer modelView) {
         e3d.setModelView(modelView);
         
         for(int submesh = 0; submesh < mats.length; submesh++) {

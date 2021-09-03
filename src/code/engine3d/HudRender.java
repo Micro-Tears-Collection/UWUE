@@ -97,9 +97,9 @@ public class HudRender {
         vertColShader.use();
         
         //Uniforms
-        noTexShader.addUniformBlock(e3d.matrices, "Mats");
-        texShader.addUniformBlock(e3d.matrices, "Mats");
-        vertColShader.addUniformBlock(e3d.matrices, "Mats");
+        noTexShader.addUniformBlock(e3d.matrices, "mats");
+        texShader.addUniformBlock(e3d.matrices, "mats");
+        vertColShader.addUniformBlock(e3d.matrices, "mats");
         
         texShader.bind();
         
@@ -129,6 +129,24 @@ public class HudRender {
         e3d = null;
     }
     
+    public final void drawRect(float x, float y, float w, float h, int color, float a) {
+        noTexShader.bind();
+        
+        drawRect(null, x, y, w, h,
+                ((color>>16)&255) / 255f,
+                ((color>>8)&255) / 255f,
+                (color&255) / 255f,
+                a,
+                noTexShader, colorUniform);
+        
+        noTexShader.unbind();
+    }
+    
+    public final void drawRect(Texture tex, float x, float y, float w, float h, 
+            int color, float a) {
+        drawRect(tex, x, y, w, h, 0, 0, 1, 1, color, a);
+    }
+    
     public final void drawRect(Texture tex, float x, float y, float w, float h, 
             float u1, float v1, float u2, float v2,
             int color, float a) {
@@ -144,24 +162,6 @@ public class HudRender {
                 texShader, colorUniform);
         
         texShader.unbind();
-    }
-    
-    public final void drawRect(Texture tex, float x, float y, float w, float h, 
-            int color, float a) {
-        drawRect(tex, x, y, w, h, 0, 0, 1, 1, color, a);
-    }
-    
-    public final void drawRect(float x, float y, float w, float h, int color, float a) {
-        noTexShader.bind();
-        
-        drawRect(null, x, y, w, h,
-                ((color>>16)&255) / 255f,
-                ((color>>8)&255) / 255f,
-                (color&255) / 255f,
-                a,
-                noTexShader, colorUniform);
-        
-        noTexShader.unbind();
     }
     
     public final void drawRect(Texture tex, float x, float y, float w, float h, 
@@ -296,6 +296,14 @@ public class HudRender {
                 (y+ch) / e3d.h * 2 - 1);
     }
     
+    public final void disableClip() {
+        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE0);
+        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE1);
+        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE2);
+        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE3);
+        clipEnabled = false;
+    }
+    
     private final void clipImpl(float cx1, float cy1, float cx2, float cy2) {
         GL33C.glEnable(GL33C.GL_CLIP_DISTANCE0);
         GL33C.glEnable(GL33C.GL_CLIP_DISTANCE1);
@@ -313,14 +321,6 @@ public class HudRender {
         vertColShader.bind();
         vertColShader.setUniform4f(clipUni, cx1, cy1, cx2, cy2);
         vertColShader.unbind();
-    }
-    
-    public final void disableClip() {
-        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE0);
-        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE1);
-        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE2);
-        GL33C.glDisable(GL33C.GL_CLIP_DISTANCE3);
-        clipEnabled = false;
     }
     
     public Vector clips;

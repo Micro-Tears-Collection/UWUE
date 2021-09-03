@@ -9,6 +9,7 @@ import code.engine.Engine;
 
 import code.engine3d.E3D;
 import code.engine3d.HudRender;
+import code.engine3d.game.lighting.LightGroup;
 
 import code.game.world.entities.Player;
 
@@ -158,6 +159,7 @@ public class Main extends Screen {
         
         hudRender.destroy();
         e3d.destroy();
+		LightGroup.clear(false);
         font.destroy();
         
         musPlayer.destroy();

@@ -1,6 +1,5 @@
-package code.engine3d.collision;
+package code.math.collision;
 
-import code.engine3d.Mesh;
 import code.math.MathUtils;
 import code.math.Vector3D;
 import java.nio.FloatBuffer;
@@ -25,13 +24,15 @@ public class SphereCast {
                 sphere.pos.z-sphere.radius > maxz);
     }
     
-    public static void sphereCast(Mesh mesh, Sphere sphere) {
-        SphereCast.sphereCast(mesh, null, sphere);
+    public static void sphereCast(Object mesh, 
+			float[][] vertsAll, float[][] facesNormals,
+			Sphere sphere) {
+        SphereCast.sphereCast(mesh, vertsAll, facesNormals, null, sphere);
     }
     
-    public static void sphereCast(Mesh mesh, FloatBuffer mat, Sphere sphere) {
-        float[][] xyz = mesh.physicsVerts;
-        float[][] normals = mesh.normalsPerFace;
+    public static void sphereCast(Object mesh, 
+			float[][] vertsAll, float[][] facesNormals,
+			FloatBuffer mat, Sphere sphere) {
         
         Vector3D pos = sphere.pos;
         float rad = sphere.radius;
@@ -40,9 +41,9 @@ public class SphereCast {
         float toRad = 1*rad/height;
         float toHeight = 1*height/rad;
         
-        for(int t=0; t<xyz.length; t++) {
-            float[] verts = xyz[t];
-            float[] norms = normals[t];
+        for(int t=0; t<vertsAll.length; t++) {
+            float[] verts = vertsAll[t];
+            float[] norms = facesNormals[t];
 
             for(int i = 0; i < verts.length; i += 9) {
                 float ax = verts[i], ay = verts[i + 1], az = verts[i + 2];

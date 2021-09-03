@@ -12,8 +12,9 @@ import org.lwjgl.system.MemoryUtil;
  *
  * @author Roman Lahin
  */
-public class MeshInstance extends Renderable {
+public class MeshInstance extends RenderInstance {
     
+	//todo remove drawMatrix somehow
     public FloatBuffer modelMatrix, drawMatrix;
     
     public Mesh mesh;
@@ -138,6 +139,6 @@ public class MeshInstance extends Renderable {
         
         mesh.renderImmediate(e3d, time, drawMatrix);
         
-        unbindLight();
+        unbindLight(e3d);
     }
 }

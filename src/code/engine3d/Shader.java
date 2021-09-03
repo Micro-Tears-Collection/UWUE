@@ -91,6 +91,7 @@ public class Shader extends ReusableContent {
     }
     
     private boolean compileCheck(String path, int shader) {
+		//todo print glsl code when error is dropping
         int isCompiled = GL33C.glGetShaderi(shader, GL33C.GL_COMPILE_STATUS);
         
         if(isCompiled != GL33C.GL_TRUE) {

@@ -1,9 +1,8 @@
-package code.engine3d.materials;
+package code.engine3d.game;
 
 import code.engine3d.Material;
 import code.engine3d.E3D;
 import code.engine3d.Shader;
-import code.engine3d.shaders.WorldShaderPack;
 import code.engine3d.Texture;
 import code.utils.IniFile;
 import code.utils.assetManager.ReusableContent;
@@ -39,7 +38,7 @@ public class WorldMaterial extends Material {
         shaderPack = WorldShaderPack.get(e3d, "world", new String[][]{null});
     }
     
-    public void load(IniFile ini) {
+    public void load(String name, IniFile ini) {
         String tmp = ini.get("alpha_test");
         
         if(tmp != null && tmp.equals("1")) {
@@ -47,7 +46,7 @@ public class WorldMaterial extends Material {
         } else if(tmp != null && tmp.equals("blend")) {
             alphaTest = true; blendMode = BLEND;
         }
-        super.load(ini);
+        super.load(name, ini);
         
         linearInterpolation = ini.getInt("linear", 0) == 1;
         mipMapping = ini.getInt("mipmap", 1) == 1;
@@ -95,14 +94,10 @@ public class WorldMaterial extends Material {
         }
         
         if(alphaTest) {
-            /*GL33C.glEnable(GL33C.GL_ALPHA_TEST);
-            GL33C.glAlphaFunc(GL33C.GL_GREATER, blendMode == OFF?0.5f:0);*/
+			shader.setUniformf(shaderPack.alphaThreshold, blendMode == OFF?0.5f:0);
         }
         
-        if(glow) {
-            /*lightingWasEnabled = GL33C.glGetInteger(GL33C.GL_LIGHTING) == GL33C.GL_TRUE;
-            if(lightingWasEnabled) GL33C.glDisable(GL33C.GL_LIGHTING);*/
-        }
+        if(glow) shader.setUniformf(shaderPack.glow, 1);
         
         super.bind(e3d, time);
     }
@@ -117,11 +112,10 @@ public class WorldMaterial extends Material {
         }
         
         if(alphaTest) {
-            /*GL33C.glDisable(GL33C.GL_ALPHA_TEST);
-            GL33C.glAlphaFunc(GL33C.GL_ALWAYS, 0);*/
+			shader.setUniformf(shaderPack.alphaThreshold, -1);
         }
         
-        //if(glow && lightingWasEnabled) GL33C.glEnable(GL33C.GL_LIGHTING);
+        if(glow) shader.setUniformf(shaderPack.glow, 0);
         
         super.unbind();
         shader.unbind();

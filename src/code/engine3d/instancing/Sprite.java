@@ -12,7 +12,7 @@ import org.lwjgl.system.MemoryUtil;
  *
  * @author Roman Lahin
  */
-public class Sprite extends Renderable {
+public class Sprite extends RenderInstance {
     
     public static final int BOTTOM = 0, CENTER = -1, TOP = -2;
     
@@ -83,7 +83,7 @@ public class Sprite extends Renderable {
         GL33C.glDrawArrays(GL33C.GL_TRIANGLE_FAN, 0, 4);
         GL33C.glBindVertexArray(0);
 
-        unbindLight();
+        unbindLight(e3d);
         mat.unbind();
     }
 

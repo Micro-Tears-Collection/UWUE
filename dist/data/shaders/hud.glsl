@@ -12,17 +12,17 @@ layout(location = 3) in vec4 inCol;
 smooth out vec4 vColor;
 #endif
 
-layout(std140) uniform Mats
+layout(std140) uniform mats
 {
-	mat4 modelViewMatrix;
-	mat4 projectMatrix;
+	mat4 modelView;
+	mat4 project;
 };
 
 uniform vec4 clipXY;
 
 void main()
 {
-    gl_Position = projectMatrix * modelViewMatrix * vec4(inPos, 1.);
+    gl_Position = project * modelView * vec4(inPos, 1.);
 	gl_ClipDistance[0] = gl_Position.x - clipXY.x;
 	gl_ClipDistance[1] = clipXY.z - gl_Position.x;
 	gl_ClipDistance[2] = -gl_Position.y - clipXY.y;

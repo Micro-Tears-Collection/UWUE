@@ -9,9 +9,11 @@ import code.utils.assetManager.ReusableContent;
 public class ShaderPack extends ReusableContent {
     
     public Shader[] shaders;
+	public String[][] defs;
     
     protected ShaderPack(E3D e3d, String name, String[][] defs) {
         shaders = new Shader[defs.length];
+		this.defs = defs;
         
         for(int i=0; i<shaders.length; i++) {
             shaders[i] = e3d.getShader(name, defs[i]);

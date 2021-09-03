@@ -2,10 +2,10 @@ package code.game.world;
 
 import code.engine3d.E3D;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.RayCast;
-import code.engine3d.collision.Sphere;
-import code.engine3d.collision.SphereCast;
+import code.math.collision.Ray;
+import code.math.collision.RayCast;
+import code.math.collision.Sphere;
+import code.math.collision.SphereCast;
 import code.engine3d.instancing.MeshInstance;
 
 import code.math.Culling;
@@ -76,7 +76,9 @@ public class Node {
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.collision) SphereCast.sphereCast(mesh.mesh, sphere);
+            if(mesh.collision) SphereCast.sphereCast(mesh.mesh, 
+					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, 
+					sphere);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).sphereCast(sphere);
@@ -90,7 +92,7 @@ public class Node {
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.collision) RayCast.rayCast(mesh.mesh, ray);
+            if(mesh.collision) RayCast.rayCast(mesh.mesh, mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, ray);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.elementAt(i).rayCast(ray);
