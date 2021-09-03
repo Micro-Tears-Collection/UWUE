@@ -139,8 +139,11 @@ public class Window {
     
     public void flush() {
         GLFW.glfwSwapBuffers(window);
-        GLFW.glfwPollEvents();
     }
+	
+	public void pollEvents() {
+		GLFW.glfwPollEvents();
+	}
     
     public void bind() {
         GLFW.glfwMakeContextCurrent(window);

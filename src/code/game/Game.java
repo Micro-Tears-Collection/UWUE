@@ -228,19 +228,19 @@ public class Game extends Screen {
         main.window.showCursor(true);
     }
     
-    public void tick() {
-        if(!inPauseScreen) {
-            if(nextMap != null) loadMapImpl();
-            if(nextDialog != null) {
-                openDialogImpl();
-                return;
-            }
-        }
-        
-        update();
-        render();
-    }
-    
+	public void tick() {
+		if(!inPauseScreen) {
+			if(nextMap != null) loadMapImpl();
+			if(nextDialog != null) {
+				openDialogImpl();
+				return;
+			}
+		}
+
+		update();
+		render();
+	}
+
     private void update() {
         if(isPaused()) {
             world.pausedAnimate(null);
@@ -359,7 +359,7 @@ public class Game extends Screen {
         }
         
         if(main.conf.debug) {
-            main.font.drawString(main.hudRender, "FPS: " + FPS.fps, 10, 10, 1, main.fontColor);
+			main.font.drawString(main.hudRender, "FPS: " + FPS.fps, 10, 10, 1, main.fontColor);
             main.font.drawString(main.hudRender,
                     Math.round(player.pos.x) + ", " + Math.round(player.pos.y) + ", " + Math.round(player.pos.z),
                     10, 10 + main.font.getHeight(), 1, main.fontColor);

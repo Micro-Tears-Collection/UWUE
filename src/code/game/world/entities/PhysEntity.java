@@ -66,7 +66,7 @@ public class PhysEntity extends Entity {
             if(world.fallDeath && fallingTime >= 3000) hp = 0;
         }
         
-        double horizFriction = onGround ? 0.546 : 0.61;
+        double horizFriction = 0.546;//onGround ? 0.546 : 0.61;
         double verticalFriction = 0.98;
         horizFriction = Math.pow(horizFriction, FPS.frameTime / 50d);
         verticalFriction = Math.pow(verticalFriction, FPS.frameTime / 50d);
@@ -157,21 +157,23 @@ public class PhysEntity extends Entity {
         if(onGround) speed.y = height;
     }
     
-    public void walk(float front, float right, float maxSpeed) {
+    public void walk(float front, float right) {
         float sin = (float) Math.sin(Math.toRadians(rotY));
         float cos = (float) Math.cos(Math.toRadians(rotY));
         
-        if(!onGround) {
+        /*if(!onGround) {
             front *= 0.2;
             right *= 0.2;
-        }
+        }*/
+		
+		if(front != 0 && right != 0) {
+			//1 / (2^0.5) ~= 0.70710678
+			front *= 0.70710678;
+			right *= 0.70710678;
+		}
         
-        speed.x += (-sin * front + cos * right) * FPS.currentTime / 50f;
-        speed.z += (-cos * front - sin * right) * FPS.currentTime / 50f;
-        
-        float oy = speed.y; speed.y = 0;
-        if(speed.lengthSquared() > maxSpeed * maxSpeed) speed.setLength(maxSpeed);
-        speed.y = oy;
+        speed.x += (-sin * front + cos * right) * FPS.frameTime / 50f;
+        speed.z += (-cos * front - sin * right) * FPS.frameTime / 50f;
     }
 
 }

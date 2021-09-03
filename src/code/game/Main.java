@@ -185,6 +185,8 @@ public class Main extends Screen {
     private void run() {
         try {
             while(run) {
+				window.pollEvents();
+				
                 //Change screen to next screen
                 if(nextScreen != null) {
                     if(screen != null && needToDestroyScreen) {
