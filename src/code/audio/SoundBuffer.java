@@ -90,6 +90,7 @@ public class SoundBuffer extends ReusableContent {
         AL10.alBufferData(soundBuffer, 
                 channels.get(0)==1?AL10.AL_FORMAT_MONO16:AL10.AL_FORMAT_STEREO16, 
                 decoded, sampleRate.get(0));
+		
         MemoryUtil.memFree(sampleRate);
         MemoryUtil.memFree(channels);
         MemoryUtil.memFree(decoded);

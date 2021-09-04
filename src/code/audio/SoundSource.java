@@ -43,6 +43,7 @@ public class SoundSource {
     
     public void destroy() {
         AudioEngine.sources.remove(this);
+		stop();
         free();
         AL10.alDeleteSources(soundSource);
     }
@@ -158,7 +159,7 @@ public class SoundSource {
     public void rewind() {
         AL10.alSourceRewind(soundSource);
         AL10.alSourcePlay(soundSource);
-    }
+        }
     
     public void free() {
         AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);

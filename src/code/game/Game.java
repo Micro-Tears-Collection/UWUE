@@ -219,6 +219,7 @@ public class Game extends Screen {
         main.musPlayer.setPitch(1);
         
         if(world != null) world.destroy();
+		player.destroy();
         
         handIcon.free();
         if(psxBuffer != null) psxBuffer.destroy();

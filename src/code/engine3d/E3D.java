@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.joml.Matrix3f;
@@ -517,7 +517,7 @@ public class E3D {
         return getMaterial(name, null);
     }
     
-    public Material getMaterial(String name, Hashtable<String,String> replace) {
+    public Material getMaterial(String name, HashMap<String,String> replace) {
         Material mat = (Material) AssetManager.get("MAT_" + name);
         if(mat != null) return mat;
         

@@ -49,6 +49,7 @@ public class Texture extends ReusableContent {
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, wrap);
 		
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
+        GL33C.glGetError();
 	}
     
     public void bind(int level) {

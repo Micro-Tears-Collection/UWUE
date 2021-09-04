@@ -610,7 +610,7 @@ public class Scripting {
         int[] sources = new int[sourcesV.size()];
 
         for(int i=0; i<sources.length; i++) {
-            sources[i] = sourcesV.remove(i);
+            sources[i] = sourcesV.get(i);
         }
         
         return sources;

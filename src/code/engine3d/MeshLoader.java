@@ -7,7 +7,7 @@ import code.utils.StringTools;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class MeshLoader {
     static Mesh[] loadObj(E3D e3d, String name) {
         //long begin = System.currentTimeMillis();
         String[] replaceRaw = StringTools.cutOnStrings(name, '|');
-        Hashtable<String, String> replace = new Hashtable();
+        HashMap<String, String> replace = new HashMap();
         for(int i=1; i<replaceRaw.length; i+=2) {
             replace.put(replaceRaw[i], replaceRaw[i+1]);
         }
