@@ -2,6 +2,7 @@
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
+//layout(location = 3) in vec3 inTangent;
 
 smooth out vec2 uv;
 smooth out vec3 lightCol;
@@ -36,8 +37,6 @@ layout(std140) uniform lights
 	vec4 ambientLight;
 	Light lightsData[MAX_LIGHTS];
 };
-
-uniform float glow;
 
 vec3 pointLight(vec4 pos, vec3 norm, int i) {
 	Light light = lightsData[i];
@@ -99,6 +98,9 @@ void main()
 	vec4 lvPos = modelView * vec4(inPos, 1.);
 	vec3 lvNormal = normalize((modelView * vec4(inNormal, 0.)).xyz);
 	
+	#ifdef GLOW
+	lightCol = vec3(1.);
+	#else
 	vec3 lightsSumm = ambientLight.rgb;
 	
 	for(int i=0; i<MAX_LIGHTS; i++) {
@@ -106,7 +108,8 @@ void main()
 		else lightsSumm += directionalLight(lvPos, lvNormal, i);
 	}
 	
-	lightCol = mix(lightsSumm, vec3(1.), glow);
+	lightCol = lightsSumm;
+	#endif
 	
 	fogOut.rgb = fogColor.rgb;
 	fogOut.a = mix(

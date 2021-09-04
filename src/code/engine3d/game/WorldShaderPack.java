@@ -12,7 +12,7 @@ import java.util.Arrays;
  */
 public class WorldShaderPack extends ShaderPack {
     
-    public int uvOffset, glow, alphaThreshold;
+    public int uvOffset, alphaThreshold;
     
     protected WorldShaderPack(E3D e3d, String path, String[][] defs) {
         super(e3d, path, defs);
@@ -29,7 +29,6 @@ public class WorldShaderPack extends ShaderPack {
         
         shaders[0].bind();
         uvOffset = shaders[0].getUniformIndex("uvOffset");
-        glow = shaders[0].getUniformIndex("glow");
         alphaThreshold = shaders[0].getUniformIndex("alphaThreshold");
         shaders[0].unbind();
     }

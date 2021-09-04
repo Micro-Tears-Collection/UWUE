@@ -11,7 +11,7 @@ import code.engine3d.instancing.MeshInstance;
 import code.math.Culling;
 import java.nio.FloatBuffer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,11 +20,11 @@ import java.util.Vector;
 public class Node {
     
     MeshInstance mesh;
-    Vector<Node> childs;
+    ArrayList<Node> childs;
     
     Node(MeshInstance mesh) {
         this.mesh = mesh;
-        childs = new Vector();
+        childs = new ArrayList<Node>();
     }
     
     boolean hasChild(Node child) {
@@ -50,11 +50,11 @@ public class Node {
             
             if(visible == Culling.FULLY_VISIBLE) {
                 for(int i=0; i<childs.size(); i++) {
-                    childs.elementAt(i).renderFully(e3d, invCam, world, renderTime);
+                    childs.get(i).renderFully(e3d, invCam, world, renderTime);
                 }
             } else {
                 for(int i=0; i<childs.size(); i++) {
-                    childs.elementAt(i).render(e3d, invCam, world, renderTime);
+                    childs.get(i).render(e3d, invCam, world, renderTime);
                 }
             }
         }
@@ -66,7 +66,7 @@ public class Node {
         mesh.render(e3d);
 
         for(int i=0; i<childs.size(); i++) {
-            childs.elementAt(i).renderFully(e3d, invCam, world, renderTime);
+            childs.get(i).renderFully(e3d, invCam, world, renderTime);
         }
     }
     
@@ -81,7 +81,7 @@ public class Node {
 					sphere);
             
             for(int i=0; i<childs.size(); i++) {
-                childs.elementAt(i).sphereCast(sphere);
+                childs.get(i).sphereCast(sphere);
             }
         }
     }
@@ -95,7 +95,7 @@ public class Node {
             if(mesh.collision) RayCast.rayCast(mesh.mesh, mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, ray);
             
             for(int i=0; i<childs.size(); i++) {
-                childs.elementAt(i).rayCast(ray);
+                childs.get(i).rayCast(ray);
             }
         }
     }

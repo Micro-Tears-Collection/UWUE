@@ -4,10 +4,12 @@ import code.audio.AudioEngine;
 import code.audio.SoundSource;
 import code.engine.Engine;
 import code.engine.Window;
-import code.engine3d.Texture;
+import code.engine3d.E3D;
+import code.engine3d.game.WorldMaterial;
 
 import code.utils.assetManager.AssetManager;
 import code.utils.IniFile;
+import code.utils.assetManager.ReusableContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -188,7 +190,8 @@ public class Configuration {
             }
         }
         applyAudio();
-        Texture.disableMipmapping = psxRender;
+        WorldMaterial.disableMipmapping = psxRender;
+		applyPsxrender();
     }
     
     void applyAudio() {
@@ -199,6 +202,18 @@ public class Configuration {
         ArrayList<SoundSource> list = AudioEngine.sources;
         for(SoundSource source : list) {
             source.setVolume(source.getVolume());
+        }
+            
+    }
+    
+    void applyPsxrender() {
+        ArrayList<ReusableContent> list = AssetManager.getAll();
+		
+        for(ReusableContent content : list) {
+            if(content instanceof WorldMaterial) {
+				WorldMaterial mat = (WorldMaterial) content;
+				mat.updateSamplerProperties();
+			}
         }
             
     }

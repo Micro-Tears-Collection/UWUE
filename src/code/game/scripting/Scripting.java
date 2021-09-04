@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaBoolean;
@@ -597,7 +597,7 @@ public class Scripting {
     }
     
     public static int[] buildSourcesArray(Game game, LuaValue list) {
-        Vector<Integer> sourcesV = new Vector();
+        ArrayList<Integer> sourcesV = new ArrayList<Integer>();
         
         for(int i=0; i<list.length(); i++) {
             Entity found = game!=null?game.world.findObject(list.get(i+1).toString()):null;
@@ -610,7 +610,7 @@ public class Scripting {
         int[] sources = new int[sourcesV.size()];
 
         for(int i=0; i<sources.length; i++) {
-            sources[i] = sourcesV.elementAt(i);
+            sources[i] = sourcesV.remove(i);
         }
         
         return sources;
@@ -644,7 +644,7 @@ public class Scripting {
         if(val.istable()) {
             dos.writeInt(TAB);
             
-            Vector<Varargs> vals = new Vector();
+            ArrayList<Varargs> vals = new ArrayList<Varargs>();
             
             LuaValue k = LuaValue.NIL;
             while(true) {
@@ -656,7 +656,7 @@ public class Scripting {
             
             dos.writeInt(vals.size());
             for(int i=0; i<vals.size(); i++) {
-                Varargs el = vals.elementAt(i);
+                Varargs el = vals.get(i);
                 save(el.arg1(), dos);
                 save(el.arg(2), dos);
             }

@@ -17,6 +17,8 @@ public class HudRender {
     
     private Shader texShader, noTexShader, vertColShader;
     private int uvOffMulUni, clipUni, colorUniform;
+	
+	private Sampler hudSampler;
     
     public HudRender(E3D e3d) {
         this.e3d = e3d;
@@ -109,6 +111,9 @@ public class HudRender {
         texShader.addTextureUnit(0);
         
         texShader.unbind();
+		
+		//Sampler
+		hudSampler = new Sampler(false, false, false);
     }
     
     public void destroy() {
@@ -172,11 +177,17 @@ public class HudRender {
             shader.setUniform4f(colorUniform, r, g, b, a);
         }
         
-        if(tex != null) tex.bind(false, false, false, 0);
+        if(tex != null) {
+			hudSampler.bind(0);
+			tex.bind(0);
+		}
 
         e3d.drawRect(x, y, w, h, tex != null);
         
-        if(tex != null) tex.unbind(0);
+        if(tex != null) {
+			hudSampler.unbind(0);
+			tex.unbind(0);
+		}
     }
     
     public void drawWindow(float x, float y, float w, float h) {

@@ -18,7 +18,7 @@ import code.math.Culling;
 import code.utils.FPS;
 import java.nio.FloatBuffer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
 
@@ -31,8 +31,8 @@ public class World {
     public Matrix4f m; 
     public FloatBuffer tmp;
     
-    Vector<Entity> objects;
-    Vector<Node> renderNodes;
+    ArrayList<Entity> objects;
+    ArrayList<Node> renderNodes;
     MeshInstance[] allMeshes, skybox;
     int skyColor;
     
@@ -53,7 +53,7 @@ public class World {
         this.skybox = skybox;
         this.skyColor = skyColor;
         
-        objects = new Vector();
+        objects = new ArrayList<Entity>();
         
         if(debug) {
             sobj = new SpriteObject(new Sprite(e3d.getMaterial("/images/test.png;alpha_test=1;lightgroup=0"), 
@@ -79,7 +79,7 @@ public class World {
     }
     
     void makeNodes() {
-        renderNodes = new Vector();
+        renderNodes = new ArrayList<Node>();
         
         Node[] allNodes = new Node[allMeshes.length];
         for(int i=0; i<allNodes.length; i++) {
@@ -130,10 +130,10 @@ public class World {
         for(Entity object : objects) object.update(this);
         
         for(int i=0; i<objects.size(); i++) {
-            Entity obj1 = objects.elementAt(i);
+            Entity obj1 = objects.get(i);
             
             for(int j=i+1; j<objects.size(); j++) {
-                Entity obj2 = objects.elementAt(j);
+                Entity obj2 = objects.get(j);
                 obj1.collisionTest(obj2);
             }
         }

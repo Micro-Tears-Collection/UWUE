@@ -133,12 +133,14 @@ public class MeshInstance extends RenderInstance {
     public void renderImmediate(E3D e3d) {
         //todo somehow check do we need to bind lights?
         //maybe check materials on mesh creation and write result to boolean?
+		//or maybe we can do send to materials do we need to enable lighting?
         bindLight(e3d, 
                     (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
                     (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2f);
         
         mesh.renderImmediate(e3d, time, drawMatrix);
         
+		//maybe instead of unbinding light sources and sending stuff to gpu we can enable GLOW?
         unbindLight(e3d);
     }
 }

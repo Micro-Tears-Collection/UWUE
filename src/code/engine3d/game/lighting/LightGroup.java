@@ -1,35 +1,35 @@
 package code.engine3d.game.lighting;
 
 import code.engine3d.E3D;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
  * @author Roman Lahin
  */
 public class LightGroup {
-    public static Vector<Light> allLights = new Vector();
-    public static Vector<LightGroup> lightgroups = new Vector();
+    public static ArrayList<Light> allLights = new ArrayList<>();
+    public static ArrayList<LightGroup> lightgroups = new ArrayList<>();
     public static LightGroup defaultGroup;
     
-    private static Vector<Light> renderLights = new Vector();
+    private static ArrayList<Light> renderLights = new ArrayList<>();
     private static int activeLightsCount = 0;
     
     public String name;
-    public Vector<Light> lights;
+    public ArrayList<Light> lights;
     private float[] ambient;
     
     public static void clear(boolean recreate) {
         for(LightGroup group : lightgroups) {
             group.destroy();
         }
-        lightgroups.removeAllElements();
+        lightgroups.clear();
         defaultGroup = null;
         
         for(Light light : allLights) {
             light.destroy();
         }
-        allLights.removeAllElements();
+        allLights.clear();
         
         if(recreate) {
             defaultGroup = new LightGroup("default");
@@ -39,7 +39,7 @@ public class LightGroup {
     
     public LightGroup(String name) {
         this.name = name;
-        lights = new Vector();
+        lights = new ArrayList<>();
         
         ambient = new float[] {0, 0, 0, 1};
     }
@@ -96,7 +96,7 @@ public class LightGroup {
         activeLightsCount = Math.min(activeLightsCount, E3D.MAX_LIGHTS);
         
         for(int ii=0; ii<activeLightsCount; ii++) {
-            Light light = renderLights.elementAt(ii);
+            Light light = renderLights.get(ii);
             
 			if(light.isSpot) {
 				e3d.setSpotLight(ii, light.posOrDir, light.spotDir, light.cutoff, light.color);
@@ -106,7 +106,7 @@ public class LightGroup {
 				e3d.setDirectionalLight(ii, light.posOrDir, light.color);
 			}
         }
-        renderLights.removeAllElements();
+        renderLights.clear();
 		
 		e3d.sendLights();
     }
@@ -121,27 +121,27 @@ public class LightGroup {
 		e3d.sendLights();
     }
     
-    private static void sort(Vector<Light> list) {
+    private static void sort(ArrayList<Light> list) {
         sort(list, 0, list.size()-1);
     }
     
-    private static void sort(Vector<Light> list, int low, int high) {
+    private static void sort(ArrayList<Light> list, int low, int high) {
         if(low >= high) return; //Завершить выполнение если уже нечего делить
         
-        Light base = list.elementAt((low+high)>>1); //Опорный элемент
+        Light base = list.get((low+high)>>1); //Опорный элемент
         float influence = base.influence;
 
         //Разделить на подмассивы, который больше и меньше опорного элемента
         int first = low, second = high;
         while(first <= second) {
-            while(list.elementAt(first).influence > influence) first++;
+            while(list.get(first).influence > influence) first++;
 
-            while(list.elementAt(second).influence < influence) second--;
+            while(list.get(second).influence < influence) second--;
 
             if(first <= second) { //Меняем местами
-                Light tmp = list.elementAt(first);
-                list.setElementAt(list.elementAt(second), first);
-                list.setElementAt(tmp, second);
+                Light tmp = list.get(first);
+                list.set(first, list.get(second));
+                list.set(second, tmp);
                 first++; second--;
             }
         }

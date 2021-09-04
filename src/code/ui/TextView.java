@@ -2,14 +2,14 @@ package code.ui;
 
 import code.engine3d.HudRender;
 import code.utils.font.BMFont;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class TextView {
 
     protected BMFont font;
     protected int w, h;
     
-    protected final Vector<String> lines = new Vector();
+    protected final ArrayList<String> lines = new ArrayList<>();
     protected boolean hCenter = false, vCenter = false;
     protected int yScroll = 0;
 
@@ -25,7 +25,7 @@ public class TextView {
         limitY();
     }
 
-    public static void createLines(String txt, Vector<String> lines, char lineDivider, BMFont font, int w) {
+    public static void createLines(String txt, ArrayList<String> lines, char lineDivider, BMFont font, int w) {
         int lineWidth = 0;
         int wordStart = 0;
         int lastSpace = -1;
@@ -55,7 +55,7 @@ public class TextView {
                     i = wordEnd+1;
                 }
                 String line = txt.substring(wordStart, wordEnd);
-                lines.addElement(line);
+                lines.add(line);
 
                 lineWidth = 0;
                 wordStart = i;
@@ -66,10 +66,10 @@ public class TextView {
         }
 
         if(wordStart < txt.length()) {
-            lines.addElement(txt.substring(wordStart, txt.length()));
+            lines.add(txt.substring(wordStart, txt.length()));
         }
 
-        if(txt.isEmpty()) lines.addElement("");
+        if(txt.isEmpty()) lines.add("");
     }
     
     public void addText(String str) {
@@ -85,7 +85,7 @@ public class TextView {
     }
 
     public void setText(String str, char lineDivider) {
-        lines.removeAllElements();
+        lines.clear();
         addText(str, lineDivider);
         centralize();
     }
@@ -99,7 +99,7 @@ public class TextView {
         hudRender.popClip();
     }
 
-    public static void draw(HudRender hudRender, Vector<String> lines, BMFont font, 
+    public static void draw(HudRender hudRender, ArrayList<String> lines, BMFont font, 
             int x, int y, int w, int h, int yScroll, boolean hCenter, int color) {
 
         final int stepY = font.getHeight();
@@ -107,7 +107,7 @@ public class TextView {
         int posY = yScroll + i*stepY;
         
         for(; i < lines.size() && posY <= h; i++) {
-            String str = lines.elementAt(i);
+            String str = lines.get(i);
             
             int offsetX = hCenter ? (w - font.stringWidth(str)) >> 1 : 0;
 

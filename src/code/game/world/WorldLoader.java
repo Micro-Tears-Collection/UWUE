@@ -28,7 +28,7 @@ import code.utils.IniFile;
 import code.utils.StringTools;
 
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -101,9 +101,9 @@ public class WorldLoader {
             String tmp = lvl.get("fog", "color");
             if(tmp != null) {
                 int c = StringTools.getRGB(tmp,',');
-                world.fogColor = new float[] {(float)((c>>16)&255) / 255f, 
-                    (float)((c>>8)&255) / 255f, 
-                    (float)(c&255) / 255f, 1};
+                world.fogColor = new float[] {((c>>16)&255) / 255f, 
+                    ((c>>8)&255) / 255f, 
+                    (c&255) / 255f, 1};
             }
             
             tmp = lvl.get("fog", "density");
@@ -125,12 +125,12 @@ public class WorldLoader {
             }
         }
         
-        Vector<Integer> sourcesToPlay = new Vector();
+        ArrayList<Integer> sourcesToPlay = new ArrayList<>();
         Object[] objGroups = IniFile.createGroups(lines);
         loadObjects((String[])objGroups[0], (IniFile[])objGroups[1], game, world, sourcesToPlay);
         if(LightGroup.allLights.isEmpty()) {
             LightGroup.defaultGroup = null;
-            LightGroup.lightgroups.removeAllElements();
+            LightGroup.lightgroups.clear();
         }
         
         game.world = world;
@@ -171,15 +171,15 @@ public class WorldLoader {
             int[] sources = new int[sourcesToPlay.size()];
             
             for(int i=0; i<sources.length; i++) {
-                sources[i] = sourcesToPlay.elementAt(i);
+                sources[i] = sourcesToPlay.get(i);
             }
         
             AudioEngine.playMultiple(sources);
         }
     }
     
-    static void loadObjects(String[] names, IniFile[] objs, Game game, World world, Vector<Integer> sourcesToPlay) {
-        Vector lightgroupdata = new Vector();
+    static void loadObjects(String[] names, IniFile[] objs, Game game, World world, ArrayList<Integer> sourcesToPlay) {
+        ArrayList lightgroupdata = new ArrayList<>();
         boolean defaultWas = false;
         
         for(int i=0; i<names.length; i++) {
@@ -225,12 +225,12 @@ public class WorldLoader {
         }
 
         for(int i=0; i<lightgroupdata.size(); i+=3) {
-            LightGroup group = (LightGroup) lightgroupdata.elementAt(i);
+            LightGroup group = (LightGroup) lightgroupdata.get(i);
 
-            String[] groupLights = (String[]) lightgroupdata.elementAt(i+1);
+            String[] groupLights = (String[]) lightgroupdata.get(i+1);
             boolean all = groupLights.length==1?groupLights[0].equals("all"):false;
             
-            if(all) group.lights = (Vector<Light>)LightGroup.allLights.clone();
+            if(all) group.lights = (ArrayList<Light>)LightGroup.allLights.clone();
             else for(String lightName : groupLights) {
                 for(Light light : LightGroup.allLights) {
                     if(lightName.equals(light.name)) {
@@ -240,13 +240,13 @@ public class WorldLoader {
                 }
             }
             
-            groupLights = (String[]) lightgroupdata.elementAt(i+2);
+            groupLights = (String[]) lightgroupdata.get(i+2);
             
             for(String lightName : groupLights) {
                 for(int xx=0; xx<group.lights.size(); xx++) {
-                    Light light = group.lights.elementAt(xx);
+                    Light light = group.lights.get(xx);
                     if(lightName.equals(light.name)) {
-                        group.lights.removeElementAt(xx);
+                        group.lights.remove(xx);
                         break;
                     }
                 }
@@ -255,7 +255,7 @@ public class WorldLoader {
     }
 
     private static void loadObject(Game game, World world, String objType, String name, IniFile ini, 
-            float[] pos, Vector lightgroupdata, Vector<Integer> sourcesToPlay) {
+            float[] pos, ArrayList lightgroupdata, ArrayList<Integer> sourcesToPlay) {
         //yeah...
         //todo maybe move code to objects?
         
@@ -323,7 +323,7 @@ public class WorldLoader {
     }
 
     private static SoundSourceEntity loadSoundSourceEntity(String name, float[] pos,
-            Game game, World world, IniFile ini, Vector<Integer> sourcesToPlay) {
+            Game game, World world, IniFile ini, ArrayList<Integer> sourcesToPlay) {
         SoundSource source = new SoundSource(ini.get("sound"));
         
         source.setVolume(ini.getFloat("volume", 1));

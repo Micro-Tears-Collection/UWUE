@@ -3,7 +3,7 @@ package code.ui.itemList;
 import code.engine3d.HudRender;
 import code.ui.TextView;
 import code.utils.font.BMFont;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,12 +15,12 @@ public class TextItem extends ListItem {
     private char lineDivider = '\0';
     private boolean hCenter;
     
-    private Vector<String> lines;
+    private ArrayList<String> lines;
     private BMFont font;
     private int width;
     
     public TextItem(String text, BMFont font, char lineDivider) {
-        lines = new Vector();
+        lines = new ArrayList<>();
         
         this.text = text;
         this.font = font;
@@ -28,7 +28,7 @@ public class TextItem extends ListItem {
     }
     
     public TextItem(String text, BMFont font) {
-        lines = new Vector();
+        lines = new ArrayList<>();
         
         this.font = font;
         this.text = text;
@@ -49,7 +49,7 @@ public class TextItem extends ListItem {
     
     public void updateHeight(int w) {
         width = w;
-        lines.removeAllElements();
+        lines.clear();
         TextView.createLines(text, lines, lineDivider, font, w);
         
         height = lines.size() * font.getHeight();

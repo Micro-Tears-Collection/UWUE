@@ -17,7 +17,6 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class Texture extends ReusableContent {
     
-    public static boolean disableMipmapping;
     private static int oldLevel = 0;
     
     public int w = 1, h = 1;
@@ -32,26 +31,34 @@ public class Texture extends ReusableContent {
     public void destroy() {
         GL33C.glDeleteTextures(id);
     }
-    
-    public void bind(boolean linearInterpolation, boolean mipMapping, boolean wrapClamp, int level) {
-        if(level != oldLevel) {
-            GL33C.glActiveTexture(GL33C.GL_TEXTURE0+level);
-            oldLevel = level;
-        }
-        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
+	
+	public void setParameters(boolean linear, boolean mipMapping, boolean wrapClamp) {
+		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
         GL33C.glGetError();
         
-        int mag = linearInterpolation ? GL33C.GL_LINEAR : GL33C.GL_NEAREST;
-        int interp = (!disableMipmapping && mipMapping) ?
-                (linearInterpolation ? GL33C.GL_LINEAR_MIPMAP_LINEAR : GL33C.GL_NEAREST_MIPMAP_LINEAR)
+        int mag = linear ? GL33C.GL_LINEAR : GL33C.GL_NEAREST;
+        int min = mipMapping ?
+                (linear ? GL33C.GL_LINEAR_MIPMAP_LINEAR : GL33C.GL_NEAREST_MIPMAP_LINEAR)
                 : mag;
         int wrap = wrapClamp?GL33C.GL_CLAMP_TO_EDGE:GL33C.GL_REPEAT;
 
-        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, interp);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, min);
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, mag);
         
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, wrap);
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, wrap);
+		
+		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
+	}
+    
+    public void bind(int level) {
+        if(level != oldLevel) {
+            GL33C.glActiveTexture(GL33C.GL_TEXTURE0+level);
+            oldLevel = level;
+        }
+		
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
+        GL33C.glGetError();
     }
     
     public void unbind(int level) {
@@ -107,6 +114,13 @@ public class Texture extends ReusableContent {
 
             GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, img);
             GL33C.glGenerateMipmap(GL33C.GL_TEXTURE_2D);
+
+			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, GL33C.GL_NEAREST_MIPMAP_LINEAR);
+			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, GL33C.GL_NEAREST);
+
+			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, GL33C.GL_REPEAT);
+			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, GL33C.GL_REPEAT);
+		
             GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
             
             MemoryUtil.memFree(img);
@@ -130,7 +144,14 @@ public class Texture extends ReusableContent {
 
         GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, gltex);
         GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, GL33C.GL_RGB8, w, h, 0, GL33C.GL_RGB, GL33C.GL_UNSIGNED_BYTE, 0);
-        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
+        
+		GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, GL33C.GL_NEAREST_MIPMAP_LINEAR);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, GL33C.GL_NEAREST);
+        
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, GL33C.GL_REPEAT);
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, GL33C.GL_REPEAT);
+		
+		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
         
         return new Texture(gltex, w, h);
     }

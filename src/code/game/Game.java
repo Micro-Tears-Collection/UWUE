@@ -21,7 +21,7 @@ import code.utils.assetManager.AssetManager;
 import code.utils.FPS;
 import code.utils.Keys;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -48,7 +48,7 @@ public class Game extends Screen {
     private ItemList pauseScreen;
     
     private Fade fade, wakeUpFade;
-    private Vector<Pause> pauses;
+    private ArrayList<Pause> pauses;
     private Entity toActivate;
     private Texture handIcon;
     
@@ -80,7 +80,7 @@ public class Game extends Screen {
         handIcon = e3d.getTexture("/images/hand.png");
         handIcon.use();
         
-        pauses = new Vector();
+        pauses = new ArrayList<>();
         
         player = new Player();
     }
@@ -102,6 +102,7 @@ public class Game extends Screen {
     private void createPSXBuffer() {
         if(psxBuffer != null) psxBuffer.destroy();
         psxBuffer = new FrameBuffer(main.conf.vrw, main.conf.vrh, true);
+		psxBuffer.tex.setParameters(false, false, true);
     }
 
     private void createDitherStuff() {
@@ -118,6 +119,7 @@ public class Game extends Screen {
         ditherShader.unbind();
         
         ditherTexture = e3d.getTexture("/images/bayer_matrix.png");
+		ditherTexture.setParameters(false, false, false);
         ditherTexture.use();
     }
     
@@ -248,9 +250,9 @@ public class Game extends Screen {
             world.pausedAnimate(null);
             
             if(!inPauseScreen && !paused && !pauses.isEmpty()) {
-                Pause pause = pauses.firstElement();
+                Pause pause = pauses.get(0);
                 
-                if(pause.update()) pauses.removeElementAt(0);
+                if(pause.update()) pauses.remove(0);
             }
             
             return;
@@ -331,8 +333,8 @@ public class Game extends Screen {
                 ditherShader.setUniformf(ditherUniW, drawW/ditherTexture.w);
                 ditherShader.setUniformf(ditherUniH, drawH/ditherTexture.h);
                 
-                psxBuffer.tex.bind(false, false, true, 0);
-                ditherTexture.bind(false, false, false, 1);
+                psxBuffer.tex.bind(0);
+                ditherTexture.bind(1);
                 
                 e3d.drawRect(
                         vpx, vpy+vph, 

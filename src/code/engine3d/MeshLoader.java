@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL33C;
 
@@ -58,7 +58,7 @@ public class MeshLoader {
             
             GL33C.glEnableVertexAttribArray(0); //pos
             GL33C.glEnableVertexAttribArray(1); //uvm
-            GL33C.glEnableVertexAttribArray(2); //pos
+            GL33C.glEnableVertexAttribArray(2); //norm
             
             vaos[i] = vao;
             vbos[i*3] = pos;
@@ -94,15 +94,15 @@ public class MeshLoader {
             String str = new String(data, "UTF-8");
             String[] fileLines = StringTools.cutOnStrings(str, '\n');
             
-            Vector<float[]> verts = new Vector();
-            Vector<float[]> normalsV = new Vector();
-            Vector<float[]> uvs = new Vector();
+            ArrayList<float[]> verts = new ArrayList<float[]>();
+            ArrayList<float[]> normalsV = new ArrayList<float[]>();
+            ArrayList<float[]> uvs = new ArrayList<float[]>();
             
-            Vector<Mesh> meshes = new Vector();
+            ArrayList<Mesh> meshes = new ArrayList<Mesh>();
             Mesh currentMesh = null;
             
-            LinkedHashMap<String, Vector<Face>> materials = new LinkedHashMap();
-            Vector<Face> faces = null;
+            LinkedHashMap<String, ArrayList<Face>> materials = new LinkedHashMap();
+            ArrayList<Face> faces = null;
             String texName = null;
             
             Vector3D max = new Vector3D(), min = new Vector3D();
@@ -143,7 +143,7 @@ public class MeshLoader {
                         
                         faces = materials.get(texName);
                         if(faces == null) {
-                            faces = new Vector();
+                            faces = new ArrayList<Face>();
                             materials.put(texName, faces);
                         }
                     }
@@ -166,17 +166,17 @@ public class MeshLoader {
                         
                         for(int i=0; i<keysArr.length; i++) {
                             texs[i] = e3d.getMaterial(keysArr[i], replace);
-                            Vector<Face> meshFaces = materials.get(keysArr[i]);
+                            ArrayList<Face> meshFaces = materials.get(keysArr[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];
                             uvm[i] = new float[meshFaces.size() * 3 * 2];
                             normals[i] = new float[meshFaces.size() * 3 * 3];
                             int pp = 0, uvp = 0, np = 0;
                             for(int x=0; x<meshFaces.size(); x++) {
-                                Face face = meshFaces.elementAt(x);
+                                Face face = meshFaces.get(x);
                                 
                                 for(int y=0; y<3; y++) {
-                                    float[] vert = verts.elementAt(face.pos[y] - 1);
+                                    float[] vert = verts.get(face.pos[y] - 1);
                                     System.arraycopy(vert, 0, poses[i], pp, 3);
                                     pp += 3;
                                     
@@ -190,14 +190,14 @@ public class MeshLoader {
                                     if(vert[2] < min.z) min.z = vert[2];
                                     
                                     if(face.uv != null) {
-                                        vert = uvs.elementAt(face.uv[y] - 1);
+                                        vert = uvs.get(face.uv[y] - 1);
                                         uvm[i][uvp] = vert[0];
                                         uvm[i][uvp+1] = 1f-vert[1];
                                         uvp += 2;
                                     }
                                     
                                     if(face.normals != null) {
-                                        vert = normalsV.elementAt(face.normals[y] - 1);
+                                        vert = normalsV.get(face.normals[y] - 1);
                                         System.arraycopy(vert, 0, normals[i], np, 3);
                                         np += 3;
                                     }
@@ -219,7 +219,7 @@ public class MeshLoader {
                         
                         meshes.add(currentMesh);
                         
-                        faces = new Vector();
+                        faces = new ArrayList<Face>();
                         texName = "null";
                         materials.clear();
                         materials.put(texName, faces);

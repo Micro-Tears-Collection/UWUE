@@ -14,7 +14,7 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -56,11 +56,11 @@ public class E3D {
 	private FloatBuffer lightsf;
     public UniformBlock lights;
 	
-    private final Vector<RenderInstance> postDraw;
+    private final ArrayList<RenderInstance> postDraw;
 	
     public E3D(Window win) {
         this.win = win;
-        postDraw = new Vector();
+        postDraw = new ArrayList<RenderInstance>();
         
         tmpM = new Matrix4f();
         tmpMf = MemoryUtil.memAllocFloat(4*4);
@@ -361,16 +361,16 @@ public class E3D {
         sort(postDraw);
         for(RenderInstance object : postDraw) object.renderImmediate(this);
         
-        postDraw.removeAllElements();
+        postDraw.clear();
     }
     
-    private static void sort(Vector<RenderInstance> list) {
+    private static void sort(ArrayList<RenderInstance> list) {
         for(int i=list.size()-1; i>=1; i--) {
             RenderInstance nearest = null;
             int pos = 0;
             
             for(int x=0; x<=i; x++) {
-                RenderInstance m1 = list.elementAt(x);
+                RenderInstance m1 = list.get(x);
                 
                 //m1 ближе чем m2
                 if(nearest == null || 
@@ -381,8 +381,8 @@ public class E3D {
                 }
             }
             
-            list.setElementAt(list.elementAt(i), pos);
-            list.setElementAt(nearest, i);
+            list.set(pos, list.get(i));
+            list.set(i, nearest);
         }
     }
     

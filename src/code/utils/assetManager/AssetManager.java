@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *
@@ -55,8 +55,8 @@ public class AssetManager {
         return reusable.get(name);
     }
 
-    public static Vector<ReusableContent> getAll() {
-        Vector<ReusableContent> content = new Vector();
+    public static ArrayList<ReusableContent> getAll() {
+        ArrayList<ReusableContent> content = new ArrayList<>();
 
         Enumeration<ReusableContent> els = reusable.elements();
 
@@ -103,7 +103,7 @@ public class AssetManager {
     }
     
     public static String[] loadLines(String path) {
-        Vector<String> lines = new Vector();
+        ArrayList<String> lines = new ArrayList<>();
         String str = loadString(path);
         
         if(str != null) {
