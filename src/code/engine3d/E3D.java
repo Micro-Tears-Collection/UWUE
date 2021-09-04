@@ -2,6 +2,7 @@ package code.engine3d;
 
 import code.engine.Window;
 import code.engine3d.game.WorldMaterial;
+import code.engine3d.instancing.MeshInstance;
 import code.engine3d.instancing.RenderInstance;
 import code.math.Vector3D;
 import code.utils.IniFile;
@@ -454,16 +455,49 @@ public class E3D {
     
     //Loading scripts
     
-    public Model getModel(String path, String prefix, String postfix) {
+    public Model getModel(String path) {
         Model model = (Model) AssetManager.get("MODEL_" + path);
 
         if(model != null) return model;
         
-        model = new Model(MeshLoader.loadObj(this, path));
+        model = new Model(ModelLoader.loadObj(this, path));
         AssetManager.add("MODEL_" + path, model);
 
         return model;
     }
+	
+	public MeshInstance[] getMeshInstances(String mdlName) {
+		return getMeshInstancesImpl(mdlName, false);
+	}
+	
+	public MeshInstance getMeshInstance(String mdlName) {
+		return getMeshInstancesImpl(mdlName, true)[0];
+	}
+	
+	private MeshInstance[] getMeshInstancesImpl(String mdlName, boolean one) {
+		String[] mdlNameSplit = StringTools.cutOnStrings(mdlName, '|');
+		Model mdl = getModel(mdlNameSplit[0]);
+		
+		HashMap<String, String> toReplace = new HashMap();
+		for(int i=0; i<(mdlNameSplit.length-1)/2; i++) {
+			toReplace.put(mdlNameSplit[1 + i*2], mdlNameSplit[1 + i*2 + 1]);
+		}
+		
+		MeshInstance[] instances = new MeshInstance[one ? 1 : mdl.getMeshes().length];
+		for(int i=0; i<instances.length; i++) {
+			Mesh mesh = mdl.get(i);
+			
+			//todo dont duplicate mat arrays?
+			Material[] mats = new Material[mesh.mats.length];
+			for(int x=0; x<mats.length; x++) {
+				mats[x] = getMaterial(mesh.mats[x], toReplace);
+			}
+			
+			instances[i] = new MeshInstance(mesh, mats);
+		}
+		
+		return instances;
+	}
     
     public Shader getShader(String path) {
         return getShader(path, null);
@@ -518,20 +552,23 @@ public class E3D {
     }
     
     public Material getMaterial(String name, HashMap<String,String> replace) {
-        Material mat = (Material) AssetManager.get("MAT_" + name);
-        if(mat != null) return mat;
-        
         String[] lines = StringTools.cutOnStrings(name, ';');
         
         String path = lines[0];
         String replaced = replace != null ? replace.get(path) : null;
         if(replaced != null) path = replaced;
+		
+		String newName = path;
+		for(int i=1; i<lines.length; i++) newName += ';' + lines[i];
+		
+        Material mat = (Material) AssetManager.get("MAT_" + newName);
+        if(mat != null) return mat;
         
         Texture tex = getTexture(path);
         mat = new WorldMaterial(this, tex);
-        mat.load(name, new IniFile(lines, false));
+        mat.load(newName, new IniFile(lines, false));
         
-        AssetManager.add("MAT_" + name, mat);
+        AssetManager.add("MAT_" + newName, mat);
         
         return mat;
     }

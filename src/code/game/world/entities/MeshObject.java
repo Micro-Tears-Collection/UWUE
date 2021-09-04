@@ -24,8 +24,8 @@ public class MeshObject extends PhysEntity {
     public boolean meshCollision = true;
     public boolean visible = true;
     
-    public MeshObject(Model model) {
-        this.mesh = MeshInstance.get(model.get(0));
+    public MeshObject(MeshInstance mesh) {
+        this.mesh = mesh;
         setSize(Math.max(Math.max(mesh.max.z,-mesh.min.z), Math.max(mesh.max.x,-mesh.min.x)), Math.max(0, mesh.max.y));
         physics = false;
         pushable = false;
@@ -51,7 +51,7 @@ public class MeshObject extends PhysEntity {
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
 			
             RayCast.rayCast(mesh.mesh, 
-					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, 
+					mesh.mesh.poses, mesh.mesh.normalsPerFace, 
 					mesh.modelMatrix, ray);
             
             if(ray.mesh == mesh.mesh) return true;
@@ -69,7 +69,7 @@ public class MeshObject extends PhysEntity {
                 mesh.max.x, mesh.max.y,  mesh.max.z)) {
 			
             SphereCast.sphereCast(mesh.mesh, 
-					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace,
+					mesh.mesh.poses, mesh.mesh.normalsPerFace,
 					mesh.modelMatrix, sphere);
             
             if(sphere.mesh == mesh.mesh) return true;

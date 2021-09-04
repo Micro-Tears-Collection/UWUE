@@ -1,6 +1,7 @@
 package code.engine3d.instancing;
 
 import code.engine3d.E3D;
+import code.engine3d.Material;
 import code.engine3d.Mesh;
 import code.math.Vector3D;
 import code.utils.IniFile;
@@ -18,15 +19,20 @@ public class MeshInstance extends RenderInstance {
     public FloatBuffer modelMatrix, drawMatrix;
     
     public Mesh mesh;
+	public Material[] mats;
     
     public Vector3D min, max;
     public Vector3D middle;
 
     public boolean collision = true, visible = true;
     
-    private MeshInstance(Mesh mesh) {
+    public MeshInstance(Mesh mesh, Material[] mats) {
         this.mesh = mesh;
+		this.mats = mats;
+		
+		for(Material mat : mats) mat.use();
         mesh.use();
+		
         load(mesh.ini);
         
         min = new Vector3D(mesh.min);
@@ -48,26 +54,16 @@ public class MeshInstance extends RenderInstance {
     
     public void destroy() {
         mesh.free();
+		mesh = null;
+		for(Material mat : mats) mat.free();
+		mats = null;
+		
         min = max = middle = null;
         
         MemoryUtil.memFree(modelMatrix);
         MemoryUtil.memFree(drawMatrix);
         
         modelMatrix = drawMatrix = null;
-    }
-    
-    public static MeshInstance get(Mesh mesh) {
-        return new MeshInstance(mesh);
-    }
-    
-    public static MeshInstance[] get(Mesh[] meshes) {
-        MeshInstance[] instances = new MeshInstance[meshes.length];
-        
-        for(int i=0; i<meshes.length; i++) {
-            instances[i] = get(meshes[i]);
-        }
-        
-        return instances;
     }
     
     public void fastIdentityCamera(FloatBuffer invcam) {
@@ -133,12 +129,12 @@ public class MeshInstance extends RenderInstance {
     public void renderImmediate(E3D e3d) {
         //todo somehow check do we need to bind lights?
         //maybe check materials on mesh creation and write result to boolean?
-		//or maybe we can do send to materials do we need to enable lighting?
+		//or maybe we can send to materials do we need to enable lighting?
         bindLight(e3d, 
                     (min.x+max.x)/2f, (min.y+max.y)/2f, (min.z+max.z)/2f,
                     (max.x-min.x)/2, (max.y-min.y)/2, (max.z-min.z)/2f);
         
-        mesh.renderImmediate(e3d, time, drawMatrix);
+        mesh.renderImmediate(e3d, mats, time, drawMatrix);
         
 		//maybe instead of unbinding light sources and sending stuff to gpu we can enable GLOW?
         unbindLight(e3d);

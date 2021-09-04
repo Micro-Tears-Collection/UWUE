@@ -74,7 +74,7 @@ public class WorldLoader {
             
             String tmp = lvl.get("sky", "model");
             if(tmp!=null) {
-                skybox = MeshInstance.get(game.e3d.getModel(tmp, null, null).getMeshes());
+                skybox = game.e3d.getMeshInstances(tmp);
             }
             
             tmp = lvl.get("sky", "color");
@@ -84,12 +84,7 @@ public class WorldLoader {
         
         MeshInstance[] worldMeshes = null;
         if(lvl.groupExists("world")) {
-            String prefix = null, postfix = null;
-            if(lvl.getInt("world", "trenchbroom", 0) == 1) {
-                prefix = "/textures/";
-                postfix = ".png";
-            }
-            worldMeshes = MeshInstance.get(game.e3d.getModel(lvl.get("world", "model"), prefix, postfix).getMeshes());
+            worldMeshes = game.e3d.getMeshInstances(lvl.get("world", "model"));
         }
         
         World world = new World(game.e3d, worldMeshes, skyColor, skybox, game.main.conf.debug);
@@ -385,7 +380,7 @@ public class WorldLoader {
     }
 
     private static MeshObject loadMesh(String name, float[] pos, Game game, World world, IniFile ini) {
-        MeshObject mesh = new MeshObject(game.e3d.getModel(ini.get("model"), null, null));
+        MeshObject mesh = new MeshObject(game.e3d.getMeshInstance(ini.get("model")));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
         mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;

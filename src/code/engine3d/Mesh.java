@@ -13,6 +13,8 @@ import org.lwjgl.opengl.GL33C;
  * @author Roman Lahin
  */
 public class Mesh extends ReusableContent {
+	
+	private static final int VBOS_PER_VAO = 4;
     
     public String name;
     public IniFile ini;
@@ -20,46 +22,80 @@ public class Mesh extends ReusableContent {
     public Vector3D min, max;
     
     private int[] vaos, vbos, vertsCount;
-    public Material[] mats;
+	public String[] mats;
     
-    public float[][] physicsVerts;
+    public float[][] poses, uvs, normals;
     public float[][] normalsPerFace;
-
-    public Mesh() {}
     
 	//todo create vaos vbos here, not in model loader
-    public Mesh(int[] vaos, int[] vbos, int[] vertsCount, 
-            Material[] mats, Vector3D min, Vector3D max) {
-        set(vaos, vbos, vertsCount, mats, min, max);
-    }
-    
-    public void set(int[] vaos, int[] vbos, int[] vertsCount, 
-            Material[] mats, Vector3D min, Vector3D max) {
-        this.vaos = vaos;
-        this.vbos = vbos;
-        this.vertsCount = vertsCount;
-        this.mats = mats;
-        
-        this.min = new Vector3D(min);
-        this.max = new Vector3D(max);
-    }
-    
-    public ReusableContent use() {
-        if(using == 0) {
-            for(Material mat : mats) mat.use();
-        }
-        
-        super.use();
-        return this;
-    }
-    
-    public ReusableContent free() {
-        if(using == 1) {
-            for(Material mat : mats) mat.free();
-        }
-        
-        super.free();
-        return this;
+    public Mesh(String name, float[][] poses, float[][] uvs, float[][] normals,
+			String[] mats, Vector3D min, Vector3D max) {
+		//Init
+		this.poses = poses;
+		this.uvs = uvs;
+		this.normals = normals;
+		
+		this.mats = mats;
+		this.min = new Vector3D(min);
+		this.max = new Vector3D(max);
+		
+		if(poses != null) calcFaceNormals();
+		
+		//Load to GPU
+		int submeshes = mats.length;
+		
+		vaos = new int[submeshes];
+		vbos = new int[submeshes * VBOS_PER_VAO];
+		vertsCount = new int[submeshes];
+		
+		for(int i=0; i<submeshes; i++) {
+			int vao = GL33C.glGenVertexArrays();
+			GL33C.glBindVertexArray(vao);
+			vaos[i] = vao;
+			
+			int vbo;
+			
+			//Poses
+			if(poses != null) {
+				vbo = GL33C.glGenBuffers(); //Creates a VBO ID
+				vbos[i * VBOS_PER_VAO] = vbo;
+				
+				GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
+				GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, poses[i], GL33C.GL_STATIC_DRAW);
+				
+				GL33C.glVertexAttribPointer(0, 3, GL33C.GL_FLOAT, false, 0, 0);
+				GL33C.glEnableVertexAttribArray(0); //pos
+				
+				vertsCount[i] = poses[i].length / 3;
+			}
+			
+			//Uvs
+			if(uvs != null) {
+				vbo = GL33C.glGenBuffers(); //Creates a VBO ID
+				vbos[i * VBOS_PER_VAO + 1] = vbo;
+				
+				GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
+				GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, uvs[i], GL33C.GL_STATIC_DRAW);
+				
+				GL33C.glVertexAttribPointer(1, 2, GL33C.GL_FLOAT, false, 0, 0);
+				GL33C.glEnableVertexAttribArray(1); //uvs
+			}
+			
+			//Normals
+			if(normals != null) {
+				vbo = GL33C.glGenBuffers(); //Creates a VBO ID
+				vbos[i * VBOS_PER_VAO + 2] = vbo;
+				
+				GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
+				GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, normals[i], GL33C.GL_STATIC_DRAW);
+				
+				GL33C.glVertexAttribPointer(2, 3, GL33C.GL_FLOAT, false, 0, 0);
+				GL33C.glEnableVertexAttribArray(2); //normals
+			}
+		}
+		
+		GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+		GL33C.glBindVertexArray(0);
     }
     
     public void destroy() {
@@ -68,16 +104,15 @@ public class Mesh extends ReusableContent {
         }
         
         for(int i = 0; i < vbos.length; i++) {
-            GL33C.glDeleteBuffers(vbos[i]);
+            if(vbos[i] != 0) GL33C.glDeleteBuffers(vbos[i]);
         }
     }
     
-    public void setPhysics(float[][] xyz) {
-        physicsVerts = xyz;
-        normalsPerFace = new float[xyz.length][];
+    public void calcFaceNormals() {
+        normalsPerFace = new float[poses.length][];
         
-        for(int i=0; i<xyz.length; i++) {
-            float[] verts = xyz[i];
+        for(int i=0; i<poses.length; i++) {
+            float[] verts = poses[i];
             normalsPerFace[i] = new float[verts.length * 3 / 9];
             float[] nrms = normalsPerFace[i];
             
@@ -99,11 +134,7 @@ public class Mesh extends ReusableContent {
         }
     }
     
-    public void renderImmediate(E3D e3d, long time, FloatBuffer modelView) {
-        renderImmediate(e3d, mats, time, modelView);
-    }
-    
-	//render with custom materials
+	//render only with custom materials
     public void renderImmediate(E3D e3d, Material[] mats, long time, FloatBuffer modelView) {
         e3d.setModelView(modelView);
         

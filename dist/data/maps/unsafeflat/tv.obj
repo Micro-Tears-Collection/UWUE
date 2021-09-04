@@ -110,16 +110,16 @@ vt 20.596923828125 -4.81572914123535 0
 # 32 texture coordinates
 
 o tv.1;lightgroup=0
-usemtl /textures/flatpack/noise.png;blend=add;scroll_x=1;scroll_y=0.5;это другой материал)
+usemtl /textures/flatpack/noise.png;glow=1;blend=add;scroll_x=1;scroll_y=0.5;это другой материал)
 f 23/4/1 24/3/1 25/2/1 26/1/1
 
-usemtl /textures/characters/tvface.png;blend=max;lightgroup=0
+usemtl /textures/characters/tvface.png;glow=1;blend=max;lightgroup=0
 f 39/8/1 40/7/1 41/6/1 42/5/1
 
-usemtl /textures/forest/33.png;blend=add;scroll_x=1;scroll_y=0.5
+usemtl /textures/forest/33.png;blend=add;glow=1;scroll_x=1;scroll_y=0.5
 f 43/12/1 44/11/1 45/10/1 46/9/1
 
-usemtl /textures/flatpack/noise3.png;blend=add;scroll_x=1;scroll_y=0.5
+usemtl /textures/flatpack/noise3.png;glow=1;blend=add;scroll_x=1;scroll_y=0.5
 f 60/16/1 62/15/1 61/14/1 59/13/1
 f 52/20/1 54/19/1 53/18/1 51/17/1
 f 64/24/1 66/23/1 65/22/1 63/21/1

@@ -12,8 +12,6 @@ public class Material extends ReusableContent {
     
     public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5;
     
-	//todo add sampler objects
-	protected String name = "mat";
     protected int blendMode = OFF;
     
     public Material(E3D e3d) {
@@ -21,9 +19,7 @@ public class Material extends ReusableContent {
     }
     
     public void load(String name, IniFile ini) {
-		this.name = name;
-		
-        String tmp = ini.getDef("blend", blendMode == BLEND ? "blend" : "0");
+		String tmp = ini.getDef("blend", blendMode == BLEND ? "blend" : "0");
         
         if(tmp.equals("blend")) blendMode = BLEND;
         else if(tmp.equals("add")) blendMode = ADD;

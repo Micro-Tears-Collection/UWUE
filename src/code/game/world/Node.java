@@ -77,7 +77,7 @@ public class Node {
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
             if(mesh.collision) SphereCast.sphereCast(mesh.mesh, 
-					mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, 
+					mesh.mesh.poses, mesh.mesh.normalsPerFace, 
 					sphere);
             
             for(int i=0; i<childs.size(); i++) {
@@ -92,7 +92,7 @@ public class Node {
                 mesh.min.x, mesh.min.y, mesh.min.z,
                 mesh.max.x, mesh.max.y, mesh.max.z)) {
             
-            if(mesh.collision) RayCast.rayCast(mesh.mesh, mesh.mesh.physicsVerts, mesh.mesh.normalsPerFace, ray);
+            if(mesh.collision) RayCast.rayCast(mesh.mesh, mesh.mesh.poses, mesh.mesh.normalsPerFace, ray);
             
             for(int i=0; i<childs.size(); i++) {
                 childs.get(i).rayCast(ray);
