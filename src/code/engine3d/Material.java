@@ -18,7 +18,7 @@ public class Material extends ReusableContent {
         
     }
     
-    public void load(String name, IniFile ini) {
+    public void load(E3D e3d, String name, IniFile ini) {
 		String tmp = ini.getDef("blend", blendMode == BLEND ? "blend" : "0");
         
         if(tmp.equals("blend")) blendMode = BLEND;

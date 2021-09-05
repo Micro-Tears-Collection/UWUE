@@ -23,7 +23,7 @@ vt 0 0 0
 # 4 texture coordinates
 
 o Cube.002_Cube.001
-usemtl textures/characters/crescent.png;alpha_test=1;scroll_y=0.5
+usemtl textures/characters/crescent;alpha_test=1;scroll_y=0.5
 f 3/4/1 7/3/1 8/2/1 4/1/1
 f 5/3/2 1/4/2 2/1/2 6/2/2
 f 3/1/3 1/4/3 5/3/3 7/2/3
@@ -52,7 +52,7 @@ vt 0.125 0 0
 # 4 texture coordinates
 
 o Cube.001_c;visible=0
-usemtl textures/characters/crescent.png;alpha_test=1;scroll_y=0.1
+usemtl textures/characters/crescent;alpha_test=1;scroll_y=0.1
 f 11/8/5 15/7/5 16/6/5 12/5/5
 f 13/7/6 9/8/6 10/5/6 14/6/6
 f 11/5/7 9/8/7 13/7/7 15/6/7
@@ -77,7 +77,7 @@ vn 0.00000009064706 -0.70710682868958 0.70710670948029
 # 0 texture coordinate
 
 o Cube
-usemtl textures/characters/crescent.png;alpha_test=1;scroll_y=0.1
+usemtl textures/characters/crescent;alpha_test=1;scroll_y=0.1
 f 19/8/9 23/7/9 24/6/9 20/5/9
 f 21/7/10 17/8/10 18/5/10 22/6/10
 f 19/5/11 17/8/11 21/7/11 23/6/11
@@ -114,7 +114,7 @@ vt 15.00000095367432 -6 0
 # 12 texture coordinates
 
 o entity28_brush3
-usemtl textures/colors/skin_pale.png
+usemtl textures/colors/skin_pale
 f 25/12/13 26/11/13 27/10/13 28/9/13
 f 29/16/5 27/15/5 26/14/5 30/13/5
 f 30/20/14 26/19/14 25/18/14 31/17/14
@@ -144,7 +144,7 @@ vt 15.00000095367432 -8 0
 # 7 texture coordinates
 
 o entity28_brush2
-usemtl textures/colors/skin_pale.png
+usemtl textures/colors/skin_pale
 f 26/11/13 33/23/13 34/22/13 35/21/13
 f 36/25/17 34/24/17 33/14/17 37/13/17
 f 37/27/8 33/26/8 26/19/8 30/20/8
@@ -170,7 +170,7 @@ vt 13.00000095367432 8 0
 # 5 texture coordinates
 
 o entity28_brush1
-usemtl textures/colors/skin_pale.png
+usemtl textures/colors/skin_pale
 f 39/30/13 25/12/13 40/29/13 41/28/13
 f 42/25/17 40/24/17 25/14/17 31/13/17
 f 31/17/8 25/18/8 39/32/8 43/31/8
@@ -193,7 +193,7 @@ vt 13.00000095367432 24 0
 # 4 texture coordinates
 
 o entity28_brush0
-usemtl textures/colors/skin_pale.png
+usemtl textures/colors/skin_pale
 f 45/34/13 46/33/13 35/21/13 40/29/13
 f 38/25/5 35/24/5 46/36/5 47/35/5
 f 47/20/8 46/19/8 45/18/8 48/17/8
@@ -220,7 +220,7 @@ vt 64 -6 0
 # 8 texture coordinates
 
 o entity27_brush3
-usemtl textures/colors/sky.png
+usemtl textures/colors/sky
 f 49/12/13 50/11/13 51/10/13 52/9/13
 f 27/40/5 51/39/5 50/38/5 26/37/5
 f 26/44/14 50/43/14 49/42/14 25/41/14
@@ -242,7 +242,7 @@ vt 64 -8 0
 # 4 texture coordinates
 
 o entity27_brush2
-usemtl textures/colors/sky.png
+usemtl textures/colors/sky
 f 50/11/13 53/23/13 54/22/13 55/21/13
 f 34/46/17 54/45/17 53/38/17 33/37/17
 f 33/48/8 53/47/8 50/43/8 26/44/8
@@ -262,7 +262,7 @@ vt 62 8 0
 # 2 texture coordinates
 
 o entity27_brush1
-usemtl textures/colors/sky.png
+usemtl textures/colors/sky
 f 56/30/13 49/12/13 57/29/13 58/28/13
 f 40/46/17 57/45/17 49/38/17 25/37/17
 f 25/41/8 49/42/8 56/50/8 39/49/8
@@ -281,7 +281,7 @@ vt 62 24 0
 # 2 texture coordinates
 
 o entity27_brush0
-usemtl textures/colors/sky.png
+usemtl textures/colors/sky
 f 59/34/13 60/33/13 55/21/13 57/29/13
 f 35/46/5 55/45/5 60/52/5 46/51/5
 f 46/44/8 60/43/8 59/42/8 45/41/8
@@ -304,7 +304,7 @@ vt 60 -6 0
 # 4 texture coordinates
 
 o entity26_brush3
-usemtl textures/colors/sky_2.png
+usemtl textures/colors/sky_2
 f 61/12/13 62/11/13 63/10/13 64/9/13
 f 51/39/5 63/54/5 62/53/5 50/38/5
 f 50/43/14 62/56/14 61/55/14 49/42/14
@@ -324,7 +324,7 @@ vt 60 -8 0
 # 2 texture coordinates
 
 o entity26_brush2
-usemtl textures/colors/sky_2.png
+usemtl textures/colors/sky_2
 f 62/11/13 65/23/13 66/22/13 67/21/13
 f 54/45/17 66/57/17 65/53/17 53/38/17
 f 53/47/8 65/58/8 62/56/8 50/43/8
@@ -343,7 +343,7 @@ vt 60 8 0
 # 1 texture coordinate
 
 o entity26_brush1
-usemtl textures/colors/sky_2.png
+usemtl textures/colors/sky_2
 f 68/30/13 61/12/13 69/29/13 70/28/13
 f 57/45/17 69/57/17 61/53/17 49/38/17
 f 49/42/8 61/55/8 68/59/8 56/50/8
@@ -361,7 +361,7 @@ vt 60 24 0
 # 1 texture coordinate
 
 o entity26_brush0
-usemtl textures/colors/sky_2.png
+usemtl textures/colors/sky_2
 f 71/34/13 72/33/13 67/21/13 69/29/13
 f 55/45/5 67/57/5 72/60/5 60/52/5
 f 60/43/8 72/56/8 71/55/8 59/42/8
@@ -392,7 +392,7 @@ vt 58 -6 0
 # 8 texture coordinates
 
 o entity25_brush3
-usemtl textures/colors/menthe.png
+usemtl textures/colors/menthe
 f 73/12/13 74/11/13 75/10/13 76/9/13
 f 77/64/5 75/63/5 74/62/5 78/61/5
 f 78/68/14 74/67/14 73/66/14 79/65/14
@@ -417,7 +417,7 @@ vt 58 -8 0
 # 4 texture coordinates
 
 o entity25_brush2
-usemtl textures/colors/menthe.png
+usemtl textures/colors/menthe
 f 74/11/13 81/23/13 82/22/13 83/21/13
 f 84/70/17 82/69/17 81/62/17 85/61/17
 f 85/72/8 81/71/8 74/67/8 78/68/8
@@ -440,7 +440,7 @@ vt 56 8 0
 # 2 texture coordinates
 
 o entity25_brush1
-usemtl textures/colors/menthe.png
+usemtl textures/colors/menthe
 f 87/30/13 73/12/13 88/29/13 89/28/13
 f 90/70/17 88/69/17 73/62/17 79/61/17
 f 79/65/8 73/66/8 87/74/8 91/73/8
@@ -461,7 +461,7 @@ vt 56 24 0
 # 2 texture coordinates
 
 o entity25_brush0
-usemtl textures/colors/menthe.png
+usemtl textures/colors/menthe
 f 93/34/13 94/33/13 83/21/13 88/29/13
 f 86/70/5 83/69/5 94/76/5 95/75/5
 f 95/68/8 94/67/8 93/66/8 96/65/8
@@ -476,7 +476,7 @@ f 90/29/16 86/21/16 95/33/16 96/34/16
 # 0 texture coordinate
 
 o entity24_brush3
-usemtl textures/colors/teal.png
+usemtl textures/colors/teal
 f 79/12/13 78/11/13 77/10/13 80/9/13
 f 63/54/5 77/64/5 78/61/5 62/53/5
 f 62/56/14 78/68/14 79/65/14 61/55/14
@@ -491,7 +491,7 @@ f 64/9/16 63/10/16 62/11/16 61/12/16
 # 0 texture coordinate
 
 o entity24_brush2
-usemtl textures/colors/teal.png
+usemtl textures/colors/teal
 f 78/11/13 85/23/13 84/22/13 86/21/13
 f 66/57/17 84/70/17 85/61/17 65/53/17
 f 65/58/8 85/72/8 78/68/8 62/56/8
@@ -506,7 +506,7 @@ f 67/21/16 66/22/16 65/23/16 62/11/16
 # 0 texture coordinate
 
 o entity24_brush1
-usemtl textures/colors/teal.png
+usemtl textures/colors/teal
 f 91/30/13 79/12/13 90/29/13 92/28/13
 f 69/57/17 90/70/17 79/61/17 61/53/17
 f 61/55/8 79/65/8 91/73/8 68/59/8
@@ -521,7 +521,7 @@ f 70/28/16 69/29/16 61/12/16 68/30/16
 # 0 texture coordinate
 
 o entity24_brush0
-usemtl textures/colors/teal.png
+usemtl textures/colors/teal
 f 96/34/13 95/33/13 86/21/13 90/29/13
 f 67/57/5 86/70/5 95/75/5 72/60/5
 f 72/56/8 95/68/8 96/65/8 71/55/8
@@ -548,7 +548,7 @@ vt 55 -6 0
 # 8 texture coordinates
 
 o entity23_brush3
-usemtl textures/colors/green_better.png
+usemtl textures/colors/green_better
 f 97/12/13 98/11/13 99/10/13 100/9/13
 f 75/80/5 99/79/5 98/78/5 74/77/5
 f 74/84/14 98/83/14 97/82/14 73/81/14
@@ -570,7 +570,7 @@ vt 55 -8 0
 # 4 texture coordinates
 
 o entity23_brush2
-usemtl textures/colors/green_better.png
+usemtl textures/colors/green_better
 f 98/11/13 101/23/13 102/22/13 103/21/13
 f 82/86/17 102/85/17 101/78/17 81/77/17
 f 81/88/8 101/87/8 98/83/8 74/84/8
@@ -590,7 +590,7 @@ vt 53 8 0
 # 2 texture coordinates
 
 o entity23_brush1
-usemtl textures/colors/green_better.png
+usemtl textures/colors/green_better
 f 104/30/13 97/12/13 105/29/13 106/28/13
 f 88/86/17 105/85/17 97/78/17 73/77/17
 f 73/81/8 97/82/8 104/90/8 87/89/8
@@ -609,7 +609,7 @@ vt 53 24 0
 # 2 texture coordinates
 
 o entity23_brush0
-usemtl textures/colors/green_better.png
+usemtl textures/colors/green_better
 f 107/34/13 108/33/13 103/21/13 105/29/13
 f 83/86/5 103/85/5 108/92/5 94/91/5
 f 94/84/8 108/83/8 107/82/8 93/81/8
@@ -632,7 +632,7 @@ vt 51 -6 0
 # 4 texture coordinates
 
 o entity22_brush3
-usemtl textures/colors/green_yellow.png
+usemtl textures/colors/green_yellow
 f 109/12/13 110/11/13 111/10/13 112/9/13
 f 99/79/5 111/94/5 110/93/5 98/78/5
 f 98/83/14 110/96/14 109/95/14 97/82/14
@@ -652,7 +652,7 @@ vt 51 -8 0
 # 2 texture coordinates
 
 o entity22_brush2
-usemtl textures/colors/green_yellow.png
+usemtl textures/colors/green_yellow
 f 110/11/13 113/23/13 114/22/13 115/21/13
 f 102/85/17 114/97/17 113/93/17 101/78/17
 f 101/87/8 113/98/8 110/96/8 98/83/8
@@ -671,7 +671,7 @@ vt 51 8 0
 # 1 texture coordinate
 
 o entity22_brush1
-usemtl textures/colors/green_yellow.png
+usemtl textures/colors/green_yellow
 f 116/30/13 109/12/13 117/29/13 118/28/13
 f 105/85/17 117/97/17 109/93/17 97/78/17
 f 97/82/8 109/95/8 116/99/8 104/90/8
@@ -689,7 +689,7 @@ vt 51 24 0
 # 1 texture coordinate
 
 o entity22_brush0
-usemtl textures/colors/green_yellow.png
+usemtl textures/colors/green_yellow
 f 119/34/13 120/33/13 115/21/13 117/29/13
 f 103/85/5 115/97/5 120/100/5 108/92/5
 f 108/83/8 120/96/8 119/95/8 107/82/8
@@ -712,7 +712,7 @@ vt 49 -6 0
 # 4 texture coordinates
 
 o entity21_brush3
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 121/12/13 122/11/13 123/10/13 124/9/13
 f 111/94/5 123/102/5 122/101/5 110/93/5
 f 110/96/14 122/104/14 121/103/14 109/95/14
@@ -732,7 +732,7 @@ vt 49 -8 0
 # 2 texture coordinates
 
 o entity21_brush2
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 122/11/13 125/23/13 126/22/13 127/21/13
 f 114/97/17 126/105/17 125/101/17 113/93/17
 f 113/98/8 125/106/8 122/104/8 110/96/8
@@ -751,7 +751,7 @@ vt 49 8 0
 # 1 texture coordinate
 
 o entity21_brush1
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 128/30/13 121/12/13 129/29/13 130/28/13
 f 117/97/17 129/105/17 121/101/17 109/93/17
 f 109/95/8 121/103/8 128/107/8 116/99/8
@@ -769,7 +769,7 @@ vt 49 24 0
 # 1 texture coordinate
 
 o entity21_brush0
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 131/34/13 132/33/13 127/21/13 129/29/13
 f 115/97/5 127/105/5 132/108/5 120/100/5
 f 120/96/8 132/104/8 131/103/8 119/95/8
@@ -792,7 +792,7 @@ vt 47 -6 0
 # 4 texture coordinates
 
 o entity20_brush3
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 133/12/13 134/11/13 135/10/13 136/9/13
 f 123/102/5 135/110/5 134/109/5 122/101/5
 f 122/104/14 134/112/14 133/111/14 121/103/14
@@ -812,7 +812,7 @@ vt 47 -8 0
 # 2 texture coordinates
 
 o entity20_brush2
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 134/11/13 137/23/13 138/22/13 139/21/13
 f 126/105/17 138/113/17 137/109/17 125/101/17
 f 125/106/8 137/114/8 134/112/8 122/104/8
@@ -831,7 +831,7 @@ vt 47 8 0
 # 1 texture coordinate
 
 o entity20_brush1
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 140/30/13 133/12/13 141/29/13 142/28/13
 f 129/105/17 141/113/17 133/109/17 121/101/17
 f 121/103/8 133/111/8 140/115/8 128/107/8
@@ -849,7 +849,7 @@ vt 47 24 0
 # 1 texture coordinate
 
 o entity20_brush0
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 143/34/13 144/33/13 139/21/13 141/29/13
 f 127/105/5 139/113/5 144/116/5 132/108/5
 f 132/104/8 144/112/8 143/111/8 131/103/8
@@ -886,7 +886,7 @@ vt 0.79646199941635 -0.99358987808228 0
 # 12 texture coordinates
 
 o entity19_brush6
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 145/120/13 146/119/13 147/118/13 148/117/13
 f 149/124/5 147/123/5 146/122/5 150/121/5
 f 150/128/19 146/127/19 145/126/19 151/125/19
@@ -921,7 +921,7 @@ vt 0.36471700668335 -0.22784495353699 0
 # 12 texture coordinates
 
 o entity19_brush5
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 153/132/13 154/131/13 155/130/13 156/129/13
 f 157/136/5 155/135/5 154/134/5 158/133/5
 f 158/140/8 154/139/8 153/138/8 159/137/8
@@ -1029,11 +1029,11 @@ f 169/164/13 170/163/13 171/162/13 172/161/13
 f 176/168/7 172/167/7 171/166/7 173/165/7
 f 176/161/16 173/162/16 174/163/16 175/164/16
 
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 173/172/25 171/171/25 170/170/25 174/169/25
 f 175/169/26 169/170/26 172/171/26 176/172/26
 
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 174/176/8 170/175/8 169/174/8 175/173/8
 
 v 1828 -68.00000762939453 96
@@ -1064,7 +1064,7 @@ f 179/180/27 164/152/27 177/166/27 180/165/27
 f 173/165/7 171/166/7 163/152/7 178/180/7
 f 173/162/16 178/142/16 179/143/16 180/177/16
 
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 180/184/28 177/183/28 171/182/28 173/181/28
 
 v 1828 -67.99999237060547 -96
@@ -1089,7 +1089,7 @@ f 184/186/7 168/157/7 172/167/7 176/168/7
 f 183/178/29 167/145/29 168/148/29 184/179/29
 f 184/153/16 176/161/16 182/185/16 183/156/16
 
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 176/181/30 172/182/30 181/183/30 182/184/30
 
 v 1235.4112548828125 969.37255859375 224.00004577636719
@@ -1135,7 +1135,7 @@ vt -20.5 3.5 0
 # 24 texture coordinates
 
 o entity18_brush11
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 185/190/31 186/189/31 187/188/31 188/187/31
 f 189/194/32 187/193/32 186/192/32 190/191/32
 f 191/198/5 190/197/5 186/196/5 185/195/5
@@ -1176,7 +1176,7 @@ vt 14 85 0
 # 19 texture coordinates
 
 o entity18_brush10
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 193/214/31 194/213/31 195/212/31 196/211/31
 f 186/218/32 195/217/32 194/216/32 197/215/32
 f 197/222/5 194/221/5 193/220/5 198/219/5
@@ -1220,7 +1220,7 @@ vt 14 3.5 0
 # 23 texture coordinates
 
 o entity18_brush9
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 199/233/31 200/232/31 201/231/31 202/230/31
 f 203/236/32 201/235/32 200/234/32 195/223/32
 f 195/240/5 200/239/5 199/238/5 196/237/5
@@ -1261,7 +1261,7 @@ vt -12.99999904632568 4 0
 # 20 texture coordinates
 
 o entity18_brush8
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 205/255/31 206/254/31 207/253/31 199/233/31
 f 208/259/32 207/258/32 206/257/32 209/256/32
 f 193/220/5 209/262/5 206/261/5 205/260/5
@@ -1305,7 +1305,7 @@ vt 21.5 -3.5 0
 # 23 texture coordinates
 
 o entity18_brush7
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 210/276/32 211/275/32 207/274/32 208/273/32
 f 212/279/31 207/253/31 211/278/31 213/277/31
 f 208/283/5 207/282/5 212/281/5 214/280/5
@@ -1337,7 +1337,7 @@ vt -4 14 0
 # 12 texture coordinates
 
 o entity18_brush6
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 216/297/32 217/296/32 211/275/32 210/276/32
 f 202/230/31 211/278/31 217/299/31 218/298/31
 f 210/262/37 211/261/37 202/260/37 204/220/37
@@ -1370,7 +1370,7 @@ vt -16 85 0
 # 14 texture coordinates
 
 o entity18_brush5
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 204/311/31 203/310/31 220/309/31 219/308/31
 f 221/315/32 220/314/32 203/313/32 187/312/32
 f 187/222/38 203/221/38 204/220/38 188/219/38
@@ -1404,7 +1404,7 @@ vt -20.5 -4 0
 # 14 texture coordinates
 
 o entity18_brush4
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 223/325/32 224/324/32 225/323/32 226/322/32
 f 188/329/31 225/328/31 224/327/31 222/326/31
 f 192/332/37 226/331/37 225/330/37 188/219/37
@@ -1437,7 +1437,7 @@ vt -16 115 0
 # 15 texture coordinates
 
 o entity18_brush3
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 215/319/31 210/337/31 216/336/31 228/320/31
 f 224/341/32 216/340/32 210/339/32 225/338/32
 f 225/344/38 210/264/38 215/343/38 229/342/38
@@ -1470,7 +1470,7 @@ vt -3.5 -19.5 0
 # 13 texture coordinates
 
 o entity18_brush2
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 231/354/31 232/353/31 225/352/31 229/351/31
 f 226/235/32 225/338/32 232/355/32 233/234/32
 f 233/359/5 232/358/5 231/357/5 234/356/5
@@ -1497,7 +1497,7 @@ vt -20.5 4 0
 # 8 texture coordinates
 
 o entity18_brush1
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 198/367/31 236/366/31 232/365/31 185/364/31
 f 233/234/32 232/355/32 236/369/32 237/368/32
 f 238/332/39 237/331/39 236/330/39 198/219/39
@@ -1525,7 +1525,7 @@ vt 4 12.50000190734863 0
 # 10 texture coordinates
 
 o entity18_brush0
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 239/227/31 209/373/31 208/372/31 214/228/31
 f 232/355/32 208/259/32 209/256/32 236/369/32
 f 240/342/40 236/344/40 209/264/40 239/343/40
@@ -1576,7 +1576,7 @@ vt -7.50000190734863 12.49999809265137 0
 # 24 texture coordinates
 
 o entity14_brush11
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 241/385/41 242/384/41 243/383/41 244/382/41
 f 245/389/42 243/388/42 242/387/42 246/386/42
 f 247/393/8 244/392/8 243/391/8 245/390/8
@@ -1620,7 +1620,7 @@ vt 19.5 12.49999809265137 0
 # 19 texture coordinates
 
 o entity14_brush10
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 249/409/45 250/408/45 251/407/45 242/406/45
 f 252/413/46 251/412/46 250/411/46 253/410/46
 f 246/417/8 242/416/8 251/415/8 252/414/8
@@ -1669,7 +1669,7 @@ vt -0.00000199999999 12.49999809265137 0
 # 24 texture coordinates
 
 o entity14_brush9
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 255/428/49 256/427/49 257/426/49 258/425/49
 f 251/432/50 257/431/50 256/430/50 259/429/50
 f 260/436/8 259/435/8 256/434/8 255/433/8
@@ -1711,7 +1711,7 @@ vt 8 19.5 0
 # 18 texture coordinates
 
 o entity14_brush8
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 261/451/53 257/426/53 262/450/53 263/449/53
 f 250/453/54 262/452/54 257/431/54 251/432/54
 f 264/456/8 251/415/8 257/455/8 261/454/8
@@ -1757,7 +1757,7 @@ vt 8 -19.5 0
 # 23 texture coordinates
 
 o entity14_brush7
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 266/469/42 267/468/42 268/467/42 261/451/42
 f 269/473/41 268/472/41 267/471/41 270/470/41
 f 270/477/8 267/476/8 266/475/8 271/474/8
@@ -1794,7 +1794,7 @@ vt 12.49999904632568 20 0
 # 18 texture coordinates
 
 o entity14_brush6
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 272/491/53 273/490/53 256/427/53 266/469/53
 f 259/429/54 256/430/54 273/493/54 274/492/54
 f 274/497/8 273/496/8 272/495/8 275/494/8
@@ -1835,7 +1835,7 @@ vt 48.99999618530273 -28 0
 # 22 texture coordinates
 
 o entity14_brush5
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 243/511/45 259/510/45 274/509/45 276/508/45
 f 277/515/46 274/514/46 259/513/46 260/512/46
 f 276/518/8 274/497/8 277/517/8 278/516/8
@@ -1873,7 +1873,7 @@ vt -27 11.99999809265137 0
 # 15 texture coordinates
 
 o entity14_brush4
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 244/382/60 243/383/60 276/531/60 279/530/60
 f 280/534/61 276/533/61 243/399/61 281/532/61
 f 279/537/8 276/518/8 280/536/8 282/535/8
@@ -1911,7 +1911,7 @@ vt 48.99999618530273 2 0
 # 17 texture coordinates
 
 o entity14_brush3
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 284/547/63 270/398/63 285/546/63 286/545/63
 f 275/551/64 285/550/64 270/549/64 271/548/64
 f 286/553/8 285/552/8 275/501/8 280/539/8
@@ -1951,7 +1951,7 @@ vt 19.5 -0.5 0
 # 18 texture coordinates
 
 o entity14_brush2
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 287/563/50 288/446/50 284/445/50 289/562/50
 f 281/567/49 284/566/49 288/565/49 290/564/49
 f 289/571/8 284/570/8 281/569/8 283/568/8
@@ -1987,7 +1987,7 @@ vt 0.5 19.5 0
 # 17 texture coordinates
 
 o entity14_brush1
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 290/582/61 242/400/61 249/581/61 292/580/61
 f 293/585/60 249/584/60 242/583/60 241/483/60
 f 291/588/8 241/587/8 242/416/8 290/586/8
@@ -2018,7 +2018,7 @@ vt 79 2 0
 # 14 texture coordinates
 
 o entity14_brush0
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 264/600/64 269/599/64 295/598/64 265/597/64
 f 296/604/63 295/603/63 269/602/63 288/601/63
 f 288/606/8 269/605/8 264/456/8 290/586/8
@@ -2069,7 +2069,7 @@ vt -56.86598968505859 26.23030853271484 0
 # 24 texture coordinates
 
 o entity10_brush11
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 297/614/13 298/613/13 299/612/13 300/611/13
 f 301/618/69 298/617/69 297/616/69 302/615/69
 f 303/622/70 299/621/70 298/620/70 301/619/70
@@ -2115,7 +2115,7 @@ vt -6.46649789810181 6.3603630065918 0
 # 21 texture coordinates
 
 o entity10_brush10
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 305/638/13 306/637/13 307/636/13 308/635/13
 f 309/642/73 308/641/73 307/640/73 310/639/73
 f 310/646/74 307/645/74 306/644/74 300/643/74
@@ -2163,7 +2163,7 @@ vt -26.86598968505859 24.44145202636719 0
 # 23 texture coordinates
 
 o entity10_brush9
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 311/659/13 312/658/13 309/657/13 310/656/13
 f 313/663/77 309/662/77 312/661/77 314/660/77
 f 315/667/78 310/666/78 309/665/78 313/664/78
@@ -2202,7 +2202,7 @@ vt -10.5 22 0
 # 16 texture coordinates
 
 o entity10_brush8
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 317/681/13 318/680/13 319/679/13 308/635/13
 f 312/670/81 319/684/81 318/683/81 320/682/81
 f 320/688/82 318/687/82 317/686/82 321/685/82
@@ -2244,7 +2244,7 @@ vt -26.86598968505859 51.27426910400391 0
 # 21 texture coordinates
 
 o entity10_brush7
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 320/698/13 322/697/13 323/696/13 321/695/13
 f 324/702/70 321/701/70 323/700/70 325/699/70
 f 325/706/69 323/705/69 322/704/69 326/703/69
@@ -2280,7 +2280,7 @@ vt -5.96649789810181 6.3603630065918 0
 # 17 texture coordinates
 
 o entity10_brush6
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 327/719/13 314/718/13 313/717/13 324/716/13
 f 328/721/77 313/663/77 314/660/77 329/720/77
 f 330/725/83 324/724/83 313/723/83 328/722/83
@@ -2315,7 +2315,7 @@ vt -72 57 0
 # 17 texture coordinates
 
 o entity10_brush5
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 313/717/13 302/735/13 304/734/13 315/733/13
 f 332/739/75 304/738/75 302/737/75 333/736/75
 f 334/743/74 315/742/74 304/741/74 332/740/74
@@ -2356,7 +2356,7 @@ vt -13.46649742126465 13.51578140258789 0
 # 17 texture coordinates
 
 o entity10_brush4
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 302/735/13 301/752/13 335/751/13 336/750/13
 f 337/754/84 301/618/84 302/615/84 333/753/84
 f 338/727/85 335/671/85 301/619/85 337/755/85
@@ -2396,7 +2396,7 @@ vt -13.46649646759033 12.06856727600098 0
 # 18 texture coordinates
 
 o entity10_brush3
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 336/769/13 324/681/13 325/768/13 340/767/13
 f 341/773/88 340/772/88 325/771/88 342/770/88
 f 330/728/89 324/710/89 336/775/89 339/774/89
@@ -2435,7 +2435,7 @@ vt 28.50000190734863 17.5 0
 # 17 texture coordinates
 
 o entity10_brush2
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 343/788/13 344/787/13 345/786/13 346/785/13
 f 347/792/92 344/791/92 343/790/92 340/789/92
 f 335/671/78 345/670/78 344/794/78 347/793/78
@@ -2461,7 +2461,7 @@ vt 1.49999797344208 -10 0
 # 8 texture coordinates
 
 o entity10_brush1
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 348/766/13 305/638/13 349/764/13 350/765/13
 f 297/805/87 305/804/87 348/803/87 346/802/87
 f 298/617/84 349/807/84 305/806/84 297/616/84
@@ -2488,7 +2488,7 @@ vt -42 2 0
 # 10 texture coordinates
 
 o entity10_brush0
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 348/769/13 317/681/13 351/768/13 352/767/13
 f 343/813/88 352/812/88 351/811/88 323/810/88
 f 321/685/89 317/686/89 348/809/89 346/797/89
@@ -2527,7 +2527,7 @@ vt 11.5 -3.5 0
 # 16 texture coordinates
 
 o entity6_brush11
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 353/823/13 354/822/13 355/821/13 356/820/13
 f 357/827/5 355/826/5 354/825/5 358/824/5
 f 358/831/8 354/830/8 353/829/8 359/828/8
@@ -2563,7 +2563,7 @@ vt 4 -17.5 0
 # 15 texture coordinates
 
 o entity6_brush10
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 361/839/13 359/838/13 360/837/13 362/836/13
 f 363/843/5 360/842/5 359/841/5 364/840/5
 f 364/846/8 359/828/8 361/845/8 365/844/8
@@ -2591,7 +2591,7 @@ vt 18 -3.5 0
 # 7 texture coordinates
 
 o entity6_brush9
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 364/832/13 367/833/13 368/834/13 363/835/13
 f 369/854/5 368/853/5 367/852/5 370/851/5
 f 370/857/8 367/856/8 364/846/8 371/855/8
@@ -2620,7 +2620,7 @@ vt 18 4 0
 # 7 texture coordinates
 
 o entity6_brush8
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 365/860/13 364/823/13 373/859/13 374/858/13
 f 375/863/94 373/862/94 364/840/94 371/861/94
 f 371/855/8 364/846/8 365/844/8 376/864/8
@@ -2654,7 +2654,7 @@ vt -3.5 19 0
 # 11 texture coordinates
 
 o entity6_brush7
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 378/868/13 379/867/13 380/866/13 373/865/13
 f 381/872/96 380/871/96 379/870/96 382/869/96
 f 382/857/8 379/856/8 378/846/8 383/855/8
@@ -2677,7 +2677,7 @@ vt 18 -4 0
 # 4 texture coordinates
 
 o entity6_brush6
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 367/822/13 384/877/13 385/876/13 380/875/13
 f 386/863/94 385/862/94 384/840/94 387/861/94
 f 387/879/8 384/878/8 367/856/8 370/857/8
@@ -2704,7 +2704,7 @@ vt -3.5 -17.5 0
 # 9 texture coordinates
 
 o entity6_brush5
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 358/883/13 388/882/13 389/881/13 357/880/13
 f 390/843/5 389/842/5 388/841/5 384/840/5
 f 384/878/8 388/884/8 358/831/8 367/856/8
@@ -2728,7 +2728,7 @@ vt 10 -4 0
 # 4 texture coordinates
 
 o entity6_brush4
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 354/822/13 391/877/13 392/876/13 393/875/13
 f 394/891/94 392/890/94 391/889/94 388/841/94
 f 388/884/8 391/892/8 354/830/8 358/831/8
@@ -2752,7 +2752,7 @@ vt 10.5 18.5 0
 # 6 texture coordinates
 
 o entity6_brush3
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 396/896/13 397/895/13 394/894/13 395/893/13
 f 385/862/5 394/891/5 397/898/5 398/897/5
 f 398/885/8 397/886/8 396/887/8 379/888/8
@@ -2776,7 +2776,7 @@ vt 42 78 0
 # 4 texture coordinates
 
 o entity6_brush2
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 399/873/13 400/874/13 393/875/13 401/859/13
 f 395/902/96 393/901/96 400/900/96 396/899/96
 f 396/831/8 400/830/8 399/829/8 402/828/8
@@ -2795,7 +2795,7 @@ vt 10 4 0
 # 1 texture coordinate
 
 o entity6_brush1
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 404/860/13 353/823/13 401/859/13 405/858/13
 f 403/891/94 401/890/94 353/889/94 359/841/94
 f 359/828/8 353/829/8 404/903/8 361/845/8
@@ -2816,7 +2816,7 @@ vt 16 76 0
 # 4 texture coordinates
 
 o entity6_brush0
-usemtl textures/colors/red.png
+usemtl textures/colors/red
 f 407/907/13 402/906/13 403/905/13 406/904/13
 f 373/862/96 403/891/96 402/898/96 378/897/96
 f 378/847/8 402/848/8 407/849/8 408/850/8
@@ -2851,7 +2851,7 @@ vt -0.00390599993989 -0.00976586341858 0
 # 10 texture coordinates
 
 o entity2_brush2
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 409/911/13 410/910/13 411/909/13 412/908/13
 f 413/913/98 411/908/98 410/911/98 414/912/98
 f 414/917/14 410/916/14 409/915/14 415/914/14
@@ -2882,7 +2882,7 @@ vt -0.00390599993989 0.00585901737213 0
 # 8 texture coordinates
 
 o entity2_brush1
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 417/921/13 418/920/13 419/919/13 420/918/13
 f 421/913/98 419/908/98 418/911/98 422/912/98
 f 422/925/14 418/924/14 417/923/14 423/922/14
@@ -2905,7 +2905,7 @@ vt -0.00390599993989 0.02929699420929 0
 # 4 texture coordinates
 
 o entity2_brush0
-usemtl textures/colors/ochre.png
+usemtl textures/colors/ochre
 f 420/918/13 411/909/13 425/927/13 426/926/13
 f 427/929/5 425/928/5 411/908/5 413/913/5
 f 413/917/8 411/916/8 420/923/8 424/922/8
@@ -2935,7 +2935,7 @@ vt -8 -6 0
 # 7 texture coordinates
 
 o entity1_brush0
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 429/12/13 430/11/13 431/33/13 432/34/13
 f 416/932/100 431/931/100 430/930/100 433/23/100
 f 433/936/14 430/935/14 429/934/14 434/933/14
@@ -2970,7 +2970,7 @@ vt 90.5 -1 0
 # 12 texture coordinates
 
 o entity0_brush16
-usemtl textures/generic/metal1_3.png
+usemtl textures/generic/metal1_3
 f 435/940/13 436/939/13 437/938/13 438/937/13
 f 439/944/5 437/943/5 436/942/5 440/941/5
 f 440/948/8 436/947/8 435/946/8 441/945/8
@@ -3002,7 +3002,7 @@ vt 91.25 -0.68181800842285 0
 # 12 texture coordinates
 
 o entity0_brush15
-usemtl textures/generic/wood1_7.png
+usemtl textures/generic/wood1_7
 f 443/952/13 444/951/13 445/950/13 446/949/13
 f 47/956/98 445/955/98 444/954/98 29/953/98
 f 29/960/102 444/959/102 443/958/102 32/957/102
@@ -3041,7 +3041,7 @@ vt -107.0716552734375 -0.46672201156616 0
 # 16 texture coordinates
 
 o entity0_brush14
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 447/964/13 448/963/13 449/962/13 450/961/13
 f 451/968/25 449/967/25 448/966/25 452/965/25
 f 452/972/8 448/971/8 447/970/8 453/969/8
@@ -3082,7 +3082,7 @@ vt -108.07171630859375 -5.23944664001465 0
 # 16 texture coordinates
 
 o entity0_brush13
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 455/980/13 456/979/13 450/978/13 457/977/13
 f 458/984/103 450/983/103 456/982/103 459/981/103
 f 459/988/104 456/987/104 455/986/104 460/985/104
@@ -3113,7 +3113,7 @@ vt -108.07171630859375 8.65665435791016 0
 # 8 texture coordinates
 
 o entity0_brush12
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 462/996/13 463/995/13 464/994/13 449/993/13
 f 465/989/103 464/990/103 463/991/103 466/992/103
 f 466/1000/106 463/999/106 462/998/106 467/997/106
@@ -3140,13 +3140,13 @@ vt 3.65625 -0.02564096450806 0
 # 8 texture coordinates
 
 o entity0_brush11
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 469/12/13 470/11/13 471/10/13 472/9/13
 f 134/1004/14 470/1003/14 469/1002/14 133/1001/14
 f 136/1001/15 472/1002/15 471/1003/15 135/1004/15
 f 136/9/16 135/10/16 134/11/16 133/12/16
 
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 135/1008/5 471/1007/5 470/1006/5 134/1005/5
 f 133/1005/6 469/1006/6 472/1007/6 136/1008/6
 
@@ -3177,7 +3177,7 @@ vt 14.735107421875 -1.25 0
 # 12 texture coordinates
 
 o entity0_brush7
-usemtl textures/generic/mt_sr_v13.png
+usemtl textures/generic/mt_sr_v13
 f 473/1012/13 474/1011/13 475/1010/13 476/1009/13
 f 477/1016/5 475/1015/5 474/1014/5 478/1013/5
 f 478/1020/8 474/1019/8 473/1018/8 479/1017/8
@@ -3205,7 +3205,7 @@ vt 14.735107421875 0.75 0
 # 7 texture coordinates
 
 o entity0_brush6
-usemtl textures/generic/mt_sr_v13.png
+usemtl textures/generic/mt_sr_v13
 f 481/1023/13 482/1022/13 483/1021/13 473/1012/13
 f 484/1013/98 483/1014/98 482/1025/98 485/1024/98
 f 485/1027/14 482/1026/14 481/1018/14 486/1017/14
@@ -3311,7 +3311,7 @@ vt 14.485107421875 -0.75 0
 # 5 texture coordinates
 
 o entity0_brush2
-usemtl textures/generic/mt_sr_v13.png
+usemtl textures/generic/mt_sr_v13
 f 503/1044/13 504/1043/13 474/1011/13 505/1042/13
 f 478/1013/98 474/1014/98 504/1025/98 506/1024/98
 f 506/1020/14 504/1019/14 503/1046/14 507/1045/14
@@ -3343,11 +3343,11 @@ f 181/185/13 177/177/13 509/1048/13 510/1047/13
 f 180/165/112 177/166/112 181/167/112 182/168/112
 f 512/1047/16 511/1048/16 180/177/16 182/185/16
 
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 511/1052/5 509/1051/5 177/1050/5 180/1049/5
 f 182/1049/6 181/1050/6 510/1051/6 512/1052/6
 
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 512/173/113 510/174/113 509/175/113 511/176/113
 
 v 3756.71435546875 -928 -96.00003814697266
@@ -3384,10 +3384,10 @@ f 513/1056/13 514/1055/13 515/1054/13 516/1053/13
 f 520/1060/15 516/1059/15 515/1058/15 517/1057/15
 f 520/1053/16 517/1054/16 518/1055/16 519/1056/16
 
-usemtl textures/weird/darksea.png
+usemtl textures/weird/darksea
 f 517/1064/114 515/1063/114 514/1062/114 518/1061/114
 f 519/1061/115 513/1062/115 516/1063/115 520/1064/115
 
-usemtl textures/colors/black.png
+usemtl textures/colors/black
 f 518/972/8 514/971/8 513/970/8 519/969/8
 

@@ -32,11 +32,11 @@ vt 0.34439313411713 0.24477648735046 0
 # 12 texture coordinates
 
 o Ноль_объект.53
-usemtl /textures/colors/black.png
+usemtl /textures/colors/black
 f 3/4/1 4/3/1 2/2/1 1/1/1
 f 1/1/1 2/2/1 6/3/1 5/4/1
 
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 7/8/2 8/7/2 4/6/2 3/5/2
 f 9/12/3 7/11/3 3/10/3 5/9/3
 f 5/5/4 10/6/4 11/7/4 9/8/4
@@ -65,7 +65,7 @@ vn 1 0 0
 # 0 texture coordinate
 
 o coll;visible=0
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 12/1/1 13/2/1 15/3/1 14/4/1
 f 18/4/2 19/3/2 17/2/2 16/1/2
 f 20/1/2 21/2/2 23/3/2 22/4/2
@@ -364,7 +364,7 @@ vt 0.7568598985672 0.81919372081757 0
 # 21 texture coordinates
 
 o junk;collision=0
-usemtl /textures/grassy/junk.png;alpha_test=1
+usemtl /textures/grassy/junk;alpha_test=1
 f 110/16/5 108/15/5 109/14/5 97/13/5
 f 123/20/3 121/19/3 120/18/3 122/17/3
 f 286/23/3 283/22/3 287/18/3 264/21/3
@@ -622,7 +622,7 @@ vt 0.54312562942505 0.27581000328064 0
 # 20 texture coordinates
 
 o backpacks
-usemtl /textures/flatpack/backpack.png
+usemtl /textures/flatpack/backpack
 f 381/37/11 380/36/11 379/35/11 378/34/11
 f 377/39/12 378/34/12 379/35/12 376/38/12
 f 376/38/13 379/35/13 380/36/13 382/40/13
@@ -781,7 +781,7 @@ vn -0.81461250782013 -0.5789110660553 0.03561495617032
 # 0 texture coordinate
 
 o backpacks.1
-usemtl /textures/flatpack/backpack.png
+usemtl /textures/flatpack/backpack
 f 425/37/87 424/36/87 423/35/87 422/34/87
 f 421/39/88 422/34/88 423/35/88 420/38/88
 f 420/38/89 423/35/89 424/36/89 426/40/89
@@ -895,7 +895,7 @@ vt 0.88004845380783 0.14847373962402 0
 # 28 texture coordinates
 
 o tv
-usemtl /textures/flatpack/tv.png
+usemtl /textures/flatpack/tv
 f 470/57/2 472/56/2 466/55/2 469/54/2
 f 471/61/2 468/60/2 464/59/2 473/58/2
 f 470/57/2 469/54/2 468/60/2 471/61/2
@@ -923,7 +923,7 @@ vt 0.12534886598587 0.45614445209503 0
 # 4 texture coordinates
 
 o tv;order=post
-usemtl /textures/flatpack/tv.png;blend=add
+usemtl /textures/flatpack/tv;blend=add
 f 502/85/2 471/84/2 473/83/2 503/82/2
 
 v 45 0 -530
@@ -1068,7 +1068,7 @@ vt 6.42592573165894 0.09259259700775 0
 # 50 texture coordinates
 
 o Объект_Клон.17
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 535/89/130 539/88/130 537/87/130 533/86/130
 f 536/93/131 540/92/131 539/91/131 535/90/131
 f 534/97/132 538/96/132 540/95/132 536/94/132
@@ -1086,7 +1086,7 @@ f 560/93/134 564/92/134 563/91/134 559/90/134
 f 558/97/132 562/96/132 564/95/132 560/94/132
 f 557/101/135 561/100/135 562/99/135 558/98/135
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 570/105/3 569/104/3 566/103/3 565/102/3
 f 540/109/136 568/108/136 565/107/136 547/106/136
 f 554/113/137 567/112/137 568/111/137 540/110/137
@@ -1194,7 +1194,7 @@ vt -0.16517108678818 0.46296298503876 0
 # 32 texture coordinates
 
 o пуфик
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 579/139/3 580/138/3 581/137/3 582/136/3
 f 575/143/144 579/142/144 582/141/144 578/140/144
 f 578/147/145 582/146/145 581/145/145 577/144/145
@@ -1206,7 +1206,7 @@ f 585/152/149 589/163/149 590/162/149 586/155/149
 f 584/148/150 588/165/150 589/164/150 585/151/150
 f 583/144/151 587/167/151 588/166/151 584/147/151
 
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 593/89/1 597/88/1 595/87/1 591/86/1
 f 594/93/4 598/92/4 597/91/4 593/90/4
 f 592/97/5 596/96/5 598/95/5 594/94/5
@@ -1309,7 +1309,7 @@ vt 0.85000002384186 0.85000002384186 0
 # 16 texture coordinates
 
 o пуфик2
-usemtl /textures/flatpack/sofa.png
+usemtl /textures/flatpack/sofa
 f 652/171/155 629/170/154 628/169/153 646/168/125
 f 648/175/159 647/174/158 642/173/157 625/172/156
 f 625/18/156 628/169/153 629/170/154 626/39/160
@@ -1406,7 +1406,7 @@ vn 0.98480772972107 0 0.17364817857742
 # 0 texture coordinate
 
 o Объект_Клон.16
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 655/89/185 659/88/185 657/87/185 653/86/185
 f 656/93/186 660/92/186 659/91/186 655/90/186
 f 654/97/187 658/96/187 660/95/187 656/94/187
@@ -1424,7 +1424,7 @@ f 680/93/194 684/92/194 683/91/194 679/90/194
 f 678/97/187 682/96/187 684/95/187 680/94/187
 f 677/101/191 681/100/191 682/99/191 678/98/191
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 690/105/3 689/104/3 686/103/3 685/102/3
 f 660/109/195 688/108/195 685/107/195 667/106/195
 f 674/113/196 687/112/196 688/111/196 660/110/196
@@ -1487,7 +1487,7 @@ vn 0 -0.0830454826355 0.99654573202133
 # 0 texture coordinate
 
 o Объект_Клон.15
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 697/89/2 701/88/2 699/87/2 695/86/2
 f 698/93/1 702/92/1 701/91/1 697/90/1
 f 696/97/4 700/96/4 702/95/4 698/94/4
@@ -1505,7 +1505,7 @@ f 722/93/1 726/92/1 725/91/1 721/90/1
 f 720/97/4 724/96/4 726/95/4 722/94/4
 f 719/101/5 723/100/5 724/99/5 720/98/5
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 732/105/3 731/104/3 728/103/3 727/102/3
 f 702/109/1 730/108/1 727/107/1 709/106/1
 f 716/113/4 729/112/4 730/111/4 702/110/4
@@ -1575,7 +1575,7 @@ vn 0.86303395032883 -0.0830454826355 -0.49827286601067
 # 0 texture coordinate
 
 o Объект_Клон.9
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 739/89/131 743/88/131 741/87/131 737/86/131
 f 740/93/205 744/92/205 743/91/205 739/90/205
 f 738/97/133 742/96/133 744/95/133 740/94/133
@@ -1593,7 +1593,7 @@ f 764/93/205 768/92/205 767/91/205 763/90/205
 f 762/97/133 766/96/133 768/95/133 764/94/133
 f 761/101/206 765/100/206 766/99/206 762/98/206
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 774/105/3 773/104/3 770/103/3 769/102/3
 f 744/109/137 772/108/137 769/107/137 751/106/137
 f 758/113/209 771/112/209 772/111/209 744/110/209
@@ -1654,7 +1654,7 @@ vt -1.3148148059845 7.19444370269775 0
 # 18 texture coordinates
 
 o Объект_Клон.12
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 802/187/2 796/186/2 797/185/2 795/184/2
 f 789/195/5 792/194/5 793/193/5 790/192/5
 f 779/187/4 783/186/4 784/185/4 780/184/4
@@ -1664,7 +1664,7 @@ f 795/197/5 797/196/5 792/194/5 789/195/5
 f 790/187/4 793/186/4 794/185/4 801/184/4
 f 786/197/5 788/196/5 782/194/5 799/195/5
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 784/191/3 783/190/3 782/189/3 781/188/3
 f 781/191/3 782/190/3 788/189/3 787/188/3
 f 791/201/3 792/200/3 797/199/3 796/198/3
@@ -1739,7 +1739,7 @@ vt 0.51313024759293 0 0
 # 26 texture coordinates
 
 o Объект_Клон.14
-usemtl /textures/flatpack/fridge.png;wrap=clamp
+usemtl /textures/flatpack/fridge;wrap=clamp
 f 804/205/217 808/204/216 807/203/215 803/202/214
 f 807/203/215 808/204/216 814/207/219 816/206/218
 f 809/210/222 811/209/221 817/208/220
@@ -1813,7 +1813,7 @@ vt -3.3148148059845 -6.94444465637207 0
 # 24 texture coordinates
 
 o Объект_Клон.13
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 837/187/2 839/186/2 840/185/2 838/184/2
 f 830/234/5 834/233/5 835/232/5 831/231/5
 f 820/187/4 824/186/4 825/185/4 821/184/4
@@ -1821,7 +1821,7 @@ f 819/234/5 823/233/5 824/232/5 820/231/5
 f 838/234/5 840/233/5 834/232/5 830/231/5
 f 827/234/5 829/233/5 823/232/5 819/231/5
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 822/230/3 842/229/3 841/228/3
 f 822/230/3 825/236/3 847/235/3 842/229/3
 f 822/230/3 823/239/3 829/238/3 828/237/3
@@ -1898,7 +1898,7 @@ vt 1 0.92857134342194 0
 # 20 texture coordinates
 
 o Объект_Клон.8
-usemtl /textures/flatpack/rakovina.png
+usemtl /textures/flatpack/rakovina
 f 870/254/232 862/253/231 866/252/230
 f 869/257/235 872/256/234 871/255/233 870/254/232
 f 871/255/233 868/259/237 863/258/236
@@ -1934,7 +1934,7 @@ vt 0 0.5 0
 # 4 texture coordinates
 
 o Объект_Клон.11
-usemtl /textures/flatpack/stove.png
+usemtl /textures/flatpack/stove
 f 832/39/2 875/273/2 876/272/2 873/175/2
 f 878/40/3 877/275/3 876/272/3 875/274/3
 f 873/175/5 876/272/5 877/275/5 874/41/5
@@ -1961,7 +1961,7 @@ v 415 270 165
 # 0 texture coordinate
 
 o Ноль_объект.30
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 881/4/2 882/3/2 880/2/2 879/1/2
 f 883/1/2 884/2/2 886/3/2 885/4/2
 f 889/8/5 890/7/5 888/6/5 887/5/5
@@ -1999,7 +1999,7 @@ vt 0.09521967172623 0.23876810073853 0
 # 7 texture coordinates
 
 o Объект_Клон.10
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 893/187/4 897/186/4 898/185/4 894/184/4
 f 896/282/5 900/281/5 897/280/5 893/184/5
 f 895/187/2 899/186/2 900/185/2 896/184/2
@@ -2009,7 +2009,7 @@ f 906/282/5 910/281/5 907/280/5 903/184/5
 f 905/187/2 909/186/2 910/185/2 906/184/2
 f 904/234/1 908/233/1 909/232/1 905/231/1
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 900/279/3 899/278/3 898/277/3 897/276/3
 f 910/279/3 909/278/3 908/277/3 907/276/3
 
@@ -2072,20 +2072,20 @@ vt -4.25 0.75 0
 # 38 texture coordinates
 
 o bed.3
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 912/286/2 916/285/2 917/284/2 913/283/2
 f 911/290/1 915/289/1 916/288/1 912/287/1
 f 914/294/4 918/293/4 915/292/4 911/291/4
 f 913/298/5 917/297/5 918/296/5 914/295/5
 f 917/297/5 921/316/5 922/315/5 918/296/5
 
-usemtl /textures/flatpack/wdfloor.png
+usemtl /textures/flatpack/wdfloor
 f 920/302/1 924/301/1 923/300/1 919/299/1
 f 924/306/3 922/305/3 921/304/3 923/303/3
 f 918/314/4 922/313/4 924/312/4 920/311/4
 f 919/320/2 923/319/2 921/318/2 917/317/2
 
-usemtl /textures/flatpack/bed.png
+usemtl /textures/flatpack/bed
 f 919/310/3 916/309/3 915/308/3 920/307/3
 
 v -675 0 -530
@@ -2168,7 +2168,7 @@ vn -0.99654573202133 -0.0830454826355 0
 # 0 texture coordinate
 
 o Объект_Клон.5
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 956/89/5 960/88/5 958/87/5 954/86/5
 f 957/93/2 961/92/2 960/91/2 956/90/2
 f 955/97/1 959/96/1 961/95/1 957/94/1
@@ -2186,7 +2186,7 @@ f 981/93/2 985/92/2 984/91/2 980/90/2
 f 979/97/1 983/96/1 985/95/1 981/94/1
 f 978/101/4 982/100/4 983/99/4 979/98/4
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 991/105/3 990/104/3 987/103/3 986/102/3
 f 961/109/2 989/108/2 986/107/2 968/106/2
 f 975/113/1 988/112/1 989/111/1 961/110/1
@@ -2265,7 +2265,7 @@ vn 0.98480772972107 0 -0.17364817857742
 # 0 texture coordinate
 
 o Объект_Клон.2
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 998/89/245 1002/88/245 1000/87/245 996/86/245
 f 999/93/246 1003/92/246 1002/91/246 998/90/246
 f 997/97/247 1001/96/247 1003/95/247 999/94/247
@@ -2283,7 +2283,7 @@ f 1023/93/250 1027/92/250 1026/91/250 1022/90/250
 f 1021/97/251 1025/96/251 1027/95/251 1023/94/251
 f 1020/101/254 1024/100/254 1025/99/254 1021/98/254
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1033/105/3 1032/104/3 1029/103/3 1028/102/3
 f 1003/109/255 1031/108/255 1028/107/255 1010/106/255
 f 1017/113/256 1030/112/256 1031/111/256 1003/110/256
@@ -2346,7 +2346,7 @@ vn 0 -0.0830454826355 -0.99654573202133
 # 0 texture coordinate
 
 o Объект_Клон.6
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1040/89/4 1044/88/4 1042/87/4 1038/86/4
 f 1041/93/5 1045/92/5 1044/91/5 1040/90/5
 f 1039/97/2 1043/96/2 1045/95/2 1041/94/2
@@ -2364,7 +2364,7 @@ f 1065/93/5 1069/92/5 1068/91/5 1064/90/5
 f 1063/97/2 1067/96/2 1069/95/2 1065/94/2
 f 1062/101/1 1066/100/1 1067/99/1 1063/98/1
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1075/105/3 1074/104/3 1071/103/3 1070/102/3
 f 1045/109/5 1073/108/5 1070/107/5 1052/106/5
 f 1059/113/2 1072/112/2 1073/111/2 1045/110/2
@@ -2459,7 +2459,7 @@ vt -0.05555555596948 -4.5 0
 # 36 texture coordinates
 
 o Объект_Клон.4
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1107/93/5 1111/92/5 1110/91/5 1106/90/5
 f 1083/324/5 1087/323/5 1086/322/5 1082/321/5
 f 1081/328/2 1085/327/2 1087/326/2 1083/325/2
@@ -2477,7 +2477,7 @@ f 1096/332/1 1100/331/1 1101/330/1 1097/329/1
 f 1098/89/4 1102/88/4 1100/87/4 1096/86/4
 f 1106/89/4 1110/88/4 1108/87/4 1104/86/4
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1119/340/3 1118/339/3 1117/338/3 1116/337/3
 f 1115/344/5 1119/343/5 1116/342/5 1112/341/5
 f 1114/348/2 1118/347/2 1119/346/2 1115/345/2
@@ -2515,12 +2515,12 @@ vt 20.17499923706055 0 0
 # 16 texture coordinates
 
 o lace;order=post
-usemtl /textures/flatpack/lace2.png;alpha_test=blend
+usemtl /textures/flatpack/lace2;alpha_test=blend
 f 1121/364/1 1125/363/1 1126/362/1 1122/361/1
 f 1120/368/4 1124/367/4 1125/366/4 1121/365/4
 f 1122/372/2 1126/371/2 1127/370/2 1123/369/2
 
-usemtl /textures/flatpack/lace.png;alpha_test=blend
+usemtl /textures/flatpack/lace;alpha_test=blend
 f 1127/360/3 1126/359/3 1125/358/3 1124/357/3
 
 v -402.5 106 -822.5
@@ -2572,7 +2572,7 @@ vt -0.64814811944962 0.94444441795349 0
 # 13 texture coordinates
 
 o Объект_Клон
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 1133/187/4 1144/186/4 1145/185/4 1135/184/4
 f 1136/375/5 1146/281/5 1144/374/5 1133/373/5
 f 1139/282/1 1143/281/1 1140/280/1 1129/184/1
@@ -2581,7 +2581,7 @@ f 1132/234/5 1141/233/5 1142/232/5 1138/231/5
 f 1129/187/2 1140/186/2 1141/185/2 1132/184/2
 f 1137/184/2 1147/185/2 1146/186/2 1136/187/2
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1144/379/4 1155/378/4 1156/377/4 1145/376/4
 f 1156/381/3 1155/380/3 1154/277/3 1153/276/3
 f 1141/385/5 1154/384/5 1155/383/5 1144/382/5
@@ -2613,7 +2613,7 @@ v -425 85 -915
 # 0 texture coordinate
 
 o Объект_Клон.3
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 1159/187/1 1169/186/1 1170/185/1 1160/184/1
 f 1161/375/4 1171/281/4 1169/374/4 1159/373/4
 f 1164/282/2 1168/281/2 1165/280/2 1157/184/2
@@ -2622,7 +2622,7 @@ f 1158/234/4 1166/233/4 1167/232/4 1163/231/4
 f 1157/187/5 1165/186/5 1166/185/5 1158/184/5
 f 1162/184/5 1172/185/5 1171/186/5 1161/187/5
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1169/379/1 1175/378/1 1176/377/1 1170/376/1
 f 1176/381/3 1175/380/3 1174/277/3 1173/276/3
 f 1166/385/4 1174/384/4 1175/383/4 1169/382/4
@@ -2642,13 +2642,13 @@ v -355 80 -240
 # 0 texture coordinate
 
 o Объект_Клон.7
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 1177/187/1 1181/186/1 1182/185/1 1178/184/1
 f 1180/282/4 1184/281/4 1181/280/4 1177/184/4
 f 1179/187/5 1183/186/5 1184/185/5 1180/184/5
 f 1178/234/2 1182/233/2 1183/232/2 1179/231/2
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1184/279/3 1183/278/3 1182/277/3 1181/276/3
 
 v -597.5 55 -752.5
@@ -2769,7 +2769,7 @@ vt 0.35840058326721 0.24590659141541 0
 # 15 texture coordinates
 
 o Объект_Клон.1
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 1198/389/4 1196/388/4 1195/387/4 1197/386/4
 f 1280/393/3 1278/392/3 1277/391/3 1274/390/3
 f 1194/396/5 1197/389/5 1195/395/5 1193/394/5
@@ -3174,7 +3174,7 @@ vt 0.08823529630899 0.91176474094391 0
 # 44 texture coordinates
 
 o Объект_Плоскость.1
-usemtl /textures/flatpack/sofa.png
+usemtl /textures/flatpack/sofa
 f 1288/177/268 1287/178/267 1286/170/266 1285/169/265
 f 1281/18/270 1285/169/265 1286/170/266 1283/39/269
 f 1283/39/269 1286/170/266 1287/178/267 1284/172/271
@@ -3286,7 +3286,7 @@ f 1418/172/400 1390/39/399 1416/38/399 1417/429/400
 f 1391/172/401 1418/39/400 1417/38/400 1389/429/401
 f 1392/39/3 1393/38/3 1412/40/396 1410/41/396
 
-usemtl /textures/flatpack/planks4.png
+usemtl /textures/flatpack/planks4
 f 1404/431/4 1425/41/4 1426/39/4 1402/430/4
 f 1420/39/5 1403/430/5 1402/431/5 1426/41/5
 f 1405/431/4 1419/41/4 1425/39/4 1404/430/4
@@ -3344,14 +3344,14 @@ vt 0.24591580033302 1 0
 # 9 texture coordinates
 
 o Ноль_объект.56
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1478/448/3 1480/447/3 1479/446/3 1477/445/3
 
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 1481/451/4 1475/40/4 1479/450/4 1482/449/4
 f 1476/453/4 1481/40/4 1482/450/4 1480/452/4
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1473/446/125 1475/445/125 1476/448/125 1474/447/125
 
 v -1035 68.5 -915
@@ -3385,7 +3385,7 @@ vt 0.24076667428017 0.8462963104248 0
 # 16 texture coordinates
 
 o Ноль_объект.54
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1474/457/4 1484/456/4 1490/455/4 1487/454/4
 f 1474/461/1 1476/460/1 1486/459/1 1484/458/1
 f 1483/465/5 1485/464/5 1475/463/5 1473/462/5
@@ -3430,7 +3430,7 @@ vt 2 0 0
 # 2 texture coordinates
 
 o Ноль_объект.50
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1500/471/402 1502/470/402 1501/40/2 1499/41/2
 f 1516/38/403 1502/40/402 1500/41/402 1515/39/403
 
@@ -3476,7 +3476,7 @@ vt 0.03703703731298 0 0
 # 10 texture coordinates
 
 o Ноль_объект.52
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1521/475/5 1522/474/5 1529/473/5 1530/472/5
 f 1517/175/1 1519/274/1 1520/40/1 1518/41/1
 f 1490/477/1 1518/475/1 1520/474/1 1487/476/1
@@ -3575,7 +3575,7 @@ vt 0.31944444775581 0 0
 # 29 texture coordinates
 
 o Ноль_объект.55
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1540/485/4 1539/484/4 1548/483/4 1545/482/4
 f 1540/489/1 1544/488/1 1543/487/1 1539/486/1
 f 1538/493/5 1542/492/5 1541/491/5 1537/490/5
@@ -3607,13 +3607,13 @@ v -320 88.5 -930
 # 0 texture coordinate
 
 o Ноль_объект.43
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1589/448/3 1591/447/3 1590/446/3 1588/445/3
 
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 1544/451/4 1541/40/4 1590/450/4 1591/449/4
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1537/446/125 1541/445/125 1544/448/125 1540/447/125
 
 v -830 0 -240
@@ -3646,14 +3646,14 @@ vt 0.5 0.50000041723251 0
 # 16 texture coordinates
 
 o Ноль_объект.27
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1555/514/1 1598/513/1 1595/512/1 1594/511/1
 f 1593/522/5 1596/521/5 1597/520/5 1592/519/5
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1594/518/125 1595/517/125 1596/516/125 1593/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1592/526/3 1597/525/3 1598/524/3 1555/523/3
 
 v -620 0 -240
@@ -3671,14 +3671,14 @@ v -500 0 -230
 # 0 texture coordinate
 
 o Ноль_объект.17
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1605/514/1 1606/513/1 1602/512/1 1601/511/1
 f 1600/522/5 1603/521/5 1604/520/5 1599/519/5
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1601/518/125 1602/517/125 1603/516/125 1600/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1599/526/3 1604/525/3 1606/524/3 1605/523/3
 
 v 135 -188 -1755
@@ -3756,17 +3756,17 @@ vt 0.74255174398422 0.00450694561005 0
 # 22 texture coordinates
 
 o Объект_Плоскость.5
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1623/530/125 1615/529/125 1614/528/125 1638/527/125
 f 1634/534/125 1610/533/125 1613/532/125 1622/531/125
 f 1622/531/125 1613/532/125 1615/529/125 1623/530/125
 
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 1639/537/409 1614/536/409 1615/40/409 1641/535/409
 f 1640/537/410 1613/536/410 1610/40/410 1642/535/410
 f 1641/548/4 1615/547/4 1613/40/4 1640/546/4
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1644/541/3 1640/540/3 1642/539/3 1646/538/3
 f 1645/543/3 1641/542/3 1640/540/3 1644/541/3
 f 1643/545/3 1639/544/3 1641/542/3 1645/543/3
@@ -3800,7 +3800,7 @@ vt 0.03688739612699 1 0
 # 12 texture coordinates
 
 o Объект_Плоскость.2
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1644/552/411 1646/551/411 1657/550/411 1653/549/411
 f 1645/554/4 1644/552/4 1653/549/4 1652/553/4
 f 1646/557/5 1642/556/5 1610/555/5 1634/40/5
@@ -3848,7 +3848,7 @@ vt 0.40000000596046 1 0
 # 6 texture coordinates
 
 o Ноль_объект.40
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1661/562/1 1675/471/1 1676/470/1 1662/561/1
 f 1677/564/4 1659/471/4 1660/470/4 1678/563/4
 f 1661/471/4 1662/470/4 1660/40/4 1659/41/4
@@ -3876,17 +3876,17 @@ v -500 0 175
 # 0 texture coordinate
 
 o Ноль_объект.35
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1691/514/1 1692/513/1 1688/512/1 1687/511/1
 f 1686/522/5 1689/521/5 1690/520/5 1685/519/5
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1687/518/125 1688/517/125 1689/516/125 1686/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1685/526/3 1690/525/3 1692/524/3 1691/523/3
 
-usemtl /textures/flatpack/exitdoor.png
+usemtl /textures/flatpack/exitdoor
 f 1692/41/2 1690/39/2 1689/38/2 1688/40/2
 
 v 405 0 -720
@@ -3924,23 +3924,23 @@ vt 0.21666666865349 0.52500003576279 0
 # 4 texture coordinates
 
 o Ноль_объект.9
-usemtl /textures/flatpack/door.png
+usemtl /textures/flatpack/door
 f 1714/568/4 1709/38/4 1708/40/4 1713/567/4
 f 1714/568/4 1715/569/4 1710/39/4 1709/38/4
 f 1715/569/4 1716/570/4 1712/41/4 1710/39/4
 f 1712/41/4 1716/570/4 1713/567/4 1708/40/4
 
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1696/512/4 1695/511/4 1699/514/4 1700/513/4
 f 1710/520/1 1705/519/1 1706/522/1 1709/521/1
 f 1698/520/2 1693/519/2 1694/522/2 1697/521/2
 f 1708/512/5 1707/511/5 1711/514/5 1712/513/5
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1693/526/3 1698/525/3 1700/524/3 1699/523/3
 f 1705/526/3 1710/525/3 1712/524/3 1711/523/3
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1709/516/125 1706/515/125 1707/518/125 1708/517/125
 f 1697/516/125 1694/515/125 1695/518/125 1696/517/125
 
@@ -3951,7 +3951,7 @@ f 1697/516/125 1694/515/125 1695/518/125 1696/517/125
 # 0 texture coordinate
 
 o Ноль_объект.2
-usemtl /textures/flatpack/door.png
+usemtl /textures/flatpack/door
 f 1713/567/2 1708/40/2 1709/38/2 1714/568/2
 f 1710/39/2 1712/41/2 1716/570/2 1715/569/2
 f 1709/38/2 1710/39/2 1715/569/2 1714/568/2
@@ -3972,14 +3972,14 @@ v 60 0 175
 # 0 texture coordinate
 
 o Ноль_объект.1
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1723/514/1 1724/513/1 1720/512/1 1719/511/1
 f 1718/522/5 1721/521/5 1722/520/5 1717/519/5
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1719/518/125 1720/517/125 1721/516/125 1718/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 1717/526/3 1722/525/3 1724/524/3 1723/523/3
 
 v -135 270 -645
@@ -4025,7 +4025,7 @@ v -135 405 165
 # 0 texture coordinate
 
 o Ноль_объект.6
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1726/471/5 1727/40/5 1725/41/5
 f 1736/564/1 1729/471/1 1731/470/1 1737/563/1
 f 1732/471/1 1733/470/1 1731/40/1 1729/41/1
@@ -4078,7 +4078,7 @@ vt 1.72222220897675 0 0
 # 2 texture coordinates
 
 o Ноль_объект.34
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1584/471/5 1761/40/5 1582/41/5
 f 1762/471/1 1764/470/1 1768/41/1
 f 1582/471/5 1761/470/5 1772/40/5 1770/41/5
@@ -4107,7 +4107,7 @@ v -675 270 -240
 # 0 texture coordinate
 
 o Ноль_объект.49
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1489/471/5 1791/40/5 1790/41/5
 f 1792/471/1 1793/470/1 1794/41/1
 f 1790/471/5 1791/470/5 1795/40/5 1528/41/5
@@ -4148,7 +4148,7 @@ v 685 405 -645
 # 0 texture coordinate
 
 o Ноль_объект.20
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1808/471/1 1809/470/1 1807/40/1 1806/41/1
 f 1803/471/1 1805/470/1 1804/40/1 1802/41/1
 f 1806/471/1 1807/470/1 1805/40/1 1803/41/1
@@ -4175,7 +4175,7 @@ vn -0 0 -1
 # 0 texture coordinate
 
 o Ноль_объект.19
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1829/471/415 1831/470/415 1830/40/2 1828/41/2
 f 1832/471/416 1833/470/416 1831/40/415 1829/41/415
 
@@ -4192,7 +4192,7 @@ v 955 270 -655
 # 0 texture coordinate
 
 o Ноль_объект.23
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1839/39/2 1838/38/2 1836/40/2 1834/41/2
 
 v 415 270 -655
@@ -4206,7 +4206,7 @@ v 1090 270 -915
 # 0 texture coordinate
 
 o Ноль_объект.16
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 1841/471/5 1842/40/5 1840/41/5
 f 1834/471/1 1836/470/1 1843/41/1
 
@@ -4228,7 +4228,7 @@ vn 0 -0.89442718029022 0.44721359014511
 # 0 texture coordinate
 
 o Ноль_объект
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1846/41/125 1847/40/125 1844/38/125 1845/39/125
 f 1845/41/125 1844/40/125 1753/38/125 1754/39/125
 f 1849/41/125 1846/40/125 1845/38/125 1848/39/125
@@ -4262,7 +4262,7 @@ v -810 405 -240
 # 0 texture coordinate
 
 o Ноль_объект.51
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1867/175/417 1487/41/417 1862/40/417 1868/274/417
 f 1489/175/417 1863/41/417 1860/40/417 1791/274/417
 f 1869/175/125 1858/41/125 1866/275/125 1870/272/125
@@ -4295,7 +4295,7 @@ vt 0.86111110448837 0.5 0
 # 3 texture coordinates
 
 o Ноль_объект.41
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1566/41/417 1878/40/417 1876/38/417 1879/39/417
 f 1584/574/417 1879/41/417 1876/40/417 1761/573/417
 f 1874/41/125 1882/275/125 1881/273/125 1872/39/125
@@ -4327,7 +4327,7 @@ vt 0.5 0.53703707456589 0
 # 3 texture coordinates
 
 o Ноль_объект.29
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1875/41/125 1885/40/125 1883/38/125 1871/39/125
 f 1871/41/125 1883/40/125 1884/38/125 1668/39/125
 f 1889/577/125 1871/40/125 1668/38/125 1672/576/125
@@ -4350,7 +4350,7 @@ v 955 405 -645
 # 0 texture coordinate
 
 o Ноль_объект.8
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1899/41/125 1900/40/125 1897/38/125 1898/39/125
 f 1898/41/125 1897/40/125 1818/38/125 1819/39/125
 f 1902/41/125 1899/40/125 1898/38/125 1901/39/125
@@ -4375,7 +4375,7 @@ v -135 270 175
 # 0 texture coordinate
 
 o Ноль_объект.14
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1909/41/125 1910/40/125 1905/38/125 1907/39/125
 f 1907/41/125 1905/40/125 1906/38/125 1908/39/125
 f 1908/41/125 1906/40/125 1911/38/125 1913/39/125
@@ -4397,7 +4397,7 @@ vn 0 -0.88749605417252 0.46081528067589
 # 0 texture coordinate
 
 o Ноль_объект.28
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 1917/41/418 1918/40/418 1915/38/418 1916/39/418
 f 1916/41/418 1915/40/418 1842/38/418 1841/39/418
 f 1922/175/418 1921/274/418 1918/38/418 1917/39/418
@@ -4479,7 +4479,7 @@ vt 0.49999964237213 0.00000083446503 0
 # 16 texture coordinates
 
 o Ноль_объект.7
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1925/580/1 1924/579/1 1932/475/1 1931/474/1
 f 1926/582/1 1928/508/1 1933/507/1 1927/581/1
 f 1931/474/1 1928/508/1 1926/582/1 1925/580/1
@@ -4585,7 +4585,7 @@ vt 0.73000013828278 0 0
 # 12 texture coordinates
 
 o Ноль_объект.26
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 1990/506/420 1991/505/421 2029/596/421 2033/595/420
 f 1999/586/1 1998/585/1 1997/584/1 1598/583/1
 f 2003/586/4 2002/585/4 1998/584/4 1999/583/4
@@ -4604,7 +4604,7 @@ vn 0.70710676908493 -0 -0.70710676908493
 # 0 texture coordinate
 
 o Ноль_объект.46
-usemtl /textures/flatpack/doorwood.png
+usemtl /textures/flatpack/doorwood
 f 2028/40/5 2031/38/5 2030/39/5 2034/41/5
 f 2033/38/424 2029/39/424 2027/41/424 2032/40/424
 
@@ -4641,7 +4641,7 @@ vt 0.7222221493721 0 0
 # 26 texture coordinates
 
 o Ноль_объект.32
-usemtl /textures/flatpack/wallpaper.png
+usemtl /textures/flatpack/wallpaper
 f 1977/610/2 1976/609/2 1982/608/2 1981/607/2
 f 1978/614/2 1980/613/2 1983/612/2 1979/611/2
 f 1981/607/2 1980/613/2 1978/614/2 1977/610/2
@@ -4672,7 +4672,7 @@ vt 0.75000011920929 0.77777779102325 0
 # 1 texture coordinate
 
 o Ноль_объект.31
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2042/633/425 2041/587/425 2038/474/425 2039/476/425
 
 v 60 0 175
@@ -4722,7 +4722,7 @@ vt 0.13888916373253 0.77777755260468 0
 # 8 texture coordinates
 
 o Ноль_объект.24
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2045/637/4 2044/636/4 2050/635/4 2049/634/4
 f 2046/641/4 2048/640/4 2051/639/4 2047/638/4
 f 2049/634/4 2048/640/4 2046/641/4 2045/637/4
@@ -4796,7 +4796,7 @@ vt 0.7777778506279 0 0
 # 8 texture coordinates
 
 o Ноль_объект.22
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2080/475/1 2081/474/1 2078/473/1 2076/472/1
 f 2076/175/1 2078/274/1 2079/40/1 2077/41/1
 f 2077/475/1 2079/474/1 2083/473/1 2082/472/1
@@ -4879,7 +4879,7 @@ vt 0.44608408212662 -0.00000071525574 0
 # 22 texture coordinates
 
 o Ноль_объект.18
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2120/472/1 2121/473/1 1922/40/1 2119/41/1
 f 2121/653/2 2120/652/2 2122/651/2 2123/650/2
 f 2126/653/4 2124/652/4 2125/651/4 2127/650/4
@@ -4915,7 +4915,7 @@ v 1090 270 -655
 # 0 texture coordinate
 
 o Ноль_объект.25
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 2158/4/1 2159/3/1 2157/2/1 2156/1/1
 f 2160/1/1 2161/2/1 2163/3/1 2162/4/1
 f 2166/8/2 2167/7/2 2165/6/2 2164/5/2
@@ -4942,7 +4942,7 @@ v -155 270 -227.5
 # 0 texture coordinate
 
 o Ноль_объект.33
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 2172/4/4 2173/3/4 2171/2/4 2170/1/4
 f 2174/1/4 2175/2/4 2177/3/4 2176/4/4
 f 2180/8/1 2181/7/1 2179/6/1 2178/5/1
@@ -4965,7 +4965,7 @@ vt 0.18513891100883 0.24477648735046 0
 # 2 texture coordinates
 
 o Ноль_объект.48
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 2186/4/5 2187/3/5 2185/2/5 2184/1/5
 f 2190/12/3 2188/673/3 2186/672/3 2184/9/3
 f 2188/8/4 2189/7/4 2187/6/4 2186/5/4
@@ -4982,7 +4982,7 @@ v -567.5 0 -877.5
 # 0 texture coordinate
 
 o wall;visible=0
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 2194/4/5 2195/3/5 2193/2/5 2192/1/5
 
 v 135 0 -375
@@ -5094,7 +5094,7 @@ vt 1 0.99999988079071 0
 # 2 texture coordinates
 
 o Ноль_объект.3
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2128/39/3 2286/675/3 2294/674/3 2292/41/3
 f 2210/39/3 2199/38/3 2196/40/3 2198/41/3
 f 2200/39/3 1929/38/3 2199/40/3 2210/41/3
@@ -5206,7 +5206,7 @@ v -810 0 -645
 # 0 texture coordinate
 
 o Ноль_объект.47
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2314/39/3 2317/675/3 2312/674/3 1517/41/3
 f 1488/39/3 2300/38/3 2298/40/3 2299/41/3
 f 2298/39/3 2315/675/3 2319/674/3 2302/41/3
@@ -5259,7 +5259,7 @@ vt 0.72222220897675 0.99999988079071 0
 # 3 texture coordinates
 
 o Ноль_объект.38
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2326/39/3 2338/675/3 1556/674/3 2321/41/3
 f 2341/39/3 2326/38/3 2321/40/3 2325/41/3
 f 2344/677/3 2343/676/3 2326/40/3 2341/41/3
@@ -5342,7 +5342,7 @@ vt -28.625 0.875 0
 # 37 texture coordinates
 
 o bed
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2347/682/5 2351/681/5 2352/680/5 2348/679/5
 f 2346/686/2 2350/685/2 2351/684/2 2347/683/2
 f 2349/690/1 2353/689/1 2350/688/1 2346/687/1
@@ -5350,7 +5350,7 @@ f 2348/694/4 2352/693/4 2353/692/4 2349/691/4
 f 2351/681/5 2357/711/5 2358/710/5 2352/680/5
 f 2352/693/4 2358/715/4 2359/714/4 2353/692/4
 
-usemtl /textures/flatpack/wdfloor.png
+usemtl /textures/flatpack/wdfloor
 f 2361/698/3 2360/697/3 2358/696/3 2357/695/3
 f 2362/700/3 2359/699/3 2358/696/3 2360/697/3
 f 2355/706/2 2361/705/2 2357/704/2 2351/684/2
@@ -5358,7 +5358,7 @@ f 2354/709/1 2360/708/1 2361/707/1 2355/688/1
 f 2356/685/2 2362/712/2 2360/705/2 2354/706/2
 f 2353/689/1 2359/713/1 2362/708/1 2356/709/1
 
-usemtl /textures/flatpack/bed.png
+usemtl /textures/flatpack/bed
 f 2354/703/3 2355/39/3 2350/702/3 2356/701/3
 
 v 270 0 -565
@@ -5435,19 +5435,19 @@ vt 1.78692317008972 0.11111116409302 0
 # 40 texture coordinates
 
 o Ноль_объект.57
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 2371/39/3 2373/717/3 2372/716/3 2370/41/3
 f 2377/39/3 2374/717/3 2373/716/3 2371/41/3
 f 2375/719/3 2370/39/3 2372/717/3 2376/718/3
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2368/718/3 2364/717/3 2198/675/3 2369/720/3
 f 2365/717/3 2210/675/3 2198/674/3 2364/716/3
 f 2366/717/3 2200/675/3 2210/674/3 2365/716/3
 f 2368/718/3 2363/716/3 2204/41/3 2367/719/3
 f 2369/720/3 2211/674/3 2363/716/3 2368/718/3
 
-usemtl /textures/flatpack/wallsmall.png
+usemtl /textures/flatpack/wallsmall
 f 2367/724/5 2375/723/5 2376/722/5 2368/721/5
 f 2364/471/4 2372/470/4 2373/274/4 2365/175/4
 f 2197/728/2 2370/727/2 2375/726/2 2367/725/2
@@ -5492,7 +5492,7 @@ vt 1 0.07407414913177 0
 # 2 texture coordinates
 
 o Ноль_объект.21
-usemtl /textures/flatpack/wdfloor.png
+usemtl /textures/flatpack/wdfloor
 f 2395/39/3 2399/675/3 2392/674/3 2391/41/3
 f 2401/39/3 2394/674/3 2390/41/3
 f 1597/757/3 2401/38/3 2390/40/3 1598/756/3
@@ -5515,7 +5515,7 @@ v -560 0 165
 # 0 texture coordinate
 
 o Ноль_объект.37
-usemtl /textures/flatpack/plitka.png
+usemtl /textures/flatpack/plitka
 f 2406/39/3 2405/38/3 2394/40/3 1982/41/3
 f 2399/39/3 2393/38/3 1983/40/3 2392/41/3
 
@@ -5529,7 +5529,7 @@ v 405 270 -915
 # 0 texture coordinate
 
 o Ноль_объект.4
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 1964/548/4 2409/547/4 2408/40/4 1963/546/4
 f 1963/548/4 2408/547/4 2407/40/4 1962/546/4
 
@@ -5543,7 +5543,7 @@ v 955 270 -915
 # 0 texture coordinate
 
 o Ноль_объект.12
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 2131/548/4 2412/547/4 2411/40/4 2130/546/4
 f 2130/548/4 2411/547/4 2410/40/4 2129/546/4
 
@@ -5564,7 +5564,7 @@ vt 0.49503448605537 0.00450694561005 0
 # 2 texture coordinates
 
 o Ноль_объект.11
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 2415/548/4 2418/547/4 2417/40/4 2414/546/4
 f 2420/759/4 2414/548/4 2417/547/4 2419/758/4
 
@@ -5581,7 +5581,7 @@ v 595 82 -655
 # 0 texture coordinate
 
 o Ноль_объект.10
-usemtl /textures/grassy/window open.png;alpha_test=1
+usemtl /textures/grassy/window open;alpha_test=1
 f 2421/546/2 2423/40/2 2424/547/2 2422/548/2
 f 2425/758/2 2423/547/2 2421/548/2 2426/759/2
 
@@ -5600,14 +5600,14 @@ v 415 0 -300
 # 0 texture coordinate
 
 o Ноль_объект.5
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2433/514/4 2434/513/4 2430/512/4 2429/511/4
 f 2428/522/2 2431/521/2 2432/520/2 2427/519/2
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 2429/518/125 2430/517/125 2431/516/125 2428/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2427/526/3 2432/525/3 2434/524/3 2433/523/3
 
 v -155 0 90
@@ -5627,14 +5627,14 @@ vt 0.5 0.54876965284348 0
 # 4 texture coordinates
 
 o Ноль_объект.15
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2016/514/4 1938/513/4 2438/512/4 2437/511/4
 f 2436/522/2 2439/521/2 2440/520/2 2435/519/2
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 2437/518/125 2438/517/125 2439/516/125 2436/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2435/763/3 2440/762/3 1938/761/3 2016/760/3
 
 v 595 90 -655
@@ -5649,13 +5649,13 @@ v 955 90 -645
 # 0 texture coordinate
 
 o Ноль_объект.13
-usemtl /textures/flatpack/wallbrick.png
+usemtl /textures/flatpack/wallbrick
 f 2444/514/1 2445/513/1 2083/512/1 2123/511/1
 f 2442/522/5 2095/521/5 2443/520/5 2441/519/5
 
-usemtl /textures/flatpack/planks3.png
+usemtl /textures/flatpack/planks3
 f 2123/518/125 2083/517/125 2095/516/125 2442/515/125
 
-usemtl /textures/flatpack/planks2.png
+usemtl /textures/flatpack/planks2
 f 2441/526/3 2443/525/3 2445/524/3 2444/523/3
 

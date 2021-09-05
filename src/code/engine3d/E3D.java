@@ -554,23 +554,43 @@ public class E3D {
     public Material getMaterial(String name, HashMap<String,String> replace) {
         String[] lines = StringTools.cutOnStrings(name, ';');
         
+		//Replace material if it in replace lift
         String path = lines[0];
         String replaced = replace != null ? replace.get(path) : null;
         if(replaced != null) path = replaced;
 		
-		String newName = path;
-		for(int i=1; i<lines.length; i++) newName += ';' + lines[i];
+		//Change name if we replaced material
+		name = path + name.substring(lines[0].length());
 		
-        Material mat = (Material) AssetManager.get("MAT_" + newName);
+		//Get material
+        Material mat = (Material) AssetManager.get("MAT_" + name);
         if(mat != null) return mat;
         
-        Texture tex = getTexture(path);
-        mat = new WorldMaterial(this, tex);
-        mat.load(newName, new IniFile(lines, false));
+		//No material found - create new
+		//Get material preferences from ini
+		IniFile matIni = new IniFile(lines, false);
+		MaterialsFile matsFile = getMaterialsFile(path);
+		matsFile.copyMaterialIni(path, matIni);
+		
+        mat = new WorldMaterial(this);
+        mat.load(this, name, matIni);
         
-        AssetManager.add("MAT_" + newName, mat);
+        AssetManager.add("MAT_" + name, mat);
         
         return mat;
     }
+	
+	public MaterialsFile getMaterialsFile(String matPath) {
+		String matsFilePath = matPath.substring(0, matPath.lastIndexOf('/') + 1) + "materials.ini";
+		
+        MaterialsFile matsFile = (MaterialsFile) AssetManager.get("MATFILE_" + matsFilePath);
+        if(matsFile != null) return matsFile;
+        
+        matsFile = new MaterialsFile(matsFilePath);
+        
+        AssetManager.add("MATFILE_" + matsFilePath, matsFile);
+        
+        return matsFile;
+	}
 
 }

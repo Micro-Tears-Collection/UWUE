@@ -23,7 +23,7 @@ public class AssetManager {
             ALL_EXCEPT_LOCKED = ALL & (~LOCKED);
     
     public static void destroyThings(int mask) {
-        System.out.println("\nDestroying junk!:");
+        //System.out.println("\nDestroying junk!:");
         boolean destroyNonFree = (mask&NONFREE) == NONFREE;
         boolean destroyLocked = (mask&LOCKED) == LOCKED;
 
@@ -38,10 +38,10 @@ public class AssetManager {
                     + el.toString());
 
             if((el.getUsingCount() == 0 || destroyNonFree) && (!el.neverUnload || destroyLocked)) {
-                System.out.println("destroy "+key);
+                //System.out.println("destroy "+key);
                 el.destroy();
                 reusable.remove(key);
-            } else System.out.println("skip "+key);
+            }// else System.out.println("skip "+key);
         }
         
         System.gc();

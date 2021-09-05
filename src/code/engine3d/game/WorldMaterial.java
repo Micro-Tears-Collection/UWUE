@@ -27,12 +27,6 @@ public class WorldMaterial extends Material {
     
     public WorldMaterial(E3D e3d) {
         super(e3d);
-        init(e3d);
-    }
-
-    public WorldMaterial(E3D e3d, Texture tex) {
-        super(e3d);
-        this.tex = tex;
 		sampler = new Sampler();
         init(e3d);
     }
@@ -41,7 +35,7 @@ public class WorldMaterial extends Material {
         shaderPack = WorldShaderPack.get(e3d, "world", new String[][]{null, new String[]{"GLOW"}});
     }
     
-    public void load(String name, IniFile ini) {
+    public void load(E3D e3d, String name, IniFile ini) {
         String tmp = ini.get("alpha_test");
         
         if(tmp != null && tmp.equals("1")) {
@@ -49,7 +43,7 @@ public class WorldMaterial extends Material {
         } else if(tmp != null && tmp.equals("blend")) {
             alphaTest = true; blendMode = BLEND;
         }
-        super.load(name, ini);
+        super.load(e3d, name, ini);
         
         linear = ini.getInt("linear", 0) == 1;
         mipMapping = ini.getInt("mipmap", 1) == 1;
@@ -61,6 +55,8 @@ public class WorldMaterial extends Material {
         scrollYSpeed = ini.getFloat("scroll_y", 0);
         
         glow = ini.getInt("glow", 0) == 1;
+		
+		tex = e3d.getTexture(ini.get("albedo"));
     }
 	
 	public void updateSamplerProperties() {

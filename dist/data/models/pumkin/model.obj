@@ -964,7 +964,7 @@ vt 0.82472544908524 0.02691066265106 0
 # 460 texture coordinates
 
 o Null
-usemtl /models/pumkin/pumkin.png
+usemtl /models/pumkin/pumkin
 f 3/4/4 19/3/3 18/2/2 2/1/1
 f 4/6/6 20/5/5 19/3/3 3/4/4
 f 5/8/8 21/7/7 20/5/5 4/6/6

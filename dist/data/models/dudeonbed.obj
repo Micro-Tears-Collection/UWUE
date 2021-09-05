@@ -67,7 +67,7 @@ vt -0 1 0
 # 5 texture coordinates
 
 o duude
-usemtl /textures/characters/dude.png
+usemtl /textures/characters/dude
 f 2/1/2 3/1/2 5/1/1 6/1/1
 f 5/1/1 1/1/3 4/1/3 6/1/1
 f 12/1/5 11/1/5 9/1/4 8/1/4
@@ -80,6 +80,6 @@ f 29/1/11 28/1/12 25/1/12 30/1/11
 f 30/1/11 27/1/13 26/1/13 29/1/11
 f 38/1/15 35/1/15 37/1/15 36/1/15
 
-usemtl /textures/characters/dude.png;alpha_test=1
+usemtl /textures/characters/dude;alpha_test=1
 f 34/5/14 31/4/14 33/3/14 32/2/14
 
