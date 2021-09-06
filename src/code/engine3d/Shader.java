@@ -156,6 +156,10 @@ public class Shader extends ReusableContent {
         if(program != 0) setUniformi(getUniformIndex("texUnit"+unit), unit);
     }
     
+    public void addTextureUnit(String name, int unit) {
+        if(program != 0) setUniformi(getUniformIndex(name), unit);
+    }
+    
     public int getUniformIndex(String name) {
         if(program != 0) {
             int location = GL33C.glGetUniformLocation(program, name);

@@ -1,6 +1,7 @@
 package code.engine3d;
 
 import code.utils.assetManager.ReusableContent;
+import java.util.Arrays;
 
 /**
  *
@@ -41,5 +42,16 @@ public class ShaderPack extends ReusableContent {
     public void destroy() {
         shaders = null;
     }
+	
+	public static int hashcode(String[][] defs) {
+		StringBuffer sb = new StringBuffer();
+		
+		for(String[] defs2 : defs) {
+			sb.append(Arrays.hashCode(defs2));
+			sb.append(";");
+		}
+		
+		return sb.toString().hashCode();
+	}
 
 }

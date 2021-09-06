@@ -182,7 +182,7 @@ public class Configuration {
         return Engine.isResolutionValid(fw, fh);
     }
     
-    void apply(Window window, boolean changeWindow) {
+    void apply(Window window, E3D e3d, boolean changeWindow) {
         if(changeWindow) {
             boolean fullscr = window.isFullscr();
             if(fullscr) {
@@ -191,7 +191,7 @@ public class Configuration {
         }
         applyAudio();
         WorldMaterial.disableMipmapping = psxRender;
-		applyPsxrender();
+		applyPsxrender(e3d);
     }
     
     void applyAudio() {
@@ -206,13 +206,13 @@ public class Configuration {
             
     }
     
-    void applyPsxrender() {
+    void applyPsxrender(E3D e3d) {
         ArrayList<ReusableContent> list = AssetManager.getAll();
 		
         for(ReusableContent content : list) {
             if(content instanceof WorldMaterial) {
 				WorldMaterial mat = (WorldMaterial) content;
-				mat.updateSamplerProperties();
+				mat.updateSamplerProperties(e3d);
 			}
         }
             

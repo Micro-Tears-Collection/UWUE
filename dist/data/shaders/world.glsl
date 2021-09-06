@@ -1,30 +1,31 @@
+#define MAX_LIGHTS 8
+
 #ifdef VERT
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
-//layout(location = 3) in vec3 inTangent;
 
-smooth out vec2 uv;
-smooth out vec3 lightCol;
+smooth out vec2 fragUV;
+#ifndef GLOW
+smooth out vec3 fragLight;
+#endif
 
 smooth out vec4 fogOut;
 smooth out float fogExp;
 
-layout(std140) uniform mats
+uniform vec2 uvOffset;
+
+layout(std140) uniform mats 
 {
 	mat4 modelView;
 	mat4 project;
 };
 
-layout(std140) uniform fog
+layout(std140) uniform fog 
 {
 	vec4 fogColor; //+linear / density
 	vec2 fogEndScale;
 };
-
-uniform vec2 uvOffset;
-
-#define MAX_LIGHTS 8
 
 struct Light {
 	vec4 pos;
@@ -38,111 +39,94 @@ layout(std140) uniform lights
 	Light lightsData[MAX_LIGHTS];
 };
 
-vec3 pointLight(vec4 pos, vec3 norm, int i) {
-	Light light = lightsData[i];
-	
-	vec3 lpos = light.pos.xyz;
-	vec3 lcol = light.col.rgb;
-	vec3 ldir = light.spotDirCutoff.xyz;
-	float lspotCutoff = light.spotDirCutoff.w;
+#ifndef GLOW
 
-	// Compute vector from surface to light position
-	vec3 lightToVec = lpos - pos.xyz;
-	float dist = length(lightToVec);
-	lightToVec = lightToVec / dist;
+float spotLight(vec3 lightVec, vec3 spot, float spotCutoff) {
+	float spotDot = dot(-lightVec, spot);
+	float oneMcutoff = 1.0 - spotCutoff;
+	return clamp((spotDot - 1.0 + oneMcutoff) / oneMcutoff, 0.0, 1.0);
+}
+
+vec3 calcLight(vec3 pos, vec3 norm, vec3 normalizedPos, int i) {
+	Light light = lightsData[i];
+	vec4 lightVec = light.pos;
+	vec3 lightCol = light.col.rgb;
 	
-	// Compute attenuation
-	float attenuation = 1. / (0.0001 * 0.1 * dist * dist);
+	if(lightVec.w > 0.5) {
+		lightVec.xyz -= pos;
+		float dist = length(lightVec);
+		float invDist = 1.0 / dist;
+		lightVec *= invDist;
+		
+		lightCol *= 100000. * invDist * invDist;
 	
-	if(lspotCutoff >= 0.) {
-		//Spot light
-		float spotDot = dot(-lightToVec, ldir);
-		float spotAttenuation = 1.;
-		
-		if(spotDot < lspotCutoff) spotAttenuation = 0.;
-		else spotAttenuation = 1.0 - min(1.0, (1.0 - spotDot) / (1.0 - lspotCutoff));
-		
-		attenuation *= spotAttenuation;
+		//Spot
+		float spotCutoff = light.spotDirCutoff.w;
+		if(spotCutoff >= 0.) lightCol *= spotLight(lightVec.xyz, light.spotDirCutoff.xyz, spotCutoff);
+	} else {
+		lightVec.xyz *= -1;
 	}
 	
-	float ldot = max(0., dot(norm, lightToVec));
+	//Diffuse
+	float NdotV = max(dot(norm, lightVec.xyz), 0.);
 	
-	//Specularity
-	/*vec3 halfVector = normalize(lightToVec + (normalize(-pos.xyz)));
-	float nDotHV = max(0.0, dot(norm, halfVector));
-	
-	ldot *= 1.0 + pow(nDotHV, 50.0) * 3.;*/
-	
-	return lcol * ldot * attenuation;
+	return lightCol * NdotV;
 }
 
-vec3 directionalLight(vec4 pos, vec3 norm, int i) {
-	Light light = lightsData[i];
-	
-	vec3 ldir = light.pos.xyz;
-	vec3 lcol = light.col.rgb;
-	
-	float ldot = max(0., dot(norm, -ldir));
-	
-	//Specularity
-	/*vec3 halfVector = normalize(ldir + (normalize(-pos.xyz)));
-	float nDotHV = max(0.0, dot(norm, halfVector));
-
-	ldot *= 1.0 + pow(nDotHV, 50.0) * 3.;*/
-	
-	return lcol * ldot;
-}
+#endif
 
 void main()
 {
-	vec4 lvPos = modelView * vec4(inPos, 1.);
-	vec3 lvNormal = normalize((modelView * vec4(inNormal, 0.)).xyz);
+	vec4 pos = modelView * vec4(inPos, 1.);
+	vec3 norm = normalize((modelView * vec4(inNormal, 0.)).xyz);
 	
-	#ifdef GLOW
-	lightCol = vec3(1.);
-	#else
-	vec3 lightsSumm = ambientLight.rgb;
-	
-	for(int i=0; i<MAX_LIGHTS; i++) {
-		if(lightsData[i].pos.w > 0.5) lightsSumm += pointLight(lvPos, lvNormal, i);
-		else lightsSumm += directionalLight(lvPos, lvNormal, i);
-	}
-	
-	lightCol = lightsSumm;
-	#endif
+    gl_Position = project * pos;
+	fragUV = inUV + uvOffset;
 	
 	fogOut.rgb = fogColor.rgb;
 	fogOut.a = mix(
-		fogEndScale.x + lvPos.z * fogEndScale.y,
-		lvPos.z * fogEndScale.x * 1.4427,
+		pos.z * fogEndScale.y + fogEndScale.x,
+		pos.z * fogEndScale.x * 1.4427,
 		fogColor.a
 	);
 	fogExp = fogColor.a;
 	
-    gl_Position = project * lvPos;
-	uv = inUV + uvOffset;
+	#ifndef GLOW
+	vec3 lightsSumm = ambientLight.rgb;
+	vec3 normalizedPos = normalize(pos.xyz);
+	
+	for(int i=0; i<MAX_LIGHTS; i++) {
+		lightsSumm += calcLight(pos.xyz, norm, normalizedPos, i);
+	}
+	
+	fragLight = max(lightsSumm, 0.);
+	#endif
 }
 #endif
 
 #ifdef FRAG
 out vec4 fragColor;
 
-smooth in vec2 uv;
-smooth in vec3 lightCol;
+smooth in vec2 fragUV;
+#ifndef GLOW
+smooth in vec3 fragLight;
+#endif
 
 smooth in vec4 fogOut;
 smooth in float fogExp;
 
-uniform sampler2D texUnit0;
+uniform sampler2D albedoMap;
 uniform float alphaThreshold;
 
-void main() 
+void main()
 {
-	vec4 tex = texture2D(texUnit0, uv);
+	vec4 tex = texture2D(albedoMap, fragUV);
 	
 	if(tex.a <= alphaThreshold) discard;
 	
-	tex.rgb *= lightCol;
+	#ifndef GLOW
+	tex.rgb *= fragLight.rgb;
+	#endif
 	
 	float fog;
 	if(fogExp > 0.5) fog = exp2(fogOut.a);

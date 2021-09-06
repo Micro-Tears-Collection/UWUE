@@ -4,7 +4,6 @@ import code.engine3d.E3D;
 import code.engine3d.Shader;
 import code.engine3d.ShaderPack;
 import code.utils.assetManager.AssetManager;
-import java.util.Arrays;
 
 /**
  *
@@ -17,11 +16,13 @@ public class WorldShaderPack extends ShaderPack {
     protected WorldShaderPack(E3D e3d, String path, String[][] defs) {
         super(e3d, path, defs);
         
-        for(Shader shader : shaders) {
+        for(int i=0; i<shaders.length; i++) {
+			Shader shader = shaders[i];
             shader.addUniformBlock(e3d.matrices, "mats");
             
             shader.bind();
-            shader.addTextureUnit(0);
+            shader.addTextureUnit("albedoMap", 0);
+            //if(i == 2) shader.addTextureUnit("normalMap", 1);
 			shader.addUniformBlock(e3d.lights, "lights");
 			shader.addUniformBlock(e3d.fog, "fog");
             shader.unbind();
@@ -34,7 +35,7 @@ public class WorldShaderPack extends ShaderPack {
     }
     
     public static WorldShaderPack get(E3D e3d, String path, String[][] defs) {
-        String defsName = (defs != null) ? String.valueOf(Arrays.hashCode(defs)) : "";
+        String defsName = (defs != null) ? String.valueOf(ShaderPack.hashcode(defs)) : "";
         
         WorldShaderPack shaderPack = (WorldShaderPack) AssetManager.get("SHDRPCK_" + path + defsName);
         if(shaderPack != null) return shaderPack;

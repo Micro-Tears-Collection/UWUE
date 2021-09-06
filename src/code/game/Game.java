@@ -102,7 +102,7 @@ public class Game extends Screen {
     private void createPSXBuffer() {
         if(psxBuffer != null) psxBuffer.destroy();
         psxBuffer = new FrameBuffer(main.conf.vrw, main.conf.vrh, true);
-		psxBuffer.tex.setParameters(false, false, true);
+		psxBuffer.tex.setParameters(e3d, false, false, true);
     }
 
     private void createDitherStuff() {
@@ -116,10 +116,11 @@ public class Game extends Screen {
         
         ditherUniW = ditherShader.getUniformIndex("ditherW");
         ditherUniH = ditherShader.getUniformIndex("ditherH");
+	
         ditherShader.unbind();
         
         ditherTexture = e3d.getTexture("/images/bayer_matrix.png");
-		ditherTexture.setParameters(false, false, false);
+		ditherTexture.setParameters(e3d, false, false, false);
         ditherTexture.use();
     }
     
@@ -314,7 +315,7 @@ public class Game extends Screen {
         player.pos.y += player.eyeHeight;
         e3d.setCam(player.pos, player.rotX, player.rotY);
         player.pos.y = py;
-        e3d.setProjectionPers(main.conf.fov, drawW, drawH);
+        e3d.setProjectionPers(main.conf.fov, drawW, drawH, world.drawDistance);
         
         world.render(e3d, drawW, drawH);
         

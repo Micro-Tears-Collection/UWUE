@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 
 import org.lwjgl.opengl.GL33C;
 import org.lwjgl.stb.STBImage;
@@ -32,7 +33,7 @@ public class Texture extends ReusableContent {
         GL33C.glDeleteTextures(id);
     }
 	
-	public void setParameters(boolean linear, boolean mipMapping, boolean wrapClamp) {
+	public void setParameters(E3D e3d, boolean linear, boolean mipMapping, boolean wrapClamp) {
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
         GL33C.glGetError();
         
@@ -47,6 +48,11 @@ public class Texture extends ReusableContent {
         
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, wrap);
         GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, wrap);
+			
+		if(e3d.anisotropicSupported && mipMapping) 
+			GL33C.glSamplerParameterf(id, 
+					EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 
+					e3d.maxAnisotropy);
 		
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
         GL33C.glGetError();
@@ -79,6 +85,11 @@ public class Texture extends ReusableContent {
     public static Texture loadTexture(String path) {
         try {
             File file = new File("data", path);
+			
+			String format = file.getName();
+			
+			if(format.lastIndexOf('.') != -1) format = format.substring(format.lastIndexOf('.'));
+			else format = null;
             
             if(!file.exists()) {
                 System.out.println("No such file "+file.getAbsolutePath());
@@ -112,16 +123,10 @@ public class Texture extends ReusableContent {
             }
             
             int textureFormat = hasAlpha ? GL33C.GL_RGBA : GL33C.GL_RGB;
+			if("norm".equals(format)) textureFormat = GL33C.GL_RG;
 
             GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, img);
             GL33C.glGenerateMipmap(GL33C.GL_TEXTURE_2D);
-
-			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, GL33C.GL_NEAREST_MIPMAP_LINEAR);
-			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, GL33C.GL_NEAREST);
-
-			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, GL33C.GL_REPEAT);
-			GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, GL33C.GL_REPEAT);
-		
             GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
             
             MemoryUtil.memFree(img);
@@ -145,13 +150,6 @@ public class Texture extends ReusableContent {
 
         GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, gltex);
         GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, GL33C.GL_RGB8, w, h, 0, GL33C.GL_RGB, GL33C.GL_UNSIGNED_BYTE, 0);
-        
-		GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, GL33C.GL_NEAREST_MIPMAP_LINEAR);
-        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, GL33C.GL_NEAREST);
-        
-        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_T, GL33C.GL_REPEAT);
-        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_WRAP_S, GL33C.GL_REPEAT);
-		
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
         
         return new Texture(gltex, w, h);

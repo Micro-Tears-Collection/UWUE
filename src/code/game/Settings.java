@@ -44,7 +44,7 @@ public class Settings extends Screen {
         w = main.getWidth(); h = main.getHeight();
         
         mconf = new Configuration(main.conf);
-        maxAA = main.e3d.getMaxAA();
+        maxAA = main.e3d.maxAA;
         
         createList();
         setList(AUDIO);
@@ -86,7 +86,7 @@ public class Settings extends Screen {
             applyConfirm.add(new TextItem("No", font) {
                 public void onEnter() {
                     main.clickedS.play();
-                    main.conf.apply(main.window, true);
+                    main.conf.apply(main.window, main.e3d, true);
                     setList(VIDEO);
                 }
                 
@@ -402,7 +402,7 @@ public class Settings extends Screen {
                         currentList = message;
                         messageText.setText("Unsupported videomode :(", message);
                     } else {
-                        mconf.apply(main.window, true);
+                        mconf.apply(main.window, main.e3d, true);
                         
                         if(mconf.isNeedToConfirm(main.conf)) {
                             applyBegin = System.currentTimeMillis();
@@ -440,7 +440,7 @@ public class Settings extends Screen {
     
     public void tick() {
         if(currentList == applyConfirm && System.currentTimeMillis() - applyBegin >= 10000) {
-            main.conf.apply(main.window, true);
+            main.conf.apply(main.window, main.e3d, true);
             setList(VIDEO);
         }
         

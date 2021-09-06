@@ -93,7 +93,7 @@ public class Main extends Screen {
         
         AudioEngine.init();
         AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
-        main.conf.apply(main.window, false);
+        main.conf.apply(main.window, main.e3d, false);
         
         main.init();
     }

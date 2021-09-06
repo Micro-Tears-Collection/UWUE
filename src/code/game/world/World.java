@@ -40,7 +40,8 @@ public class World {
     int fogMode = 0;
     float[] fogColor;
     float fogStart, fogEnd, fogDensity;
-    
+	
+	public float drawDistance = 40000;
     public boolean fallDeath = true;
     
     long renderTime;

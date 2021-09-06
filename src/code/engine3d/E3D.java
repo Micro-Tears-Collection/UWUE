@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL33C;
 import org.lwjgl.system.MemoryUtil;
 
@@ -40,6 +41,10 @@ public class E3D {
 	public static final int LIGHT_SIZE = 12, MAX_LIGHTS = 8;
 	
     private Window win;
+	
+	public int maxAA;
+	public boolean anisotropicSupported;
+	public float maxAnisotropy;
     
     public boolean mode2D;
     public float w, h;
@@ -62,6 +67,10 @@ public class E3D {
     public E3D(Window win) {
         this.win = win;
         postDraw = new ArrayList<RenderInstance>();
+		
+        maxAA = GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
+		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+		anisotropicSupported = GL33C.glGetError() == GL33C.GL_NO_ERROR;
         
         tmpM = new Matrix4f();
         tmpMf = MemoryUtil.memAllocFloat(4*4);
@@ -147,6 +156,8 @@ public class E3D {
 		for(int i=0; i<lightsf.capacity(); i++) {
 			lightsf.put(i, 0);
 		}
+		for(int i=0; i<MAX_LIGHTS; i++) disableLight(i);
+		sendLights();
     }
     
     public void destroy() {
@@ -188,8 +199,8 @@ public class E3D {
         invCam.get(invCamf);
     }
     
-    public void setProjectionPers(float fov, int w, int h) {
-        proj.identity().perspective((float) Math.toRadians(fov), (float) w / h, 1f, 40000.0f);
+    public void setProjectionPers(float fov, int w, int h, float zfar) {
+        proj.identity().perspective((float) Math.toRadians(fov), (float) w / h, 1f, zfar);
         proj.get(projf);
         
         matrices.bind();
@@ -248,6 +259,26 @@ public class E3D {
         
         GL33C.glClear(GL33C.GL_COLOR_BUFFER_BIT);
     }
+
+	private static final float SRGB_ALPHA = 0.055f;
+
+	// Converts a single linear channel to srgb
+	public static float linear_to_srgb(float channel) {
+		/*if(channel <= 0.0031308)
+			return 12.92f * channel;
+		else
+			return (float) ((1.0 + SRGB_ALPHA) * Math.pow(channel, 1.0 / 2.4) - SRGB_ALPHA);*/
+		return channel;
+	}
+
+	// Converts a single srgb channel to rgb
+	public static float srgb_to_linear(float channel) {
+		/*if(channel <= 0.04045)
+			return channel / 12.92f;
+		else
+			return (float) Math.pow((channel + SRGB_ALPHA) / (1.0 + SRGB_ALPHA), 2.4);*/
+		return channel;
+	}
     
     public void disableFog() {
 		fogf.put(3, 0);
@@ -299,7 +330,7 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 1);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, srgb_to_linear(col[x]));
 		
 		lightsf.put(offset + 8 + 3, -1);
 	}
@@ -315,7 +346,7 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 1);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + 4 + x, col[x]);
+		for(int x=0; x<3; x++) lightsf.put(offset + 4 + x, srgb_to_linear(col[x]));
 		
 		tmp.set(dir);
 		tmp.transform(invCamf, false);
@@ -337,14 +368,21 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 0);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, srgb_to_linear(col[x]));
+		
+		lightsf.put(offset + 8 + 3, -1);
 	}
 	
 	public void disableLight(int i) {
 		int offset = 4 + i * LIGHT_SIZE;
 		
+		lightsf.put(offset, 0);
+		lightsf.put(offset + 1, 0);
+		lightsf.put(offset + 2, 1);
+		
 		lightsf.put(offset + 3, 0);
 		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, 0);
+		lightsf.put(offset + 8 + 3, -1);
 	}
 	
 	public void sendLights() {
@@ -448,10 +486,6 @@ public class E3D {
             e.printStackTrace();
         }
     }
-
-    public int getMaxAA() {
-        return GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
-    }
     
     //Loading scripts
     
@@ -517,7 +551,7 @@ public class E3D {
     }
     
     public ShaderPack getShaderPack(String path, String[][] defs) {
-        String defsName = (defs != null) ? String.valueOf(Arrays.hashCode(defs)) : "";
+        String defsName = (defs != null) ? String.valueOf(ShaderPack.hashcode(defs)) : "";
         
         ShaderPack shaderPack = (ShaderPack) AssetManager.get("SHDRPCK_" + path + defsName);
         if(shaderPack != null) return shaderPack;

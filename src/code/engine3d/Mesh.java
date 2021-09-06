@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL33C;
  */
 public class Mesh extends ReusableContent {
 	
-	private static final int VBOS_PER_VAO = 4;
+	private static final int VBOS_PER_VAO = 3;
     
     public String name;
     public IniFile ini;
@@ -24,7 +24,7 @@ public class Mesh extends ReusableContent {
     private int[] vaos, vbos, vertsCount;
 	public String[] mats;
     
-    public float[][] poses, uvs, normals;
+    public float[][] poses, uvs, normals;//, tangents;
     public float[][] normalsPerFace;
     
 	//todo create vaos vbos here, not in model loader
@@ -96,6 +96,8 @@ public class Mesh extends ReusableContent {
 		
 		GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
 		GL33C.glBindVertexArray(0);
+		
+		//if(poses != null && uvs != null) calcTangents();
     }
     
     public void destroy() {
@@ -108,7 +110,7 @@ public class Mesh extends ReusableContent {
         }
     }
     
-    public void calcFaceNormals() {
+    private void calcFaceNormals() {
         normalsPerFace = new float[poses.length][];
         
         for(int i=0; i<poses.length; i++) {
@@ -133,6 +135,57 @@ public class Mesh extends ReusableContent {
             }
         }
     }
+
+	/*private void calcTangents() {
+		tangents = new float[poses.length][];
+		
+		for(int submesh=0; submesh<poses.length; submesh++) {
+			float[] subPos = poses[submesh];
+			float[] subUvs = uvs[submesh];
+			
+			float[] subTangents = new float[poses[submesh].length];
+			tangents[submesh] = subTangents;
+			
+			for(int i=0; i<subPos.length; i+=9) {
+				Vector3D edge1 = new Vector3D(subPos[i + 3], subPos[i + 3 + 1], subPos[i + 3 + 2]);
+				edge1.sub(subPos[i], subPos[i + 1], subPos[i + 2]);
+				
+				Vector3D edge2 = new Vector3D(subPos[i + 6], subPos[i + 6 + 1], subPos[i + 6 + 2]);
+				edge2.sub(subPos[i], subPos[i + 1], subPos[i + 2]);
+				
+				int uvi = i * 2 / 3;
+				Vector3D deltaUV1 = new Vector3D(subUvs[uvi + 2], subUvs[uvi + 2 + 1], 0);
+				deltaUV1.sub(subUvs[uvi], subUvs[uvi + 1], 0);
+				
+				Vector3D deltaUV2 = new Vector3D(subUvs[uvi + 4], subUvs[uvi + 4 + 1], 0);
+				deltaUV2.sub(subUvs[uvi], subUvs[uvi + 1], 0);
+
+				float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+				
+				subTangents[i] = subTangents[i + 3] = subTangents[i + 6] =
+						f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+				
+				subTangents[i + 1] = subTangents[i + 3 + 1] = subTangents[i + 6 + 1] =
+						f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+				
+				subTangents[i + 2] = subTangents[i + 3 + 2] = subTangents[i + 6 + 2] =
+						f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+			}
+			
+			int vbo = GL33C.glGenBuffers(); //Creates a VBO ID
+			vbos[submesh * VBOS_PER_VAO + 3] = vbo;
+
+			GL33C.glBindVertexArray(vaos[submesh]);
+			GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
+			GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, subTangents, GL33C.GL_STATIC_DRAW);
+			
+			GL33C.glVertexAttribPointer(3, 3, GL33C.GL_FLOAT, false, 0, 0);
+			GL33C.glEnableVertexAttribArray(3); //tangents
+		}
+		
+		GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+		GL33C.glBindVertexArray(0);
+	}*/
     
 	//render only with custom materials
     public void renderImmediate(E3D e3d, Material[] mats, long time, FloatBuffer modelView) {

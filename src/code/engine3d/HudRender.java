@@ -113,7 +113,7 @@ public class HudRender {
         texShader.unbind();
 		
 		//Sampler
-		hudSampler = new Sampler(false, false, false);
+		hudSampler = new Sampler(e3d, false, false, false);
     }
     
     public void destroy() {

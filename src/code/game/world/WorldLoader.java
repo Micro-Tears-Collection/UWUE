@@ -89,6 +89,7 @@ public class WorldLoader {
         
         World world = new World(game.e3d, worldMeshes, skyColor, skybox, game.main.conf.debug);
         
+		world.drawDistance = lvl.getFloat("world", "draw_distance", world.drawDistance);
         world.fallDeath = lvl.getInt("world", "fall_death", world.fallDeath?1:0) == 1;
         
         if(lvl.groupExists("fog")) {
