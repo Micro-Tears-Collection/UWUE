@@ -2,52 +2,61 @@ package code.engine3d.game;
 
 import code.engine3d.E3D;
 import code.engine3d.Shader;
-import code.engine3d.ShaderPack;
-import code.utils.assetManager.AssetManager;
+import java.util.ArrayList;
 
 /**
  *
  * @author Roman Lahin
  */
-public class WorldShaderPack extends ShaderPack {
+public class WorldShaderPack {
     
     public int uvOffset, alphaThreshold;
-    
-    protected WorldShaderPack(E3D e3d, String path, String[][] defs) {
-        super(e3d, path, defs);
-        
-        for(int i=0; i<shaders.length; i++) {
-			Shader shader = shaders[i];
-            shader.addUniformBlock(e3d.matrices, "mats");
-            
-            shader.bind();
-            shader.addTextureUnit("albedoMap", 0);
-            //if(i == 2) shader.addTextureUnit("normalMap", 1);
-			shader.addUniformBlock(e3d.lights, "lights");
+	
+	public Shader getShader(E3D e3d, WorldMaterial mat) {
+		ArrayList<String> defs = new ArrayList<>();
+		
+		if(!mat.glow) {
+			defs.add("LIGHT");
+			
+			/*if(mat.normalMap != null) defs.add("NORMALMAP");
+			if(mat.specular != null || mat.specularMap != null) {
+				defs.add("SPECULAR");
+				if(mat.specularMap != null) defs.add("SPECULARMAP");
+				
+				if(mat.roughnessMap != null) defs.add("ROUGHNESSMAP");
+			}*/
+		}
+		
+		String[] defsarr = defs.toArray(new String[defs.size()]);
+		Shader shader = e3d.getShader("world", defsarr);
+		
+		if(e3d.isShaderWasCreated()) {
+			shader.bind();
+			
+			shader.addTextureUnit("albedoMap", 0);
+			
+			if(defs.contains("LIGHT")) {
+				shader.addUniformBlock(e3d.lights, "lights");
+				/*if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
+			
+				if(defs.contains("SPECULAR")) {
+					if(defs.contains("SPECULARMAP")) shader.addTextureUnit("specularMap", 2);
+					else specular = shader.getUniformIndex("specular");
+				
+					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);
+					else roughness = shader.getUniformIndex("roughness");
+				}*/
+			}
+			
 			shader.addUniformBlock(e3d.fog, "fog");
-            shader.unbind();
-        }
-        
-        shaders[0].bind();
-        uvOffset = shaders[0].getUniformIndex("uvOffset");
-        alphaThreshold = shaders[0].getUniformIndex("alphaThreshold");
-        shaders[0].unbind();
-    }
-    
-    public static WorldShaderPack get(E3D e3d, String path, String[][] defs) {
-        String defsName = (defs != null) ? String.valueOf(ShaderPack.hashcode(defs)) : "";
-        
-        WorldShaderPack shaderPack = (WorldShaderPack) AssetManager.get("SHDRPCK_" + path + defsName);
-        if(shaderPack != null) return shaderPack;
-        
-        shaderPack = new WorldShaderPack(e3d, path, defs);
-        AssetManager.add("SHDRPCK_" + path + defsName, shaderPack);
-        
-        return shaderPack;
-    }
-    
-    public void destroy() {
-        super.destroy();
-    }
+			
+			uvOffset = shader.getUniformIndex("uvOffset");
+			alphaThreshold = shader.getUniformIndex("alphaThreshold");
+			
+			shader.unbind();
+		}
+		
+		return shader;
+	}
 
 }

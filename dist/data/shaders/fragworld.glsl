@@ -1,5 +1,18 @@
 #define MAX_LIGHTS 8
 
+//LIGHT for light
+//NORMALMAP for normal map
+//vec3 inTangent, sampler2D normalMap
+
+//SPECULAR for specularity
+//vec3 specular, float roughness
+//SPECULARMAP for specular map
+//sampler2D specularMap
+
+//ROUGHNESSMAP for roughness
+//sampler2D  roughnessMap
+
+#ifdef LIGHT
 struct Light {
 	vec4 pos;
 	vec4 col;
@@ -11,18 +24,21 @@ layout(std140) uniform lights
 	vec4 ambientLight;
 	Light lightsData[MAX_LIGHTS];
 };
+#endif
 
 #ifdef VERT
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
+#ifdef NORMALMAP
 layout(location = 3) in vec3 inTangent;
+#endif
 
 smooth out vec2 fragUV;
 smooth out vec3 fragPos;
 smooth out vec3 fragNorm;
 
-#ifndef GLOW
+#ifdef LIGHT
 smooth out vec3[MAX_LIGHTS] lightsDirs;
 smooth out vec3[MAX_LIGHTS] lightsSpotDirs;
 #endif
@@ -60,7 +76,7 @@ void main()
 	);
 	fogExp = fogColor.a;
 	
-	#ifndef GLOW
+	#ifdef LIGHT
 	#ifdef NORMALMAP
 	vec3 T = normalize((modelView * vec4(inTangent, 0.)).xyz);
 	T = normalize(T - dot(T, norm) * norm);
@@ -106,7 +122,7 @@ uniform sampler2D normalMap;
 #endif
 uniform float alphaThreshold;
 
-#ifndef GLOW
+#ifdef LIGHT
 const float SRGB_GAMMA = 1.0 / 2.2;
 const float SRGB_INVERSE_GAMMA = 2.2;
 const float SRGB_ALPHA = 0.055;
@@ -202,7 +218,7 @@ void main()
 	
 	if(tex.a <= alphaThreshold) discard;
 	
-	#ifndef GLOW
+	#ifdef LIGHT
 	vec3 lightsSumm = ambientLight.rgb;
 	
 	#ifdef NORMALMAP

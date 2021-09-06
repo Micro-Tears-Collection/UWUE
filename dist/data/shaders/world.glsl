@@ -1,12 +1,14 @@
 #define MAX_LIGHTS 8
 
+//LIGHT for light
+
 #ifdef VERT
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
 
 smooth out vec2 fragUV;
-#ifndef GLOW
+#ifdef LIGHT
 smooth out vec3 fragLight;
 #endif
 
@@ -27,6 +29,8 @@ layout(std140) uniform fog
 	vec2 fogEndScale;
 };
 
+#ifdef LIGHT
+
 struct Light {
 	vec4 pos;
 	vec4 col;
@@ -38,8 +42,6 @@ layout(std140) uniform lights
 	vec4 ambientLight;
 	Light lightsData[MAX_LIGHTS];
 };
-
-#ifndef GLOW
 
 float spotLight(vec3 lightVec, vec3 spot, float spotCutoff) {
 	float spotDot = dot(-lightVec, spot);
@@ -91,7 +93,7 @@ void main()
 	);
 	fogExp = fogColor.a;
 	
-	#ifndef GLOW
+	#ifdef LIGHT
 	vec3 lightsSumm = ambientLight.rgb;
 	vec3 normalizedPos = normalize(pos.xyz);
 	
@@ -108,7 +110,7 @@ void main()
 out vec4 fragColor;
 
 smooth in vec2 fragUV;
-#ifndef GLOW
+#ifdef LIGHT
 smooth in vec3 fragLight;
 #endif
 
@@ -124,7 +126,7 @@ void main()
 	
 	if(tex.a <= alphaThreshold) discard;
 	
-	#ifndef GLOW
+	#ifdef LIGHT
 	tex.rgb *= fragLight.rgb;
 	#endif
 	

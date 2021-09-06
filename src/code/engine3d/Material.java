@@ -68,7 +68,7 @@ public class Material extends ReusableContent {
         }
     }
     
-    public void unbind() {
+    public void unbind(E3D e3d) {
         if(blendMode != OFF) {
             GL33C.glDisable(GL33C.GL_BLEND);
         }

@@ -2,6 +2,7 @@ package code.engine3d;
 
 import code.engine.Window;
 import code.engine3d.game.WorldMaterial;
+import code.engine3d.game.WorldShaderPack;
 import code.engine3d.instancing.MeshInstance;
 import code.engine3d.instancing.RenderInstance;
 import code.math.Vector3D;
@@ -62,11 +63,13 @@ public class E3D {
 	private FloatBuffer lightsf;
     public UniformBlock lights;
 	
-    private final ArrayList<RenderInstance> postDraw;
+    private ArrayList<RenderInstance> postDraw;
+	public WorldShaderPack worldShaderPack;
 	
     public E3D(Window win) {
         this.win = win;
         postDraw = new ArrayList<RenderInstance>();
+		worldShaderPack = new WorldShaderPack();
 		
         maxAA = GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
 		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
@@ -161,6 +164,10 @@ public class E3D {
     }
     
     public void destroy() {
+		postDraw.clear();
+		postDraw = null;
+		worldShaderPack = null;
+		
         MemoryUtil.memFree(tmpMf);
         MemoryUtil.memFree(tmpM3f);
         MemoryUtil.memFree(invCamf);
@@ -533,34 +540,30 @@ public class E3D {
 		return instances;
 	}
     
+	private boolean shaderWasCreated = false;
+	
     public Shader getShader(String path) {
         return getShader(path, null);
     }
     
     public Shader getShader(String path, String[] defs) {
+		if(defs != null) Arrays.sort(defs);
         String defsName = (defs != null) ? String.valueOf(Arrays.hashCode(defs)) : "";
         
         Shader shader = (Shader) AssetManager.get("SHRD_" + path + defsName);
         
-        if(shader == null) {
+		shaderWasCreated = shader == null;
+        if(shaderWasCreated) {
             shader = new Shader(path, defs);
             AssetManager.add("SHRD_" + path + defsName, shader);
         }
         
         return shader;
     }
-    
-    public ShaderPack getShaderPack(String path, String[][] defs) {
-        String defsName = (defs != null) ? String.valueOf(ShaderPack.hashcode(defs)) : "";
-        
-        ShaderPack shaderPack = (ShaderPack) AssetManager.get("SHDRPCK_" + path + defsName);
-        if(shaderPack != null) return shaderPack;
-        
-        shaderPack = new ShaderPack(this, path, defs);
-        AssetManager.add("SHDRPCK_" + path + defsName, shaderPack);
-        
-        return shaderPack;
-    }
+	
+	public boolean isShaderWasCreated() {
+		return shaderWasCreated;
+	}
     
     public Texture getTexture(String name) {
         Texture tex = (Texture) AssetManager.get("TEX_" + name);

@@ -84,7 +84,7 @@ public class Sprite extends RenderInstance {
         GL33C.glBindVertexArray(0);
 
         unbindLight(e3d);
-        mat.unbind();
+        mat.unbind(e3d);
     }
 
 }

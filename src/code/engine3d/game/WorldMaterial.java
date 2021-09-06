@@ -19,22 +19,16 @@ public class WorldMaterial extends Material {
     
     public Texture tex;//, normalmap;
 	public Sampler sampler;
-    public WorldShaderPack shaderPack;
+    public Shader shader;
     
-    private boolean alphaTest, linear, mipMapping, wrapClamp, glow;
+	boolean glow; //dont change!!!
+	
+    boolean alphaTest, linear, mipMapping, wrapClamp;
     private float scrollXSpeed, scrollYSpeed;
     
     public WorldMaterial(E3D e3d) {
         super(e3d);
 		sampler = new Sampler(e3d);
-        init(e3d);
-    }
-    
-    private void init(E3D e3d) {
-        /*shaderPack = WorldShaderPack.get(e3d, "world", 
-				new String[][]{null, new String[]{"GLOW"}, new String[]{"NORMALMAP"}});*/
-        shaderPack = WorldShaderPack.get(e3d, "world", 
-				new String[][]{null, new String[]{"GLOW"}});
     }
     
     public void load(E3D e3d, String name, IniFile ini) {
@@ -61,6 +55,8 @@ public class WorldMaterial extends Material {
 		tex = e3d.getTexture(ini.get("albedo"));
 		/*tmp = ini.get("normalmap");
 		if(tmp != null) normalmap = e3d.getTexture(tmp);*/
+		
+		shader = e3d.worldShaderPack.getShader(e3d, this);
     }
 	
 	public void updateSamplerProperties(E3D e3d) {
@@ -71,7 +67,7 @@ public class WorldMaterial extends Material {
         if(using == 0) {
             if(tex != null) tex.use();
             //if(normalmap != null) normalmap.use();
-            if(shaderPack != null) shaderPack.use();
+			shader.use();
         }
         
         super.use();
@@ -82,7 +78,7 @@ public class WorldMaterial extends Material {
         if(using == 1) {
             if(tex != null) tex.free();
             //if(normalmap != null) normalmap.free();
-            if(shaderPack != null) shaderPack.free();
+            shader.free();
         }
         
         super.free();
@@ -92,12 +88,11 @@ public class WorldMaterial extends Material {
     public void destroy() {
         tex = null;
 		if(sampler != null) sampler.destroy();
-        shaderPack = null;
+        shader = null;
     }
     
     public void bind(E3D e3d, long time) {
         //Shader shader = shaderPack.shaders[glow?1:(normalmap != null ? 2 : 0)];
-		Shader shader = shaderPack.shaders[glow?1:0];
         shader.bind();
         
         if(tex != null) {
@@ -111,20 +106,17 @@ public class WorldMaterial extends Material {
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
-            shader.setUniform2f(shaderPack.uvOffset, time * scrollXSpeed / 1000, -time * scrollYSpeed / 1000);
+            shader.setUniform2f(e3d.worldShaderPack.uvOffset, time * scrollXSpeed / 1000, -time * scrollYSpeed / 1000);
         }
         
         if(alphaTest) {
-			shader.setUniformf(shaderPack.alphaThreshold, blendMode == OFF?0.5f:0);
+			shader.setUniformf(e3d.worldShaderPack.alphaThreshold, blendMode == OFF?0.5f:0);
         }
         
         super.bind(e3d, time);
     }
     
-    public void unbind() {
-        //Shader shader = shaderPack.shaders[glow?1:(normalmap != null ? 2 : 0)];
-		Shader shader = shaderPack.shaders[glow?1:0];
-        
+    public void unbind(E3D e3d) {
         if(tex != null) {
 			sampler.unbind(0);
 			tex.unbind(0);
@@ -136,14 +128,14 @@ public class WorldMaterial extends Material {
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
-            shader.setUniform2f(shaderPack.uvOffset, 0, 0);
+            shader.setUniform2f(e3d.worldShaderPack.uvOffset, 0, 0);
         }
         
         if(alphaTest) {
-			shader.setUniformf(shaderPack.alphaThreshold, -1);
+			shader.setUniformf(e3d.worldShaderPack.alphaThreshold, -1);
         }
         
-        super.unbind();
+        super.unbind(e3d);
         shader.unbind();
     }
 

@@ -198,7 +198,7 @@ public class Mesh extends ReusableContent {
             GL33C.glBindVertexArray(vaos[submesh]);
             GL33C.glDrawArrays(GL33C.GL_TRIANGLES, 0, vertsCount[submesh]);
             
-            mat.unbind();
+            mat.unbind(e3d);
         }
         
         GL33C.glBindVertexArray(0);
