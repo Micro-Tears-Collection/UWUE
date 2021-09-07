@@ -6,6 +6,8 @@ import code.engine3d.Sampler;
 import code.engine3d.Shader;
 import code.engine3d.Texture;
 import code.utils.IniFile;
+import code.utils.StringTools;
+import code.utils.assetManager.AssetManager;
 import code.utils.assetManager.ReusableContent;
 
 /**
@@ -17,11 +19,15 @@ public class WorldMaterial extends Material {
     public static final int UNDEFINED = -2, DEFAULT = -1;
 	public static boolean disableMipmapping;
     
-    public Texture tex;//, normalmap;
+    public Texture tex;
 	public Sampler sampler;
     public Shader shader;
     
 	boolean glow; //dont change!!!
+	//per pixel stuff
+	/*public Texture normalMap, specularMap, roughnessMap;
+	public float[] specular;
+	public float roughness;*/
 	
     boolean alphaTest, linear, mipMapping, wrapClamp;
     private float scrollXSpeed, scrollYSpeed;
@@ -52,9 +58,29 @@ public class WorldMaterial extends Material {
         
         glow = ini.getInt("glow", 0) == 1;
 		
-		tex = e3d.getTexture(ini.get("albedo"));
+		String currentPath = AssetManager.getDirectory(name);
+		
+		tex = e3d.getTexture(ini.get("albedo"), currentPath);
+		
 		/*tmp = ini.get("normalmap");
-		if(tmp != null) normalmap = e3d.getTexture(tmp);*/
+		if(tmp != null) normalMap = e3d.getTexture(tmp, currentPath);
+		
+		tmp = ini.get("roughnessmap");
+		if(tmp != null) roughnessMap = e3d.getTexture(tmp, currentPath);
+        
+        roughness = ini.getFloat("roughness", roughnessMap != null ? 1 : roughness);
+		
+		tmp = ini.get("specularmap");
+		if(tmp != null) specularMap = e3d.getTexture(tmp, currentPath);
+		
+        tmp = ini.getDef("specular", specularMap != null ? "1" : null);
+		if(tmp != null) {
+			specular = new float[3];
+			float[] fvs = StringTools.cutOnFloats(tmp, ',');
+			
+			if(fvs.length < 3) specular[0] = specular[1] = specular[2] = fvs[0];
+			else System.arraycopy(fvs, 0, specular, 0, 3);
+		}*/
 		
 		shader = e3d.worldShaderPack.getShader(e3d, this);
     }
@@ -66,7 +92,9 @@ public class WorldMaterial extends Material {
     public ReusableContent use() {
         if(using == 0) {
             if(tex != null) tex.use();
-            //if(normalmap != null) normalmap.use();
+            /*if(normalMap != null) normalMap.use();
+            if(specularMap != null) specularMap.use();
+            if(roughnessMap != null) roughnessMap.use();*/
 			shader.use();
         }
         
@@ -77,7 +105,9 @@ public class WorldMaterial extends Material {
     public ReusableContent free() {
         if(using == 1) {
             if(tex != null) tex.free();
-            //if(normalmap != null) normalmap.free();
+            /*if(normalMap != null) normalMap.free();
+            if(specularMap != null) specularMap.free();
+            if(roughnessMap != null) roughnessMap.free();*/
             shader.free();
         }
         
@@ -92,7 +122,6 @@ public class WorldMaterial extends Material {
     }
     
     public void bind(E3D e3d, long time) {
-        //Shader shader = shaderPack.shaders[glow?1:(normalmap != null ? 2 : 0)];
         shader.bind();
         
         if(tex != null) {
@@ -100,9 +129,26 @@ public class WorldMaterial extends Material {
 			tex.bind(0);
 		}
         
-        /*if(normalmap != null) {
-			sampler.bind(1);
-			normalmap.bind(1);
+		/*if(!glow) {
+			if(normalMap != null) {
+				sampler.bind(1);
+				normalMap.bind(1);
+			}
+			
+			if(specular != null) {
+				shader.setUniform3f(e3d.worldShaderPack.specular, specular[0], specular[1], specular[2]);
+				shader.setUniformf(e3d.worldShaderPack.roughness, roughness);
+				
+				if(specularMap != null) {
+					sampler.bind(2);
+					specularMap.bind(2);
+				}
+				
+				if(roughnessMap != null) {
+					sampler.bind(3);
+					roughnessMap.bind(3);
+				}
+			}
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
@@ -122,9 +168,23 @@ public class WorldMaterial extends Material {
 			tex.unbind(0);
 		}
         
-        /*if(normalmap != null) {
-			sampler.unbind(1);
-			normalmap.unbind(1);
+		/*if(!glow) {
+			if(normalMap != null) {
+				sampler.unbind(1);
+				normalMap.unbind(1);
+			}
+			
+			if(specular != null) {
+				if(specularMap != null) {
+					sampler.unbind(2);
+					specularMap.unbind(2);
+				}
+				
+				if(roughnessMap != null) {
+					sampler.unbind(3);
+					roughnessMap.unbind(3);
+				}
+			}
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {

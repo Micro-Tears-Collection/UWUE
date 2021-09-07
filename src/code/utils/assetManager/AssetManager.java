@@ -126,5 +126,15 @@ public class AssetManager {
         
         return ini;
     }
+	
+	public static String updatePath(String path, String currentDirectory) {
+		if(currentDirectory == null) return path;
+		else if(path.startsWith(".")) return currentDirectory + path.substring(1);
+		else return path;
+	}
+	
+	public static String getDirectory(String file) {
+		return file.substring(0, file.lastIndexOf('/'));
+	}
 
 }

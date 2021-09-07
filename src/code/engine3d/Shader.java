@@ -38,11 +38,11 @@ public class Shader extends ReusableContent {
         if(defs != null) {
             StringBuilder sb = new StringBuilder();
             
-            for(String definition : defs) {
-                sb.append("#define ");
-                sb.append(definition);
-                sb.append("\n");
-            }
+			for(String definition : defs) {
+				sb.append("#define ");
+				sb.append(definition);
+				sb.append("\n");
+			}
             
             sb.append(shader);
             shader = sb.toString();

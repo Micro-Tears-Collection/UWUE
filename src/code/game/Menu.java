@@ -31,9 +31,9 @@ public class Menu extends Screen {
         if(initialized) return;
         initialized = true;
         
-        background = main.e3d.getTexture("/images/menu.png");
-        logo = main.e3d.getTexture("/images/lsddejfg.png");
-        shadow = main.e3d.getTexture("/images/menushadow.png");
+        background = main.e3d.getTexture("/images/menu.png", null);
+        logo = main.e3d.getTexture("/images/lsddejfg.png", null);
+        shadow = main.e3d.getTexture("/images/menushadow.png", null);
         
         main.musPlayer.loadFile("/music/menu.ogg");
         main.musPlayer.play();

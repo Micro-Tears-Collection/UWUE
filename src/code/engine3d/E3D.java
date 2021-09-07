@@ -34,7 +34,7 @@ public class E3D {
 	/*
 	4 AMBIENT COLOR + padding
 
-	8X:
+	Lights count x
 	4 POSITION + DIR/POINT
 	4 COLOR + padding
 	4 SPOT_DIR + SPOT_CUTOFF
@@ -298,7 +298,7 @@ public class E3D {
     }
     
     public void setLinearFog(float start, float end, float[] col) {
-		for(int x=0; x<3; x++) fogf.put(x, col[x]);
+		for(int x=0; x<3; x++) fogf.put(x, srgb_to_linear(col[x]));
 		fogf.put(3, 0);
 		
         fogf.put(4, end / (end - start));
@@ -310,7 +310,7 @@ public class E3D {
     }
     
     public void setExpFog(float density, float[] col) {
-		for(int x=0; x<3; x++) fogf.put(x, col[x]);
+		for(int x=0; x<3; x++) fogf.put(x, srgb_to_linear(col[x]));
 		fogf.put(3, 1);
 		
         fogf.put(4, density);
@@ -337,7 +337,7 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 1);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, srgb_to_linear(col[x]));
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
 		
 		lightsf.put(offset + 8 + 3, -1);
 	}
@@ -353,7 +353,7 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 1);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + 4 + x, srgb_to_linear(col[x]));
+		for(int x=0; x<3; x++) lightsf.put(offset + 4 + x, col[x]);
 		
 		tmp.set(dir);
 		tmp.transform(invCamf, false);
@@ -375,7 +375,7 @@ public class E3D {
 		lightsf.put(offset + 2, tmp.z);
 		lightsf.put(offset + 3, 0);
 		
-		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, srgb_to_linear(col[x]));
+		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, col[x]);
 		
 		lightsf.put(offset + 8 + 3, -1);
 	}
@@ -496,32 +496,45 @@ public class E3D {
     
     //Loading scripts
     
-    public Model getModel(String path) {
+    public Model getModel(String path, String currentDirectory) {
+		path = AssetManager.updatePath(path, currentDirectory);
         Model model = (Model) AssetManager.get("MODEL_" + path);
 
         if(model != null) return model;
         
         model = new Model(ModelLoader.loadObj(this, path));
         AssetManager.add("MODEL_" + path, model);
+		
+		String modelDirectory = AssetManager.getDirectory(path);
+		for(Mesh mesh : model.getMeshes()) {
+			String[] mats = mesh.mats;
+			
+			for(int i=0; i<mats.length; i++) {
+				mats[i] = AssetManager.updatePath(mats[i], modelDirectory);
+			}
+		}
 
         return model;
     }
 	
-	public MeshInstance[] getMeshInstances(String mdlName) {
-		return getMeshInstancesImpl(mdlName, false);
+	public MeshInstance[] getMeshInstances(String mdlName, String currentDirectory) {
+		return getMeshInstancesImpl(mdlName, currentDirectory, false);
 	}
 	
-	public MeshInstance getMeshInstance(String mdlName) {
-		return getMeshInstancesImpl(mdlName, true)[0];
+	public MeshInstance getMeshInstance(String mdlName, String currentDirectory) {
+		return getMeshInstancesImpl(mdlName, currentDirectory, true)[0];
 	}
 	
-	private MeshInstance[] getMeshInstancesImpl(String mdlName, boolean one) {
+	private MeshInstance[] getMeshInstancesImpl(String mdlName, String currentDirectory, boolean one) {
 		String[] mdlNameSplit = StringTools.cutOnStrings(mdlName, '|');
-		Model mdl = getModel(mdlNameSplit[0]);
+		Model mdl = getModel(mdlNameSplit[0], currentDirectory);
 		
 		HashMap<String, String> toReplace = new HashMap();
 		for(int i=0; i<(mdlNameSplit.length-1)/2; i++) {
-			toReplace.put(mdlNameSplit[1 + i*2], mdlNameSplit[1 + i*2 + 1]);
+			String oldMat = mdlNameSplit[1 + i*2];
+			String newMat = mdlNameSplit[1 + i*2 + 1];
+			
+			toReplace.put(oldMat, AssetManager.updatePath(newMat, currentDirectory));
 		}
 		
 		MeshInstance[] instances = new MeshInstance[one ? 1 : mdl.getMeshes().length];
@@ -531,7 +544,7 @@ public class E3D {
 			//todo dont duplicate mat arrays?
 			Material[] mats = new Material[mesh.mats.length];
 			for(int x=0; x<mats.length; x++) {
-				mats[x] = getMaterial(mesh.mats[x], toReplace);
+				mats[x] = getMaterial(mesh.mats[x], currentDirectory, toReplace);
 			}
 			
 			instances[i] = new MeshInstance(mesh, mats);
@@ -565,31 +578,36 @@ public class E3D {
 		return shaderWasCreated;
 	}
     
-    public Texture getTexture(String name) {
-        Texture tex = (Texture) AssetManager.get("TEX_" + name);
+    public Texture getTexture(String path, String currentDirectory) {
+		path = AssetManager.updatePath(path, currentDirectory);
+		
+        Texture tex = (Texture) AssetManager.get("TEX_" + path);
         if(tex != null) return tex;
         
-        if(name.equals("null")) {
+        if(path.equals("null")) {
             tex = new Texture(0, 1, 1);
             tex.lock();
         } else {
-            tex = Texture.loadTexture(name);
+            tex = Texture.loadTexture(path);
         }
         
         if(tex != null) {
-            AssetManager.add("TEX_" + name, tex);
+            AssetManager.add("TEX_" + path, tex);
             return tex;
         }
         
-        return getTexture("null");
+        return getTexture("null", currentDirectory);
     }
     
-    public Material getMaterial(String name) {
-        return getMaterial(name, null);
+    public Material getMaterial(String name, String currentDirectory) {
+        return getMaterial(name, currentDirectory, null);
     }
     
-    public Material getMaterial(String name, HashMap<String,String> replace) {
+    public Material getMaterial(String name, String currentDirectory, HashMap<String,String> replace) {
         String[] lines = StringTools.cutOnStrings(name, ';');
+		
+		//Add current directory to path
+		name = AssetManager.updatePath(name, currentDirectory);
         
 		//Replace material if it in replace lift
         String path = lines[0];
@@ -606,7 +624,7 @@ public class E3D {
 		//No material found - create new
 		//Get material preferences from ini
 		IniFile matIni = new IniFile(lines, false);
-		MaterialsFile matsFile = getMaterialsFile(path);
+		MaterialsFile matsFile = getMaterialsFile(path, currentDirectory);
 		matsFile.copyMaterialIni(path, matIni);
 		
         mat = new WorldMaterial(this);
@@ -617,8 +635,11 @@ public class E3D {
         return mat;
     }
 	
-	public MaterialsFile getMaterialsFile(String matPath) {
+	public MaterialsFile getMaterialsFile(String matPath, String currentDirectory) {
 		String matsFilePath = matPath.substring(0, matPath.lastIndexOf('/') + 1) + "materials.ini";
+		
+		//Add current directory to path
+		matsFilePath = AssetManager.updatePath(matsFilePath, currentDirectory);
 		
         MaterialsFile matsFile = (MaterialsFile) AssetManager.get("MATFILE_" + matsFilePath);
         if(matsFile != null) return matsFile;

@@ -74,7 +74,7 @@ public class WorldLoader {
             
             String tmp = lvl.get("sky", "model");
             if(tmp!=null) {
-                skybox = game.e3d.getMeshInstances(tmp);
+                skybox = game.e3d.getMeshInstances(tmp, null);
             }
             
             tmp = lvl.get("sky", "color");
@@ -84,7 +84,7 @@ public class WorldLoader {
         
         MeshInstance[] worldMeshes = null;
         if(lvl.groupExists("world")) {
-            worldMeshes = game.e3d.getMeshInstances(lvl.get("world", "model"));
+            worldMeshes = game.e3d.getMeshInstances(lvl.get("world", "model"), null);
         }
         
         World world = new World(game.e3d, worldMeshes, skyColor, skybox, game.main.conf.debug);
@@ -174,13 +174,17 @@ public class WorldLoader {
         }
     }
     
-    static void loadObjects(String[] names, IniFile[] objs, Game game, World world, ArrayList<Integer> sourcesToPlay) {
+    static void loadObjects(
+			String[] sections, 
+			IniFile[] objsInis, Game game, World world,
+			ArrayList<Integer> sourcesToPlay
+	) {
         ArrayList lightgroupdata = new ArrayList<>();
         boolean defaultWas = false;
         
-        for(int i=0; i<names.length; i++) {
-            String section = names[i];
-            IniFile obj = objs[i];
+        for(int i=0; i<sections.length; i++) {
+            String section = sections[i];
+            IniFile objIni = objsInis[i];
             
             if(section.startsWith("obj ")) {
                 String[] data = StringTools.cutOnStrings(section, ' ');
@@ -197,7 +201,7 @@ public class WorldLoader {
                     name = sb.toString();
                 }
                 
-                String tmp = obj.get("pos");
+                String tmp = objIni.get("pos");
                 String[] poses = tmp==null?null:StringTools.cutOnStrings(tmp, ';');
                 
                 for(int x=0; x<(poses==null?1:poses.length); x++) {
@@ -209,7 +213,8 @@ public class WorldLoader {
                     }
                     
                     defaultWas |= type.equals("lightgroup") && "default".equals(name);
-                    loadObject(game, world, data[1], thisName, obj, pos, lightgroupdata, sourcesToPlay);
+                    loadObject(game, world, data[1], thisName, objIni, 
+							pos, lightgroupdata, sourcesToPlay);
                 }
             }
         }
@@ -250,27 +255,27 @@ public class WorldLoader {
         }
     }
 
-    private static void loadObject(Game game, World world, String objType, String name, IniFile ini, 
+    private static void loadObject(Game game, World world, String objType, String objName, IniFile ini, 
             float[] pos, ArrayList lightgroupdata, ArrayList<Integer> sourcesToPlay) {
         //yeah...
         //todo maybe move code to objects?
         
         Entity obj = null;
         if(objType.equals("spr")) {
-            obj = loadSprite(name, pos, game, world, ini, false);
+            obj = loadSprite(objName, pos, game, world, ini, false);
         } else if(objType.equals("billboard")) {
-            obj = loadSprite(name, pos, game, world, ini, true);
+            obj = loadSprite(objName, pos, game, world, ini, true);
         } else if(objType.equals("mesh")) {
-            obj = loadMesh(name, pos, game, world, ini);
+            obj = loadMesh(objName, pos, game, world, ini);
         } else if(objType.equals("sound")) {
-            obj = loadSoundSourceEntity(name, pos, game, world, ini, sourcesToPlay);
+            obj = loadSoundSourceEntity(objName, pos, game, world, ini, sourcesToPlay);
         } else if(objType.equals("entity")) {
             obj = new Entity();
-            loadDefEntity(obj, pos, name, game, world, ini);
+            loadDefEntity(obj, pos, objName, game, world, ini);
         } else if(objType.equals("teleport")) {
-            obj = loadTP(name, pos, game, world, ini);
+            obj = loadTP(objName, pos, game, world, ini);
         } else if(objType.equals("box")) {
-            obj = loadBox(name, pos, game, world, ini);
+            obj = loadBox(objName, pos, game, world, ini);
         } else if(objType.equals("light")) {
             
             float[] color = StringTools.cutOnFloats(ini.getDef("color", "255,255,255"), ',');
@@ -293,18 +298,18 @@ public class WorldLoader {
 				isPoint = false;
             }
 
-            Light light = new Light(name, position, isPoint, dir, color);
+            Light light = new Light(objName, position, isPoint, dir, color);
 
             if(isSpot) light.cutoff = ini.getFloat("cutoff", light.cutoff);
 
             LightGroup.allLights.add(light);
         } else if(objType.equals("lightgroup")) {
             LightGroup group;
-            boolean defaultGroup = name.equals("default");
+            boolean defaultGroup = objName.equals("default");
             if(defaultGroup) {
                 group = LightGroup.defaultGroup;
             } else {
-                group = new LightGroup(name);
+                group = new LightGroup(objName);
                 LightGroup.lightgroups.add(group);
             }
 
@@ -380,8 +385,10 @@ public class WorldLoader {
         return cube;
     }
 
-    private static MeshObject loadMesh(String name, float[] pos, Game game, World world, IniFile ini) {
-        MeshObject mesh = new MeshObject(game.e3d.getMeshInstance(ini.get("model")));
+    private static MeshObject loadMesh(
+			String name, float[] pos, 
+			Game game, World world, IniFile ini) {
+        MeshObject mesh = new MeshObject(game.e3d.getMeshInstance(ini.get("model"), null));
         
         mesh.meshCollision = ini.getInt("ph_mesh_collision", mesh.meshCollision?1:0) == 1;
         mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;
@@ -391,8 +398,11 @@ public class WorldLoader {
         return mesh;
     }
 
-    private static SpriteObject loadSprite(String name, float[] pos, Game game, World world, IniFile ini, boolean billboard) {
-        Material loadedMat = game.e3d.getMaterial(ini.get("tex"));
+    private static SpriteObject loadSprite(
+			String name, float[] pos, 
+			Game game, World world, IniFile ini,
+			boolean billboard) {
+        Material loadedMat = game.e3d.getMaterial(ini.get("tex"), null);
         if(!(loadedMat instanceof WorldMaterial)) {
             System.out.println("wrong material???");
             return null;

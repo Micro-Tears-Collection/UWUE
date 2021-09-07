@@ -437,7 +437,7 @@ vt 0.33345636725426 0.25 0
 # 143 texture coordinates
 
 o Ноль_объект.1
-usemtl /models/facelesswoman
+usemtl ./facelesswoman
 f 69/4/4 16/3/3 66/2/2 68/1/1
 f 53/8/8 54/7/7 25/6/6 60/5/5
 f 52/11/10 21/10/9 54/9/7

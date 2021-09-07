@@ -1,5 +1,3 @@
-#define MAX_LIGHTS 8
-
 //LIGHT for light
 //NORMALMAP for normal map
 //vec3 inTangent, sampler2D normalMap
@@ -120,9 +118,19 @@ uniform sampler2D albedoMap;
 #ifdef NORMALMAP
 uniform sampler2D normalMap;
 #endif
-uniform float alphaThreshold;
+#ifdef SPECULARMAP
+uniform sampler2D specularMap;
+#endif
+#ifdef ROUGHNESSMAP
+uniform sampler2D roughnessMap;
+#endif
 
-#ifdef LIGHT
+uniform float alphaThreshold;
+#ifdef SPECULAR
+uniform float roughness;
+uniform vec3 specular;
+#endif
+
 const float SRGB_GAMMA = 1.0 / 2.2;
 const float SRGB_INVERSE_GAMMA = 2.2;
 const float SRGB_ALPHA = 0.055;
@@ -162,6 +170,8 @@ vec3 srgb_to_rgb(vec3 srgb) {
     );
 }
 
+#ifdef LIGHT
+
 smooth in vec3[MAX_LIGHTS] lightsDirs;
 smooth in vec3[MAX_LIGHTS] lightsSpotDirs;
 
@@ -186,7 +196,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 }
 #endif
 
-vec3 calcLight(vec3 norm, vec3 normalizedPos, int i) {
+vec3 calcLight(int i, float roughness, vec3 specular, vec3 norm, vec3 normalizedPos) {
 	vec3 lightVec = lightsDirs[i];
 	
 	float dist = length(lightVec);
@@ -196,15 +206,17 @@ vec3 calcLight(vec3 norm, vec3 normalizedPos, int i) {
 	
 	//Diffuse
 	float NdotV = max(dot(norm, lightVec), 0.);
-	vec3 lightCol = lightsData[i].col.rgb * NdotV * 100000. * invDist * invDist;
+	vec3 radiance = lightsData[i].col.rgb * NdotV * 100000. * invDist * invDist;
 	
 	//Spot
 	float spotCutoff = lightsData[i].spotDirCutoff.w;
-	if(spotCutoff >= 0.) lightCol *= spotLight(lightVec, lightsSpotDirs[i], spotCutoff);
+	if(spotCutoff >= 0.) radiance *= spotLight(lightVec, lightsSpotDirs[i], spotCutoff);
+	
+	vec3 lightCol = radiance;
 	
 	#ifdef SPECULAR
 	vec3 halfVec = normalize(lightVec - normalizedPos);
-	lightCol *= 1.0 + DistributionGGX(norm, halfVec, 0.2);
+	lightCol += DistributionGGX(norm, halfVec, roughness) * radiance * specular;
 	#endif
 	
 	return lightCol;
@@ -215,6 +227,7 @@ vec3 calcLight(vec3 norm, vec3 normalizedPos, int i) {
 void main()
 {
 	vec4 tex = texture2D(albedoMap, fragUV);
+	tex.rgb = srgb_to_rgb(tex.rgb);
 	
 	if(tex.a <= alphaThreshold) discard;
 	
@@ -230,18 +243,34 @@ void main()
 	
 	vec3 normalizedPos = normalize(fragPos);
 	
+	#ifdef SPECULAR
+	float roughnessVal = roughness;
+	#ifdef ROUGHNESSMAP
+	roughnessVal *= texture2D(roughnessMap, fragUV).x;
+	#endif
+	
+	vec3 specularVal = specular;
+	#ifdef SPECULARMAP
+	specularVal *= texture2D(specularMap, fragUV).x;
+	#endif
+	
+	#else
+	float roughnessVal = 1.0;
+	vec3 specularVal = vec3(0.);
+	#endif
+	
 	for(int i=0; i<MAX_LIGHTS; i++) {
-		lightsSumm += calcLight(norm, normalizedPos, i);
+		lightsSumm += calcLight(i, roughnessVal, specularVal, norm, normalizedPos);
 	}
 	
-	tex.rgb = rgb_to_srgb(max(srgb_to_rgb(tex.rgb) * lightsSumm, 0.0));
+	tex.rgb = max(tex.rgb * lightsSumm, 0.0);
 	#endif
 	
 	float fog;
 	if(fogExp > 0.5) fog = exp2(fogOut.a);
 	else fog = fogOut.a;
 	
-	tex.rgb = mix(fogOut.rgb, tex.rgb, clamp(fog, 0., 1.));
+	tex.rgb = rgb_to_srgb(mix(fogOut.rgb, tex.rgb, clamp(fog, 0., 1.)));
 	
     fragColor = tex;
 }

@@ -57,7 +57,7 @@ public class World {
         objects = new ArrayList<Entity>();
         
         if(debug) {
-            sobj = new SpriteObject(new Sprite(e3d.getMaterial("/images/test;alpha_test=1;lightgroup=0"), 
+            sobj = new SpriteObject(new Sprite(e3d.getMaterial("/images/test;alpha_test=1;lightgroup=0", null), 
                     false, 20, 20, Sprite.CENTER));
         }
         

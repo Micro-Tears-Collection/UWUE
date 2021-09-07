@@ -159,7 +159,7 @@ vt 0.82400000095367 0.05958366394043 0
 # 58 texture coordinates
 
 o Объект_Сфера;lightgroup=0
-usemtl /models/eye/eye;wrap=clamp
+usemtl ./eye;wrap=clamp
 f 6/4 7/3 2/2 1/1
 f 11/6 12/5 7/3 6/4
 f 16/8 17/7 12/5 11/6

@@ -166,7 +166,7 @@ public class Settings extends Screen {
     }
     
     private String valueEdit(int val) {
-        return "<"+val+">";
+        return "<<"+val+">>";
     }
     
     private void setList(int type) {

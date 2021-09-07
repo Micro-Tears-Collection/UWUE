@@ -77,7 +77,7 @@ public class Game extends Screen {
         pauseScreen = ItemList.createItemList(w, h, main.font, main.selectedS);
         setPauseScreenItems();
         
-        handIcon = e3d.getTexture("/images/hand.png");
+        handIcon = e3d.getTexture("/images/hand.png", null);
         handIcon.use();
         
         pauses = new ArrayList<>();
@@ -119,7 +119,7 @@ public class Game extends Screen {
 	
         ditherShader.unbind();
         
-        ditherTexture = e3d.getTexture("/images/bayer_matrix.png");
+        ditherTexture = e3d.getTexture("/images/bayer_matrix.png", null);
 		ditherTexture.setParameters(e3d, false, false, false);
         ditherTexture.use();
     }

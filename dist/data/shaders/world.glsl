@@ -1,5 +1,3 @@
-#define MAX_LIGHTS 8
-
 //LIGHT for light
 
 #ifdef VERT

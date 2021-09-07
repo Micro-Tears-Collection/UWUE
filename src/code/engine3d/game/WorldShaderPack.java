@@ -10,24 +10,27 @@ import java.util.ArrayList;
  */
 public class WorldShaderPack {
     
-    public int uvOffset, alphaThreshold;
+    public int uvOffset = -1, alphaThreshold = -1;
+	//public int specular = -1, roughness = -1;
 	
 	public Shader getShader(E3D e3d, WorldMaterial mat) {
 		ArrayList<String> defs = new ArrayList<>();
 		
 		if(!mat.glow) {
 			defs.add("LIGHT");
+			defs.add("MAX_LIGHTS "+E3D.MAX_LIGHTS);
 			
 			/*if(mat.normalMap != null) defs.add("NORMALMAP");
-			if(mat.specular != null || mat.specularMap != null) {
+			if(mat.specular != null) {
 				defs.add("SPECULAR");
-				if(mat.specularMap != null) defs.add("SPECULARMAP");
 				
+				if(mat.specularMap != null) defs.add("SPECULARMAP");
 				if(mat.roughnessMap != null) defs.add("ROUGHNESSMAP");
 			}*/
 		}
 		
 		String[] defsarr = defs.toArray(new String[defs.size()]);
+		if(defsarr.length == 0) defsarr = null;
 		Shader shader = e3d.getShader("world", defsarr);
 		
 		if(e3d.isShaderWasCreated()) {
@@ -40,18 +43,18 @@ public class WorldShaderPack {
 				/*if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
 			
 				if(defs.contains("SPECULAR")) {
+					if(specular == -1) specular = shader.getUniformIndex("specular");
+					if(roughness == -1) roughness = shader.getUniformIndex("roughness");
+					
 					if(defs.contains("SPECULARMAP")) shader.addTextureUnit("specularMap", 2);
-					else specular = shader.getUniformIndex("specular");
-				
 					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);
-					else roughness = shader.getUniformIndex("roughness");
 				}*/
 			}
 			
 			shader.addUniformBlock(e3d.fog, "fog");
 			
-			uvOffset = shader.getUniformIndex("uvOffset");
-			alphaThreshold = shader.getUniformIndex("alphaThreshold");
+			if(uvOffset == -1) uvOffset = shader.getUniformIndex("uvOffset");
+			if(alphaThreshold == -1) alphaThreshold = shader.getUniformIndex("alphaThreshold");
 			
 			shader.unbind();
 		}
