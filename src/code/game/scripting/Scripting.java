@@ -406,6 +406,30 @@ public class Scripting {
                 return LuaValue.NIL;
             }
         });
+		
+		lua.set("ambientLight", new TwoArgFunction() {
+			public LuaValue call(LuaValue obj, LuaValue val) {
+				LightGroup lightgroup = LightGroup.findLightGroup(obj.toString());
+				if(lightgroup == null) return LuaValue.NIL;
+
+				if(!val.isnil()) {
+					if(val.istable())
+						lightgroup.setAmbient(new float[]{
+							val.get(1).tofloat(),
+							val.get(2).tofloat(),
+							val.get(3).tofloat()
+						});
+					else if(val.isnumber())
+						lightgroup.setAmbient(new float[]{val.tofloat()});
+				}
+
+				return LuaTable.listOf(new LuaValue[]{
+					LuaValue.valueOf(lightgroup.ambient[0] * 255),
+					LuaValue.valueOf(lightgroup.ambient[1] * 255),
+					LuaValue.valueOf(lightgroup.ambient[2] * 255)
+				});
+			}
+		});
         
         lua.set("objVar", new ThreeArgFunction() {
             public LuaValue call(LuaValue obj, LuaValue var, LuaValue val)  {
@@ -426,8 +450,6 @@ public class Scripting {
                 
                 if(entity == null) {
                     Light light = LightGroup.findLight(obj.toString());
-                    
-                    if(light == null) return LuaValue.NIL;
                     
                     if(varName.equals("color")) {
                         if(!val.isnil()) {
