@@ -17,7 +17,7 @@ public class Vector3D {
     }
     
     public Vector3D(Vector3D vec) {
-        set(vec.x, vec.y, vec.z);
+        set(vec);
     }
     
     public void set(Vector3D vec) {
@@ -167,5 +167,13 @@ public class Vector3D {
 
         setLength(1);
     }
+	
+	public static Vector3D cross(Vector3D a, Vector3D b) {
+		return new Vector3D(
+				a.y*b.z - b.y*a.z,
+				a.z*b.x - b.z*a.x,
+				a.x*b.y - b.x*a.y
+		);
+	}
 
 }

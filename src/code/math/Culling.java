@@ -124,28 +124,11 @@ public class Culling {
 		frustum[5][2] /= t;
 		frustum[5][3] /= t;
     }
-	
-	private float[] min, max;
     
-    public Culling() {
-        min = new float[3];
-        max = new float[3];
-    }
-    
-    public void setBox(float x1, float y1, float z1, float x2, float y2, float z2) {
-        min[0] = x1; min[1] = y1; min[2] = z1;
-        max[0] = x2; max[1] = y2; max[2] = z2;
-    }
-    
-    public void setBox(Vector3D minv, Vector3D maxv) {
-        min[0] = minv.x; min[1] = minv.y; min[2] = minv.z;
-        max[0] = maxv.x; max[1] = maxv.y; max[2] = maxv.z;
-    }
-    
-    public int visible() {
+    public static int visible(Vector3D min, Vector3D max) {
 		//тестируем 6 плоскостей фрустума
-		float minx = min[0], miny = min[1], minz = min[2];
-		float maxx = max[0], maxy = max[1], maxz = max[2];
+		float minx = min.x, miny = min.y, minz = min.z;
+		float maxx = max.x, maxy = max.y, maxz = max.z;
 		
 		for(int i = 0; i < 6; i++) {
 			//находим ближайшую к плоскости вершину
