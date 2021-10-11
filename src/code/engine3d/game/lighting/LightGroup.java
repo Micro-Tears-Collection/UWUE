@@ -17,7 +17,7 @@ public class LightGroup {
     
     public String name;
     public ArrayList<Light> lights;
-    private float[] ambient;
+    public float[] ambient;
     
     public static void clear(boolean recreate) {
         for(LightGroup group : lightgroups) {
@@ -64,6 +64,8 @@ public class LightGroup {
     }
     
     public void bind(E3D e3d, float x, float y, float z, float xs, float ys, float zs) {
+		final float minInfluence = E3D.srgb_to_linear(1f/255f);
+		
         e3d.setAmbientLight(ambient[0], ambient[1], ambient[2]);
             
         activeLightsCount = 0;
@@ -81,7 +83,7 @@ public class LightGroup {
                 if(d != 0) light.influence = light.absLit * 10000 * 10 / d;
                 else light.influence = Float.MAX_VALUE;
                 
-                if(light.influence <= 1f/255f) continue;
+                if(light.influence <= minInfluence) continue;
             } else {
                 //directional source
                 light.influence = Float.MAX_VALUE;
@@ -154,6 +156,14 @@ public class LightGroup {
     public static Light findLight(String find) {
         for(Light light : allLights) {
             if(find.equals(light.name)) return light;
+        }
+        
+        return null;
+    }
+    
+    public static LightGroup findLightGroup(String find) {
+        for(LightGroup lightgroup : lightgroups) {
+            if(find.equals(lightgroup.name)) return lightgroup;
         }
         
         return null;

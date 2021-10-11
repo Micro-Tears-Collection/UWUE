@@ -25,7 +25,8 @@ public class WorldMaterial extends Material {
     
 	boolean glow; //dont change!!!
 	//per pixel stuff
-	/*public Texture normalMap, specularMap, roughnessMap;
+	/*public boolean fastShader;
+	public Texture normalMap, specularMap, roughnessMap, parallaxMap, emissionMap;
 	public float[] specular;
 	public float roughness;*/
 	
@@ -80,7 +81,15 @@ public class WorldMaterial extends Material {
 			
 			if(fvs.length < 3) specular[0] = specular[1] = specular[2] = fvs[0];
 			else System.arraycopy(fvs, 0, specular, 0, 3);
-		}*/
+		}
+		
+		tmp = ini.get("parallaxmap");
+		if(tmp != null) parallaxMap = e3d.getTexture(tmp, currentPath);
+		
+		tmp = ini.get("emissionmap");
+		if(tmp != null) emissionMap = e3d.getTexture(tmp, currentPath);
+		
+		fastShader = ini.getInt("fast_shader", 0) == 1;*/
 		
 		shader = e3d.worldShaderPack.getShader(e3d, this);
     }
@@ -94,7 +103,9 @@ public class WorldMaterial extends Material {
             if(tex != null) tex.use();
             /*if(normalMap != null) normalMap.use();
             if(specularMap != null) specularMap.use();
-            if(roughnessMap != null) roughnessMap.use();*/
+            if(roughnessMap != null) roughnessMap.use();
+            if(parallaxMap != null) parallaxMap.use();
+            if(emissionMap != null) emissionMap.use();*/
 			shader.use();
         }
         
@@ -107,7 +118,9 @@ public class WorldMaterial extends Material {
             if(tex != null) tex.free();
             /*if(normalMap != null) normalMap.free();
             if(specularMap != null) specularMap.free();
-            if(roughnessMap != null) roughnessMap.free();*/
+            if(roughnessMap != null) roughnessMap.free();
+            if(parallaxMap != null) parallaxMap.free();
+            if(emissionMap != null) emissionMap.free();*/
             shader.free();
         }
         
@@ -149,6 +162,16 @@ public class WorldMaterial extends Material {
 					roughnessMap.bind(3);
 				}
 			}
+	
+			if(emissionMap != null) {
+				sampler.bind(5);
+				emissionMap.bind(5);
+			}
+		}
+		
+		if(parallaxMap != null) {
+			sampler.bind(4);
+			parallaxMap.bind(4);
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
@@ -185,6 +208,16 @@ public class WorldMaterial extends Material {
 					roughnessMap.unbind(3);
 				}
 			}
+	
+			if(emissionMap != null) {
+				sampler.unbind(5);
+				emissionMap.unbind(5);
+			}
+		}
+		
+		if(parallaxMap != null) {
+			sampler.unbind(4);
+			parallaxMap.unbind(4);
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {

@@ -26,12 +26,15 @@ public class WorldShaderPack {
 				
 				if(mat.specularMap != null) defs.add("SPECULARMAP");
 				if(mat.roughnessMap != null) defs.add("ROUGHNESSMAP");
-			}*/
+			}
+			
+			if(mat.parallaxMap != null) defs.add("PARALLAXMAP");
+			if(mat.emissionMap != null) defs.add("EMISSIONMAP");*/
 		}
 		
 		String[] defsarr = defs.toArray(new String[defs.size()]);
 		if(defsarr.length == 0) defsarr = null;
-		Shader shader = e3d.getShader("world", defsarr);
+		Shader shader = e3d.getShader(/*mat.fastShader ? */"world"/* : "fragworld"*/, defsarr);
 		
 		if(e3d.isShaderWasCreated()) {
 			shader.bind();
@@ -48,7 +51,10 @@ public class WorldShaderPack {
 					
 					if(defs.contains("SPECULARMAP")) shader.addTextureUnit("specularMap", 2);
 					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);
-				}*/
+				}
+				
+				if(defs.contains("PARALLAXMAP")) shader.addTextureUnit("parallaxMap", 4);
+				if(defs.contains("EMISSIONMAP")) shader.addTextureUnit("emissionMap", 5);*/
 			}
 			
 			shader.addUniformBlock(e3d.fog, "fog");

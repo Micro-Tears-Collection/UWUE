@@ -10,6 +10,8 @@
 //ROUGHNESSMAP for roughness
 //sampler2D  roughnessMap
 
+//EMISSIONMAP
+
 #ifdef LIGHT
 struct Light {
 	vec4 pos;
@@ -27,13 +29,14 @@ layout(std140) uniform lights
 #ifdef VERT
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
-layout(location = 2) in vec3 inNormal;
+layout(location = 2) in vec4 inNormal;
 #ifdef NORMALMAP
-layout(location = 3) in vec3 inTangent;
+layout(location = 3) in vec4 inTangent;
 #endif
 
 smooth out vec2 fragUV;
 smooth out vec3 fragPos;
+smooth out vec3 fragPosOrig;
 smooth out vec3 fragNorm;
 
 #ifdef LIGHT
@@ -61,7 +64,7 @@ uniform vec2 uvOffset;
 void main()
 {
 	vec4 pos = modelView * vec4(inPos, 1.);
-	vec3 norm = normalize((modelView * vec4(inNormal, 0.)).xyz);
+	vec3 norm = normalize((modelView * inNormal).xyz);
 	
     gl_Position = project * pos;
 	fragUV = inUV + uvOffset;
@@ -76,10 +79,11 @@ void main()
 	
 	#ifdef LIGHT
 	#ifdef NORMALMAP
-	vec3 T = normalize((modelView * vec4(inTangent, 0.)).xyz);
-	T = normalize(T - dot(T, norm) * norm);
+	vec3 T = normalize(inTangent.xyz - dot(inTangent.xyz, inNormal.xyz) * inNormal.xyz);
+	T = normalize((modelView * vec4(T, 0.)).xyz);
+	vec3 B = cross(norm, T) * inTangent.w;
 	
-	mat3 TBN = transpose(mat3(T, cross(norm, T), norm));
+	mat3 TBN = transpose(mat3(T, B, norm));
 	#else
 	mat3 TBN = mat3(vec3(1., 0., 0.), vec3(0., 1., 0.), vec3(0., 0., 1.));
 	#endif
@@ -100,6 +104,7 @@ void main()
 	#else
 	fragPos = pos.xyz;
 	#endif
+	fragPosOrig = pos.xyz;
 	fragNorm = norm;
 }
 #endif
@@ -109,6 +114,7 @@ out vec4 fragColor;
 
 smooth in vec2 fragUV;
 smooth in vec3 fragPos;
+smooth in vec3 fragPosOrig;
 smooth in vec3 fragNorm;
 
 smooth in vec4 fogOut;
@@ -123,6 +129,12 @@ uniform sampler2D specularMap;
 #endif
 #ifdef ROUGHNESSMAP
 uniform sampler2D roughnessMap;
+#endif
+#ifdef PARALLAXMAP
+uniform sampler2D parallaxMap;
+#endif
+#ifdef EMISSIONMAP
+uniform sampler2D emissionMap;
 #endif
 
 uniform float alphaThreshold;
@@ -205,12 +217,12 @@ vec3 calcLight(int i, float roughness, vec3 specular, vec3 norm, vec3 normalized
 	lightVec *= invDist;
 	
 	//Diffuse
-	float NdotV = max(dot(norm, lightVec), 0.);
-	vec3 radiance = lightsData[i].col.rgb * NdotV * 100000. * invDist * invDist;
+	float NdotV = max(dot(norm, lightVec), 0.) * 100000. * invDist * invDist;
+	vec3 radiance = lightsData[i].col.rgb * NdotV;
 	
 	//Spot
 	float spotCutoff = lightsData[i].spotDirCutoff.w;
-	if(spotCutoff >= 0.) radiance *= spotLight(lightVec, lightsSpotDirs[i], spotCutoff);
+	if(spotCutoff >= 0.) radiance *= spotLight(lightVec, normalize(lightsSpotDirs[i]), spotCutoff);
 	
 	vec3 lightCol = radiance;
 	
@@ -224,9 +236,58 @@ vec3 calcLight(int i, float roughness, vec3 specular, vec3 norm, vec3 normalized
 
 #endif
 
+#ifdef PARALLAXMAP
+vec2 parallaxMapping(vec2 texCoords, vec3 viewDir) { 
+    // number of depth layers
+    const float minLayers = 8;
+    const float maxLayers = 32;
+	float heightScale = 0.02;
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));  
+    // calculate the size of each layer
+    float layerDepth = 1.0 / numLayers;
+    // depth of current layer
+    float currentLayerDepth = 0.0;
+    // the amount to shift the texture coordinates per layer (from vector P)
+    vec2 P = viewDir.xy / viewDir.z * heightScale; 
+    vec2 deltaTexCoords = P / numLayers;
+  
+    // get initial values
+    vec2  currentTexCoords     = texCoords;
+    float currentDepthMapValue = texture2D(parallaxMap, currentTexCoords).r;
+      
+    while(currentLayerDepth < currentDepthMapValue) {
+        // shift texture coordinates along direction of P
+        currentTexCoords -= deltaTexCoords;
+        // get depthmap value at current texture coordinates
+        currentDepthMapValue = texture2D(parallaxMap, currentTexCoords).r;  
+        // get depth of next layer
+        currentLayerDepth += layerDepth; 
+    }
+    
+    // get texture coordinates before collision (reverse operations)
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth  = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture2D(parallaxMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+ 
+    // interpolation of texture coordinates
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
+#endif
+
 void main()
 {
-	vec4 tex = texture2D(albedoMap, fragUV);
+	#ifdef PARALLAXMAP
+	vec2 uv = parallaxMapping(fragUV, normalize(fragPos) * vec3(1., -1., -1.));
+	#else
+	vec2 uv = fragUV;
+	#endif
+	
+	vec4 tex = texture2D(albedoMap, uv);
 	tex.rgb = srgb_to_rgb(tex.rgb);
 	
 	if(tex.a <= alphaThreshold) discard;
@@ -235,7 +296,7 @@ void main()
 	vec3 lightsSumm = ambientLight.rgb;
 	
 	#ifdef NORMALMAP
-	vec3 norm = texture2D(normalMap, fragUV).xyz * 2.0 - vec3(1.0);
+	vec3 norm = texture2D(normalMap, uv).xyz * 2.0 - vec3(1.0);
 	norm.z = sqrt(1. - dot(norm.xy, norm.xy));
 	#else
 	vec3 norm = normalize(fragNorm);
@@ -246,12 +307,12 @@ void main()
 	#ifdef SPECULAR
 	float roughnessVal = roughness;
 	#ifdef ROUGHNESSMAP
-	roughnessVal *= texture2D(roughnessMap, fragUV).x;
+	roughnessVal *= texture2D(roughnessMap, uv).x;
 	#endif
 	
 	vec3 specularVal = specular;
 	#ifdef SPECULARMAP
-	specularVal *= texture2D(specularMap, fragUV).x;
+	specularVal *= texture2D(specularMap, uv).x;
 	#endif
 	
 	#else
@@ -263,7 +324,13 @@ void main()
 		lightsSumm += calcLight(i, roughnessVal, specularVal, norm, normalizedPos);
 	}
 	
+	//lightsSumm += vec3(0.01) * 100000. / ((fragPosOrig.y + 275.)*(fragPosOrig.y + 275.)) * max(0., 1. - abs(fragNorm.y));
+	
 	tex.rgb = max(tex.rgb * lightsSumm, 0.0);
+	#endif
+	
+	#ifdef EMISSIONMAP
+	tex.rgb += srgb_to_rgb(texture2D(emissionMap, uv).rgb);
 	#endif
 	
 	float fog;

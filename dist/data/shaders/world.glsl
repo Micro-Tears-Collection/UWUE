@@ -3,7 +3,7 @@
 #ifdef VERT
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
-layout(location = 2) in vec3 inNormal;
+layout(location = 2) in vec4 inNormal;
 
 smooth out vec2 fragUV;
 #ifdef LIGHT
@@ -78,7 +78,7 @@ vec3 calcLight(vec3 pos, vec3 norm, vec3 normalizedPos, int i) {
 void main()
 {
 	vec4 pos = modelView * vec4(inPos, 1.);
-	vec3 norm = normalize((modelView * vec4(inNormal, 0.)).xyz);
+	vec3 norm = normalize((modelView * inNormal).xyz);
 	
     gl_Position = project * pos;
 	fragUV = inUV + uvOffset;
