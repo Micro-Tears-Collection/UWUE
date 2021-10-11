@@ -84,10 +84,15 @@ public class Texture extends ReusableContent {
 		byte[] data = AssetManager.load(path);
 		if(data == null) return null;
 		
-		String format = path.substring(path.lastIndexOf('/') + 1);
-
-		if(format.lastIndexOf('.') != -1) format = format.substring(format.lastIndexOf('.'));
-		else format = null;
+		/*String name = path.substring(path.lastIndexOf('/') + 1);
+		String format = null;
+		if(name.lastIndexOf('.') != -1) {
+			format = name.substring(name.lastIndexOf('.'));
+			name = name.substring(0, name.lastIndexOf('.'));
+		}
+		
+		String textureType = null;
+		if(name.lastIndexOf('.') != -1) textureType = name.substring(name.lastIndexOf('.'));*/
 	
 		ByteBuffer bruh = (ByteBuffer) MemoryUtil.memAlloc(data.length).put(data).rewind();
 
@@ -111,10 +116,11 @@ public class Texture extends ReusableContent {
 		}
 
 		int textureFormat = hasAlpha ? GL33C.GL_RGBA : GL33C.GL_RGB;
-		if("norm".equals(format)) textureFormat = GL33C.GL_RG;
-		if("rough".equals(format) || "spec".equals(format)) textureFormat = GL33C.GL_RED;
+		/*if("norm".equals(textureType)) textureFormat = GL33C.GL_RG;
+		if("rough".equals(textureType) || "spec".equals(textureType)) textureFormat = GL33C.GL_RED;*/
 
-		GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, img);
+		GL33C.glTexImage2D(GL33C.GL_TEXTURE_2D, 0, textureFormat, w[0], h[0], 0, 
+				GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, img);
 		GL33C.glGenerateMipmap(GL33C.GL_TEXTURE_2D);
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
 
