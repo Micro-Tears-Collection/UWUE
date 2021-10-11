@@ -33,15 +33,14 @@ public class PhysEntity extends Entity {
         this.radius = radius;
         this.height = height;
     }
-    
-    public boolean rayCast(Ray ray, boolean onlyMeshes) {
-        if(onlyMeshes) return false;
-        
-        Vector3D tmp = new Vector3D(pos);
-        tmp.add(0, height-radius, 0);
-        
-        return Entity.rayCastSphere(ray, tmp, radius);
-    }
+	
+	public Vector3D getMin() {
+		return new Vector3D(pos.x - radius, pos.y, pos.z - radius);
+	}
+	
+	public Vector3D getMax() {
+		return new Vector3D(pos.x + radius, pos.y + height, pos.z + radius);
+	}
     
     public boolean damage(int damage, Entity attacker) {
         hp -= damage;
@@ -55,6 +54,15 @@ public class PhysEntity extends Entity {
     
     public boolean isAlive() {
         return hp > 0;
+    }
+    
+    public boolean rayCast(Ray ray, boolean onlyMeshes) {
+        if(onlyMeshes) return false;
+        
+        Vector3D tmp = new Vector3D(pos);
+        tmp.add(0, height-radius, 0);
+        
+        return Entity.rayCastSphere(ray, tmp, radius);
     }
     
     public void physicsUpdate(World world) {
@@ -77,6 +85,8 @@ public class PhysEntity extends Entity {
         
         //gravity
         speed.y -= 8F * FPS.frameTime / 50;
+		
+		super.physicsUpdate(world);
     }
     
     private static final Vector3D tmp = new Vector3D(), tmp2 = new Vector3D();

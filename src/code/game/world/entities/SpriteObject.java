@@ -28,6 +28,14 @@ public class SpriteObject extends Entity {
         spr = null;
         super.destroy();
     }
+	
+	public Vector3D getMin() {
+		return new Vector3D(pos.x - spr.w / 2, pos.y + spr.h*spr.align/2, pos.z - spr.w / 2);
+	}
+	
+	public Vector3D getMax() {
+		return new Vector3D(pos.x + spr.w / 2, pos.y + spr.h*(2 - spr.align)/2, pos.z + spr.w / 2);
+	}
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes) return false;

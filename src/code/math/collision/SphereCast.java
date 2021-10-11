@@ -13,6 +13,10 @@ public class SphereCast {
     private static final Vector3D nor = new Vector3D();
     private static final Vector3D v1 = new Vector3D(), v2 = new Vector3D(), v3 = new Vector3D();
     
+    public static boolean isSphereAABBCollision(Sphere sphere, Vector3D min, Vector3D max) {
+        return isSphereAABBCollision(sphere, min.x, min.y, min.z, max.x, max.y, max.z);
+    }
+    
     public static boolean isSphereAABBCollision(Sphere sphere, 
             float minx, float miny, float minz, float maxx, float maxy, float maxz) {
         

@@ -130,7 +130,7 @@ public class WorldLoader {
         }
         
         game.world = world;
-        world.objects.add(game.player);
+        world.addEntity(game.player);
         
         if(lvl.groupExists("music")) {
             SoundSource player = game.main.musPlayer;
@@ -320,7 +320,7 @@ public class WorldLoader {
             lightgroupdata.add(StringTools.cutOnStrings(ini.getDef("exclude", ""), ','));
         }
         
-        if(obj != null) world.objects.add(obj);
+        if(obj != null) world.addEntity(obj);
     }
 
     private static SoundSourceEntity loadSoundSourceEntity(String name, float[] pos,
@@ -394,7 +394,7 @@ public class WorldLoader {
         mesh.visible = ini.getInt("visible", mesh.visible?1:0) == 1;
         
         loadPhysEntity(mesh, pos, name, game, world, ini);
-        
+		
         return mesh;
     }
 

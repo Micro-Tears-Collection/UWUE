@@ -4,6 +4,7 @@ import code.engine3d.E3D;
 
 import code.game.Main;
 import code.game.scripting.Scripting;
+import code.game.world.Node;
 import code.game.world.World;
 
 import code.math.collision.Ray;
@@ -21,6 +22,7 @@ public class Entity {
     
     //World-entity stuff
     public Vector3D pos = new Vector3D();
+	public Node node;
     
     public String name, unicalID;
     
@@ -31,6 +33,8 @@ public class Entity {
     }
     
     public void update(World world) {}
+	public Vector3D getMin() {return new Vector3D(pos);}
+	public Vector3D getMax() {return new Vector3D(pos);}
     public void physicsUpdate(World world) {}
     public void collisionTest(Entity entity) {}
     public boolean rayCast(Ray ray, boolean onlyMeshes) {return false;}

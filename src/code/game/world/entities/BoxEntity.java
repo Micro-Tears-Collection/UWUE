@@ -22,6 +22,14 @@ public class BoxEntity extends Entity {
         super.destroy();
         size = null;
     }
+	
+	public Vector3D getMin() {
+		return new Vector3D(pos.x - size.x/2, pos.y - size.y/2, pos.z - size.z/2);
+	}
+	
+	public Vector3D getMax() {
+		return new Vector3D(pos.x + size.x/2, pos.y + size.y/2, pos.z + size.z/2);
+	}
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes || !activable) return false;

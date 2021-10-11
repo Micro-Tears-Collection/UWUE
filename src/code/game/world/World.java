@@ -14,6 +14,7 @@ import code.math.collision.Ray;
 import code.math.collision.Sphere;
 import code.engine3d.instancing.MeshInstance;
 import code.math.Culling;
+import code.math.Vector3D;
 
 import code.utils.FPS;
 import java.nio.FloatBuffer;
@@ -31,8 +32,8 @@ public class World {
     public Matrix4f m; 
     public FloatBuffer tmp;
     
-    ArrayList<Entity> objects;
-    ArrayList<Node> renderNodes;
+    private ArrayList<Entity> entities;
+    Node node;
     MeshInstance[] allMeshes, skybox;
     int skyColor;
     
@@ -54,7 +55,7 @@ public class World {
         this.skybox = skybox;
         this.skyColor = skyColor;
         
-        objects = new ArrayList<Entity>();
+        entities = new ArrayList<Entity>();
         
         if(debug) {
             sobj = new SpriteObject(new Sprite(e3d.getMaterial("/images/test;alpha_test=1;lightgroup=0", null), 
@@ -69,77 +70,61 @@ public class World {
         for(MeshInstance mesh : allMeshes) mesh.destroy();
         if(skybox != null) for(MeshInstance mesh : skybox) mesh.destroy();
         
-        for(Entity obj : objects) {
+        for(Entity obj : entities) {
             if(!(obj instanceof Player)) obj.destroy();
         }
+		
+		node.destroy();
         
-        sobj.destroy();
+        if(sobj != null) sobj.destroy();
         MemoryUtil.memFree(tmp);
         m = null;
         tmp = null;
     }
     
     void makeNodes() {
-        renderNodes = new ArrayList<Node>();
-        
-        Node[] allNodes = new Node[allMeshes.length];
-        for(int i=0; i<allNodes.length; i++) {
-            allNodes[i] = new Node(allMeshes[i]);
-        }
-        
-        for(int i=0; i<allNodes.length; i++) {
-            Node node = allNodes[i];
-            MeshInstance mesh = node.mesh;
-            
-            float minSize = Float.MAX_VALUE;
-            Node selected = null;
-            for(int x=0; x<allNodes.length; x++) {
-                if(x == i) continue;
-                Node node2 = allNodes[x];
-                if(node.hasChild(node2)) continue;
-                MeshInstance mesh2 = node2.mesh;
-                
-                if(mesh.min.x < mesh2.min.x || mesh.max.x > mesh2.max.x ||
-                        mesh.min.y < mesh2.min.y || mesh.max.y > mesh2.max.y ||
-                        mesh.min.z < mesh2.min.z || mesh.max.z > mesh2.max.z) continue;
-                
-                float size = 
-                        (mesh2.max.x - mesh2.min.x) * 
-                        (mesh2.max.y - mesh2.min.y) * 
-                        (mesh2.max.z - mesh2.min.z);
-                
-                if(size < minSize) {
-                    minSize = size;
-                    selected = node2;
-                }
-            }
-            
-            if(selected != null) {
-                selected.childs.add(node);
-            } else renderNodes.add(node);
-            
-        }
+		Vector3D min = new Vector3D(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+		Vector3D max = new Vector3D(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+		
+		for(MeshInstance mesh : allMeshes) {
+			min.min(mesh.min);
+			max.max(mesh.max);
+		}
+		
+		min.sub(200, 200, 200);
+		max.add(200, 200, 200);
+		
+		node = new Node(null, min, max, 1000);
+		
+		for(MeshInstance mesh : allMeshes) {
+			node.addMesh(mesh);
+		}
     }
-    
+	
+	public void addEntity(Entity entity) {
+		entities.add(entity);
+		entity.node = node.addEntity(entity);
+	}
+	
     public void pausedAnimate(Entity except) {
-        for(Entity object : objects) {
+        for(Entity object : entities) {
             if(object != except) object.animate(FPS.frameTime, true, null);
         }
     }
     
     public void update(Player player) {
-        for(Entity object : objects) object.update(this);
+        for(Entity object : entities) object.update(this);
         
-        for(int i=0; i<objects.size(); i++) {
-            Entity obj1 = objects.get(i);
+        for(int i=0; i<entities.size(); i++) {
+            Entity obj1 = entities.get(i);
             
-            for(int j=i+1; j<objects.size(); j++) {
-                Entity obj2 = objects.get(j);
-                obj1.collisionTest(obj2);
-            }
+			node.collisionTest(obj1);
         }
         
-        for(Entity object : objects) object.physicsUpdate(this);
+        for(Entity entity : entities) {
+			entity.physicsUpdate(this);
+			entity.node = entity.node.addEntity(entity);
+		}
         
         updateListener(player);
     }
@@ -157,14 +142,7 @@ public class World {
     }
 
     public void sphereCast(Sphere sphere, Entity skip) {
-        for(Node node : renderNodes) {
-            node.sphereCast(sphere);
-        }
-        
-        for(Entity obj : objects) {
-            if(obj == skip) continue;
-            obj.meshSphereCast(sphere);
-        }
+        node.sphereCast(sphere, skip);
     }
     
     public Entity rayCast(Ray ray, boolean onlyMeshes) {
@@ -172,23 +150,7 @@ public class World {
     }
 
     public Entity rayCast(Ray ray, boolean onlyMeshes, Entity skip) {
-        for(Node node : renderNodes) {
-            node.rayCast(ray);
-        }
-        
-        float minDist = ray.distance;
-        Entity got = null;
-        
-        for(Entity obj : objects) {
-            if(obj == skip) continue;
-            
-            if(obj.rayCast(ray, onlyMeshes) && ray.distance < minDist) {
-                minDist = ray.distance;
-                got = obj;
-            }
-        }
-        
-        return got;
+        return node.rayCast(ray, onlyMeshes, skip);
     }
     
     public void render(E3D e3d, int w, int h) {
@@ -219,10 +181,9 @@ public class World {
         //Check all location meshes
         Culling.set(e3d.invCamf, e3d.projf);
         
-        for(Node node : renderNodes) node.render(e3d, e3d.invCamf, this, renderTime);
-        
-        //Check objects
-        for(Entity object : objects) object.render(e3d, this);
+		//Render world + objects using octree
+        node.render(e3d, e3d.invCamf, this, renderTime);
+		
         if(sobj != null) sobj.render(e3d, this);
         
         e3d.postRender();
@@ -239,7 +200,8 @@ public class World {
         
         Entity got = rayCast(ray, false, player);
         
-        for(Entity obj : objects) {
+		//todo use octree
+        for(Entity obj : entities) {
             if(obj.canBeActivated(got, ray, click)) {
                 if(obj.activate(main)) break;
             }
@@ -248,7 +210,7 @@ public class World {
         ray.reset();
     }
 
-    //copy pasting sucks but i just dont know
+    //todo copy pasting sucks but i just dont know
     public Entity findObjectToActivate(Player player, boolean click) {
         Entity toActivate = null;
         
@@ -259,7 +221,8 @@ public class World {
         
         Entity got = rayCast(ray, false, player);
         
-        for(Entity obj : objects) {
+		//todo use octree
+        for(Entity obj : entities) {
             if(obj.canBeActivated(got, ray, click)) {
                 toActivate = obj;
                 break;
@@ -290,7 +253,8 @@ public class World {
     }
     
     public Entity findObject(String name) {
-        for(Entity obj : objects) {
+		//todo hashmap?
+        for(Entity obj : entities) {
             if(name.equals(obj.unicalID) || name.equals(obj.name)) return obj;
         }
         

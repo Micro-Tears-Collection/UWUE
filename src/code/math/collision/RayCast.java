@@ -13,6 +13,10 @@ public class RayCast {
     private static final Vector3D v1 = new Vector3D(), v2 = new Vector3D(), v3 = new Vector3D();
     private static final Vector3D normal = new Vector3D();
     
+    public static boolean isRayAABBCollision(Ray ray, Vector3D min, Vector3D max) {
+        return isRayAABBCollision(ray, min.x, min.y, min.z, max.x, max.y, max.z);
+    }
+    
     public static boolean isRayAABBCollision(Ray ray, 
             float minx, float miny, float minz, float maxx, float maxy, float maxz) {
         Vector3D start = ray.start;
@@ -96,15 +100,17 @@ public class RayCast {
         return false;
     }
 
-    public static void rayCast(Object mesh, 
+    public static boolean rayCast(Object mesh, 
 			float[][] vertsAll, float[][] facesNormals,
 			Ray ray) {
-        RayCast.rayCast(mesh, vertsAll, facesNormals, null, ray);
+        return RayCast.rayCast(mesh, vertsAll, facesNormals, null, ray);
     }
 
-    public static void rayCast(Object mesh, 
+    public static boolean rayCast(Object mesh, 
 			float[][] vertsAll, float[][] facesNormals,
 			FloatBuffer mat, Ray ray) {
+		
+		boolean collision = false;
         
         final Vector3D start = ray.start;
         final Vector3D dir = ray.dir;
@@ -150,10 +156,13 @@ public class RayCast {
                     float distance = dirLen * dis;
                     if(distance < ray.distance) {
                         ray.set(mesh, t, i, distance, colPoint);
+						collision = true;
                     }
                 }
             }
         }
+		
+		return collision;
     }
 
 }
