@@ -81,7 +81,7 @@ public class ModelLoader {
                     }
                 } else {
                     
-                    boolean newMesh = line.startsWith("o ") || line.startsWith("g ");
+                    boolean newMesh = line.startsWith("o ");
                     
                     if((newMesh || line.equals("end")) && currentMesh != null) {
                         if(materials.get("null").isEmpty()) materials.remove("null");
