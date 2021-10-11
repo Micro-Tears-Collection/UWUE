@@ -39,7 +39,7 @@ public class AudioEngine {
         //AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE_CLAMPED);
         AL11.alSpeedOfSound(34300f);
         
-        if(alcCapabilities.ALC_SOFT_HRTF) Audio3DEffects.enableHRTF(device);
+        if(alcCapabilities.ALC_SOFT_HRTF) Audio3DEffects.disableHRTF(device);
         else System.out.println("HRTF support doesnt found");
         
         //Audio3DEffects.init();
