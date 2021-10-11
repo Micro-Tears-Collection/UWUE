@@ -210,15 +210,19 @@ public class BMFont {
         return 0;
     }
     
-    public int getHeight() {
-        return (int) (fontSize * baseScale);
+    public int getOriginalHeight() {
+        return fontSize;
     }
     
-    public void drawString(HudRender hudRender, String text, int x, int y, float scale, int color) {
+    public int getHeight() {
+        return Math.round(fontSize * baseScale);
+    }
+    
+    public void drawString(HudRender hudRender, String text, float x, float y, float scale, int color) {
         drawString(hudRender, text, x, y, scale, color, 1);
     }
     
-    public void drawString(HudRender hudRender, String text, int x, int y, float scale, int color, float a) {
+    public void drawString(HudRender hudRender, String text, float x, float y, float scale, int color, float a) {
         float scale2 = baseScale * scale;
 
         int prevCP = 0;
