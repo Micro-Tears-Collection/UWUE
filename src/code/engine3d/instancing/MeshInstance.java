@@ -100,7 +100,7 @@ public class MeshInstance extends RenderInstance {
     private void updateBB(FloatBuffer mat) {
         Vector3D tmp = new Vector3D();
         min.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-        max.set(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+        max.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
         
         for(int i=0; i<8; i++) {
             tmp.set(i>=4?mesh.max.x:mesh.min.x, 
