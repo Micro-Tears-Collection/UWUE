@@ -118,7 +118,7 @@ public class Main extends Screen {
         hudRender = new HudRender(e3d);
         
         font = BMFont.loadFont(gamecfg.get("hud", "font"));
-        setFontScale(getHeight());
+        setFontScale(getWidth(), getHeight());
         
         fontColor = StringTools.getRGB(gamecfg.getDef("hud", "font_color", "255,255,255"), ',');
         fontSelColor = StringTools.getRGB(gamecfg.getDef("hud", "font_selected_color", "221,136,149"), ',');
@@ -360,14 +360,17 @@ public class Main extends Screen {
     }
 
     public void sizeChanged(int w, int h, Screen scr) {
-        setFontScale(h);
+        setFontScale(w, h);
         console.setXYW(0, 0, w);
         
         if(screen != null) screen.sizeChanged(w, h, scr);
     }
     
-    private void setFontScale(int h) {
-        font.baseScale = Math.max(1, Math.round(h * 2 / 768f));
+    private void setFontScale(int w, int h) {
+		//Todo add boolean to control minimal scale and rounding
+		font.baseScale = Math.max(
+				1f/* / font.getOriginalHeight()*/, 
+				Math.round(Math.min(w, h) * 38 / 768f / font.getOriginalHeight()));
     }
 
 }
