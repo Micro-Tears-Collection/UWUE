@@ -99,7 +99,7 @@ void main()
 		lightsSumm += calcLight(pos.xyz, norm, normalizedPos, i);
 	}
 	
-	fragLight = max(lightsSumm, 0.);
+	fragLight = max(min(lightsSumm, 1.), 0.);
 	#endif
 }
 #endif

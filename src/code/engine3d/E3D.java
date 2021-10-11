@@ -271,18 +271,20 @@ public class E3D {
 
 	// Converts a single linear channel to srgb
 	public static final float linear_to_srgb(float channel) {
-		if(channel <= 0.0031308)
+		return channel;
+		/*if(channel <= 0.0031308)
 			return 12.92f * channel;
 		else
-			return (float) ((1.0 + SRGB_ALPHA) * Math.pow(channel, 1.0 / 2.4) - SRGB_ALPHA);
+			return (float) ((1.0 + SRGB_ALPHA) * Math.pow(channel, 1.0 / 2.4) - SRGB_ALPHA);*/
 	}
 
 	// Converts a single srgb channel to rgb
 	public static final float srgb_to_linear(float channel) {
-		if(channel <= 0.04045)
+		return channel;
+		/*if(channel <= 0.04045)
 			return channel / 12.92f;
 		else
-			return (float) Math.pow((channel + SRGB_ALPHA) / (1.0 + SRGB_ALPHA), 2.4);
+			return (float) Math.pow((channel + SRGB_ALPHA) / (1.0 + SRGB_ALPHA), 2.4);*/
 	}
     
     public void disableFog() {
