@@ -220,7 +220,7 @@ public class Settings extends Screen {
                         }
                     });
             
-            list.add(new TextItem("Footsteps volume: " + valueEdit(mconf.footstepsVolume), 
+            /*list.add(new TextItem("Footsteps volume: " + valueEdit(mconf.footstepsVolume), 
                     font) {
                         public boolean onRight() {
                             main.clickedS.play();
@@ -237,7 +237,7 @@ public class Settings extends Screen {
                             setText("Footsteps volume: " + valueEdit(mconf.footstepsVolume), list);
                             return true;
                         }
-                    });
+                    });*/
             
         } else if(type == VIDEO) {
             list.add(new TextItem("Launch game in fullscreen: " + checkBox(mconf.startInFullscr),
@@ -356,7 +356,7 @@ public class Settings extends Screen {
                         }
                     });
             
-            list.add(new TextItem("Gamepad look speed: " + valueEdit(mconf.gamepadLookSpeed), 
+            /*list.add(new TextItem("Gamepad look speed: " + valueEdit(mconf.gamepadLookSpeed), 
                     font) {
                         public boolean onRight() {
                             mconf.gamepadLookSpeed += 5;
@@ -375,7 +375,7 @@ public class Settings extends Screen {
                 public void onEnter() {
                     main.clickedS.play();
                 }
-            });
+            });*/
         
             list.add(new TextItem("Remove progress", font) {
                 public void onEnter() {
