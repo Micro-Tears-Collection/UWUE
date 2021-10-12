@@ -134,7 +134,10 @@ public class AssetManager {
 	}
 	
 	public static String getDirectory(String file) {
-		return file.substring(0, file.lastIndexOf('/'));
+		int i = file.lastIndexOf('/');
+		if(i == -1) return null;
+		
+		return file.substring(0, i);
 	}
 
 }
