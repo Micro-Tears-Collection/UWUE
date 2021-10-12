@@ -60,9 +60,9 @@ public class PhysEntity extends Entity {
         if(onlyMeshes) return false;
         
         Vector3D tmp = new Vector3D(pos);
-        tmp.add(0, height-radius, 0);
+        tmp.add(0, height / 2, 0);
         
-        return Entity.rayCastSphere(ray, tmp, radius);
+        return Entity.rayCastSphere(ray, tmp, radius, height);
     }
     
     public void physicsUpdate(World world) {

@@ -43,7 +43,7 @@ public class SpriteObject extends Entity {
         Vector3D tmp = new Vector3D(pos);
         tmp.add(0, spr.h*(spr.align+1)/2, 0);
         
-        return Entity.rayCastSphere(ray, tmp, spr.w/2);
+        return Entity.rayCastSphere(ray, tmp, spr.w/2, spr.h);
     }
     
     public void update(World world) {
