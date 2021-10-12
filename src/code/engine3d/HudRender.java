@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL33C;
  * @author Roman Lahin
  */
 public class HudRender {
+	
+	private static final int UNI_CLIP_RECT = 0, UNI_UV_OFF_MUL = 1, UNI_COL = 2;
     
     private E3D e3d;
     
@@ -16,7 +18,6 @@ public class HudRender {
     private int windowVAO, arrowVAO, cubeVAO;
     
     private Shader texShader, noTexShader, vertColShader;
-    private int uvOffMulUni, clipUni, colorUniform;
 	
 	private Sampler hudSampler;
     
@@ -103,14 +104,27 @@ public class HudRender {
         texShader.addUniformBlock(e3d.matrices, "mats");
         vertColShader.addUniformBlock(e3d.matrices, "mats");
         
+		//texShader uniforms
         texShader.bind();
-        
-        uvOffMulUni = texShader.getUniformIndex("uvOffMul");
-        clipUni = texShader.getUniformIndex("clipXY");
-        colorUniform = texShader.getUniformIndex("color");
+		
+		texShader.storeUniform(UNI_CLIP_RECT, "clipXY");
+		texShader.storeUniform(UNI_UV_OFF_MUL, "uvOffMul");
+		texShader.storeUniform(UNI_COL, "color");
         texShader.addTextureUnit(0);
         
         texShader.unbind();
+		
+		//noTexShader uniforms
+        noTexShader.bind();
+		noTexShader.storeUniform(UNI_CLIP_RECT, "clipXY");
+		noTexShader.storeUniform(UNI_COL, "color");
+        noTexShader.unbind();
+		
+		//vertColShader uniforms
+        vertColShader.bind();
+		vertColShader.storeUniform(UNI_CLIP_RECT, "clipXY");
+		vertColShader.storeUniform(UNI_COL, "color");
+        vertColShader.unbind();
 		
 		//Sampler
 		hudSampler = new Sampler(e3d, false, false, false);
@@ -142,7 +156,7 @@ public class HudRender {
                 ((color>>8)&255) / 255f,
                 (color&255) / 255f,
                 a,
-                noTexShader, colorUniform);
+                noTexShader, noTexShader.uniforms[UNI_COL]);
         
         noTexShader.unbind();
     }
@@ -157,14 +171,14 @@ public class HudRender {
             int color, float a) {
         
         texShader.bind();
-        texShader.setUniform4f(uvOffMulUni, u1, v1, u2-u1, v2-v1);
+        texShader.setUniform4f(texShader.uniforms[UNI_UV_OFF_MUL], u1, v1, u2-u1, v2-v1);
         
         drawRect(tex, x, y, w, h,
                 ((color>>16)&255) / 255f,
                 ((color>>8)&255) / 255f,
                 (color&255) / 255f,
                 a,
-                texShader, colorUniform);
+                texShader, texShader.uniforms[UNI_COL]);
         
         texShader.unbind();
     }
@@ -193,7 +207,7 @@ public class HudRender {
     public void drawWindow(float x, float y, float w, float h) {
         vertColShader.bind();
         
-        vertColShader.setUniform4f(colorUniform, 0, 0, 0, 1);
+        vertColShader.setUniform4f(vertColShader.uniforms[UNI_COL], 0, 0, 0, 1);
         
         GL33C.glEnable(GL33C.GL_BLEND);
         GL33C.glBlendEquation(GL33C.GL_FUNC_ADD);
@@ -241,7 +255,7 @@ public class HudRender {
         float g = ((color>>8)&255) / 255f;
         float b = (color&255) / 255f;
         
-        noTexShader.setUniform4f(colorUniform, r, g, b, a);
+        noTexShader.setUniform4f(noTexShader.uniforms[UNI_COL], r, g, b, a);
         
         GL33C.glEnable(GL33C.GL_BLEND);
         GL33C.glBlendEquation(GL33C.GL_FUNC_ADD);
@@ -278,7 +292,7 @@ public class HudRender {
         float g = ((color>>8)&255) / 255f;
         float b = (color&255) / 255f;
         
-        noTexShader.setUniform4f(colorUniform, r, g, b, a);
+        noTexShader.setUniform4f(noTexShader.uniforms[UNI_COL], r, g, b, a);
         
         GL33C.glEnable(GL33C.GL_BLEND);
         GL33C.glBlendEquation(GL33C.GL_FUNC_ADD);
@@ -326,11 +340,11 @@ public class HudRender {
         clipEnabled = true;
         
         texShader.bind();
-        texShader.setUniform4f(clipUni, cx1, cy1, cx2, cy2);
+        texShader.setUniform4f(texShader.uniforms[UNI_CLIP_RECT], cx1, cy1, cx2, cy2);
         noTexShader.bind();
-        noTexShader.setUniform4f(clipUni, cx1, cy1, cx2, cy2);
+        noTexShader.setUniform4f(noTexShader.uniforms[UNI_CLIP_RECT], cx1, cy1, cx2, cy2);
         vertColShader.bind();
-        vertColShader.setUniform4f(clipUni, cx1, cy1, cx2, cy2);
+        vertColShader.setUniform4f(vertColShader.uniforms[UNI_CLIP_RECT], cx1, cy1, cx2, cy2);
         vertColShader.unbind();
     }
     

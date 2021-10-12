@@ -2,7 +2,6 @@ package code.engine3d;
 
 import code.engine.Window;
 import code.engine3d.game.WorldMaterial;
-import code.engine3d.game.WorldShaderPack;
 import code.engine3d.instancing.MeshInstance;
 import code.engine3d.instancing.RenderInstance;
 import code.math.Vector3D;
@@ -64,12 +63,10 @@ public class E3D {
     public UniformBlock lights;
 	
     private ArrayList<RenderInstance> postDraw;
-	public WorldShaderPack worldShaderPack;
 	
     public E3D(Window win) {
         this.win = win;
         postDraw = new ArrayList<RenderInstance>();
-		worldShaderPack = new WorldShaderPack();
 		
         maxAA = GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
 		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
@@ -156,9 +153,7 @@ public class E3D {
 		
 		lights = new UniformBlock((4 + LIGHT_SIZE * MAX_LIGHTS) * 4, 2);
         lightsf = MemoryUtil.memAllocFloat(4 + LIGHT_SIZE * MAX_LIGHTS);
-		for(int i=0; i<lightsf.capacity(); i++) {
-			lightsf.put(i, 0);
-		}
+		setAmbientLight(1, 1, 1);
 		for(int i=0; i<MAX_LIGHTS; i++) disableLight(i);
 		sendLights();
     }
@@ -166,7 +161,6 @@ public class E3D {
     public void destroy() {
 		postDraw.clear();
 		postDraw = null;
-		worldShaderPack = null;
 		
         MemoryUtil.memFree(tmpMf);
         MemoryUtil.memFree(tmpM3f);
@@ -393,6 +387,10 @@ public class E3D {
 		
 		lightsf.put(offset + 3, 0);
 		for(int x=0; x<3; x++) lightsf.put(offset + x + 4, 0);
+		
+		lightsf.put(offset + 8 + 0, 0);
+		lightsf.put(offset + 8 + 1, 0);
+		lightsf.put(offset + 8 + 2, 0);
 		lightsf.put(offset + 8 + 3, -1);
 	}
 	

@@ -6,9 +6,9 @@ import code.engine3d.Sampler;
 import code.engine3d.Shader;
 import code.engine3d.Texture;
 import code.utils.IniFile;
-import code.utils.StringTools;
 import code.utils.assetManager.AssetManager;
 import code.utils.assetManager.ReusableContent;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,6 +17,7 @@ import code.utils.assetManager.ReusableContent;
 public class WorldMaterial extends Material {
     
     public static final int UNDEFINED = -2, DEFAULT = -1;
+	public static final int UNI_UV_OFFSET = 0, UNI_ALPHA_THRESHOLD = 1;
 	public static boolean disableMipmapping;
     
     public Texture tex;
@@ -37,6 +38,61 @@ public class WorldMaterial extends Material {
         super(e3d);
 		sampler = new Sampler(e3d);
     }
+	
+	public static Shader getShader(E3D e3d, WorldMaterial mat) {
+		ArrayList<String> defs = new ArrayList<>();
+		
+		if(!mat.glow) {
+			defs.add("LIGHT");
+			defs.add("MAX_LIGHTS "+E3D.MAX_LIGHTS);
+			
+			/*if(mat.normalMap != null) defs.add("NORMALMAP");
+			if(mat.specular != null) {
+				defs.add("SPECULAR");
+				
+				if(mat.specularMap != null) defs.add("SPECULARMAP");
+				if(mat.roughnessMap != null) defs.add("ROUGHNESSMAP");
+			}
+			
+			if(mat.parallaxMap != null) defs.add("PARALLAXMAP");
+			if(mat.emissionMap != null) defs.add("EMISSIONMAP");*/
+		}
+		
+		String[] defsarr = defs.toArray(new String[defs.size()]);
+		if(defsarr.length == 0) defsarr = null;
+		Shader shader = e3d.getShader(/*mat.fastShader ? */"world"/* : "fragworld"*/, defsarr);
+		
+		if(e3d.isShaderWasCreated()) {
+			shader.bind();
+			
+			shader.addTextureUnit("albedoMap", 0);
+			
+			if(defs.contains("LIGHT")) {
+				shader.addUniformBlock(e3d.lights, "lights");
+				/*if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
+			
+				if(defs.contains("SPECULAR")) {
+					if(specular == -1) specular = shader.getUniformIndex("specular");
+					if(roughness == -1) roughness = shader.getUniformIndex("roughness");
+					
+					if(defs.contains("SPECULARMAP")) shader.addTextureUnit("specularMap", 2);
+					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);
+				}
+				
+				if(defs.contains("PARALLAXMAP")) shader.addTextureUnit("parallaxMap", 4);
+				if(defs.contains("EMISSIONMAP")) shader.addTextureUnit("emissionMap", 5);*/
+			}
+			
+			shader.addUniformBlock(e3d.fog, "fog");
+			
+			shader.storeUniform(UNI_UV_OFFSET, "uvOffset");
+			shader.storeUniform(UNI_ALPHA_THRESHOLD, "alphaThreshold");
+			
+			shader.unbind();
+		}
+		
+		return shader;
+	}
     
     public void load(E3D e3d, String name, IniFile ini) {
         String tmp = ini.get("alpha_test");
@@ -91,7 +147,7 @@ public class WorldMaterial extends Material {
 		
 		fastShader = ini.getInt("fast_shader", 0) == 1;*/
 		
-		shader = e3d.worldShaderPack.getShader(e3d, this);
+		shader = getShader(e3d, this);
     }
 	
 	public void updateSamplerProperties(E3D e3d) {
@@ -175,11 +231,11 @@ public class WorldMaterial extends Material {
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
-            shader.setUniform2f(e3d.worldShaderPack.uvOffset, time * scrollXSpeed / 1000, -time * scrollYSpeed / 1000);
+            shader.setUniform2f(shader.uniforms[UNI_UV_OFFSET], time * scrollXSpeed / 1000, -time * scrollYSpeed / 1000);
         }
         
         if(alphaTest) {
-			shader.setUniformf(e3d.worldShaderPack.alphaThreshold, blendMode == OFF?0.5f:0);
+			shader.setUniformf(shader.uniforms[UNI_ALPHA_THRESHOLD], blendMode == OFF?0.5f:0);
         }
         
         super.bind(e3d, time);
@@ -221,11 +277,11 @@ public class WorldMaterial extends Material {
 		}*/
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
-            shader.setUniform2f(e3d.worldShaderPack.uvOffset, 0, 0);
+            shader.setUniform2f(shader.uniforms[UNI_UV_OFFSET], 0, 0);
         }
         
         if(alphaTest) {
-			shader.setUniformf(e3d.worldShaderPack.alphaThreshold, -1);
+			shader.setUniformf(shader.uniforms[UNI_ALPHA_THRESHOLD], -1);
         }
         
         super.unbind(e3d);

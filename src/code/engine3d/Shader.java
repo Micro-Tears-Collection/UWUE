@@ -14,6 +14,8 @@ public class Shader extends ReusableContent {
     
     private int vertShader, fragShader;
     private int program;
+	
+	public int[] uniforms;
 
     protected Shader(String path, String[] definitions) {
         init(path, definitions);
@@ -88,6 +90,8 @@ public class Shader extends ReusableContent {
             program = 0;
             return;
         }
+		
+		uniforms = new int[10];
     }
     
     private boolean compileCheck(String path, int shader) {
@@ -132,8 +136,10 @@ public class Shader extends ReusableContent {
     public void destroy() {
         if(program != 0) GL33C.glDeleteProgram(program);
         
-        if(vertShader != 0) GL33C.glDeleteProgram(vertShader);
-        if(fragShader != 0) GL33C.glDeleteProgram(fragShader);
+        if(vertShader != 0) GL33C.glDeleteShader(vertShader);
+        if(fragShader != 0) GL33C.glDeleteShader(fragShader);
+		
+		uniforms = null;
     }
     
     public void bind() {
@@ -159,6 +165,16 @@ public class Shader extends ReusableContent {
     public void addTextureUnit(String name, int unit) {
         if(program != 0) setUniformi(getUniformIndex(name), unit);
     }
+	
+	public void storeUniform(int id, String name) {
+		if(uniforms.length < (id/10*10+10)) {
+			int[] newUniforms = new int[id/10*10+10];
+			System.arraycopy(uniforms, 0, newUniforms, 0, uniforms.length);
+			uniforms = newUniforms;
+		}
+		
+		uniforms[id] = getUniformIndex(name);
+	}
     
     public int getUniformIndex(String name) {
         if(program != 0) {
