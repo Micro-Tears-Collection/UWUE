@@ -10,6 +10,7 @@ Controls:
 WASD - walk
 Shift - run
 Space - jump
+Arrow keys - look around
 E - interact
 ESC - back
 Enter - confirm
