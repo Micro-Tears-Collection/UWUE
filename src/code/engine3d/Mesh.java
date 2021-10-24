@@ -28,7 +28,6 @@ public class Mesh extends ReusableContent {
     public float[][] poses, uvs, normals;//, tangents;
     public float[][] normalsPerFace;
     
-	//todo create vaos vbos here, not in model loader
     public Mesh(String name, float[][] poses, float[][] uvs, float[][] normals,
 			String[] mats, Vector3D min, Vector3D max) {
 		//Init

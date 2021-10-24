@@ -45,6 +45,8 @@ import org.luaj.vm2.lib.TwoArgFunction;
  * @author Roman Lahin
  */
 public class Scripting {
+	
+	//todo use hashmap with enum for entities variables
     
     public static LuaValue loadScript(Main main, String script) {
         try {
