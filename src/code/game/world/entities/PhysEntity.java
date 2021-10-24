@@ -14,6 +14,7 @@ import code.utils.FPS;
  */
 public class PhysEntity extends Entity {
     
+	//todo add mass center?
     public float hp = 100;
     public Vector3D speed = new Vector3D();
     public float rotY;
