@@ -69,7 +69,7 @@ public class MathUtils {
         
         temp.set(point.x-a.x, point.y-a.y, point.z-a.z);
         float dist = temp.dot(nor); //Расстояние
-        if(dist > 0) return Float.MAX_VALUE;
+        if(dist < 0) return Float.MAX_VALUE;
         
         //Проекция на плоскость
         temp.set(point.x-(nor.x*dist), point.y-(nor.y*dist), point.z-(nor.z*dist));
@@ -77,9 +77,9 @@ public class MathUtils {
             return rad - Math.abs(dist);
         }
 
-        final float len1 = MathUtils.distanceToLine(point, a, b);
-        final float len2 = MathUtils.distanceToLine(point, b, c);
-        final float len3 = MathUtils.distanceToLine(point, c, a);
+        final float len1 = distanceToLine(point, a, b);
+        final float len2 = distanceToLine(point, b, c);
+        final float len3 = distanceToLine(point, c, a);
 
         float min = min(len1, len2, len3);
         if(min == len1) {
@@ -90,7 +90,7 @@ public class MathUtils {
             nor.set(closestPointOnLineSegment(c, a, point));
         }
         nor.sub(point);
-        nor.setLength(1);
+        nor.setLength(-1);
         
         if(min <= rad*rad) return rad - (float)Math.sqrt(min);
         
@@ -115,10 +115,10 @@ public class MathUtils {
             Vector3D start, Vector3D dir, Vector3D pos) {
         
         pos.set(start.x-a.x, start.y-a.y, start.z-a.z);
-        float dot = dir.dot(nor);
+        float dot = -dir.dot(nor);
         
         if(dot <= 0) return Float.MAX_VALUE;
-        dot = -pos.dot(nor) / dot;
+        dot = pos.dot(nor) / dot;
         if(dot < 0 || dot > 1) return Float.MAX_VALUE;
         
         pos.set(start.x + (dir.x * dot),

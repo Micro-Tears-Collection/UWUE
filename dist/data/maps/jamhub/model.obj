@@ -14,7 +14,7 @@ vt 1 0 0
 # 4 texture coordinates
 
 o Объект_Плоскость;order=post;lightgroup=0
-usemtl /textures/jamhub/logo.png;alpha_test=blend
+usemtl /textures/jamhub/logo;alpha_test=blend
 f 2/4/1 4/3/1 3/2/1 1/1/1
 
 v 6556.86962890625 -1898.36962890625 -5192.3974609375
@@ -1051,7 +1051,7 @@ vt 52.34375 1.48055195808411 0
 # 112 texture coordinates
 
 o tower
-usemtl /textures/forest/15.png
+usemtl /textures/forest/15
 f 5/8/2 6/7/2 7/6/2 8/5/2
 f 9/12/3 7/11/3 6/10/3 10/9/3
 f 11/16/4 8/15/4 7/14/4 9/13/4
@@ -1572,7 +1572,7 @@ vn -0.99954187870026 -0.030153689906 -0.00259802723303
 # 0 texture coordinate
 
 o Cube
-usemtl /textures/forest/15.png
+usemtl /textures/forest/15
 f 485/8/437 486/7/437 487/6/437 488/5/437
 f 489/12/438 487/11/438 486/10/438 490/9/438
 f 491/16/439 488/15/439 487/14/439 489/13/439
@@ -2758,7 +2758,7 @@ vt 0.50800806283951 0.50595837831497 0
 # 251 texture coordinates
 
 o Объект_Диск.2
-usemtl /textures/soviet_period1/hubc.png
+usemtl /textures/soviet_period1/hubc
 f 775/119/481 533/118/481 799/117/481
 f 776/120/481 533/118/481 775/119/481
 f 777/121/481 533/118/481 776/120/481
@@ -3353,7 +3353,7 @@ vt 37.25 -2 0
 # 30 texture coordinates
 
 o Cube.1
-usemtl /textures/forest/4.png
+usemtl /textures/forest/4
 f 1035/371/863 1036/370/863 1037/369/863 1038/368/863
 f 1039/375/864 1037/374/864 1036/373/864 1040/372/864
 f 1040/379/865 1036/378/865 1035/377/865 1041/376/865
@@ -3367,7 +3367,7 @@ f 1050/384/481 1046/385/481 1045/386/481 1047/387/481
 f 1049/372/866 1043/373/866 1046/374/866 1050/375/866
 f 1050/380/485 1047/381/485 1048/382/485 1049/383/485
 
-usemtl /textures/forest/36.png
+usemtl /textures/forest/36
 f 1051/389/863 1052/388/863 1053/370/863 1054/383/863
 f 1055/393/1 1053/392/1 1052/391/1 1056/390/1
 f 1056/397/867 1052/396/867 1051/395/867 1057/394/867
@@ -7295,7 +7295,7 @@ vt 0.22845120728016 0.5926496386528 0
 # 44 texture coordinates
 
 o grassy.1
-usemtl /textures/grassy/grasstown.png
+usemtl /textures/grassy/grasstown
 f 1078/401/873 1080/400/872 1081/399/871 1073/398/870
 f 1082/404/876 1069/403/875 1077/402/874
 f 1074/408/880 1072/407/879 1070/406/878 1076/405/877
@@ -10599,7 +10599,7 @@ vn 0 1 0
 # 0 texture coordinate
 
 o grassycol;visible=0
-usemtl /textures/grassy/grasstown.png
+usemtl /textures/grassy/grasstown
 f 1231/409/2401 1233/404/2401 1232/403/2401 1230/402/2401
 f 1297/409/2402 1299/407/2402 1298/406/2402 1296/405/2402
 f 1201/409/481 1203/402/481 1202/405/481 1200/408/481

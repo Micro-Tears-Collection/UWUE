@@ -980,7 +980,7 @@ vt 0.8046875 0.5234375 0
 # 174 texture coordinates
 
 o mesh_2
-usemtl textures/bar/club_tex.png
+usemtl textures/bar/club_tex
 f 17/3/1 18/2/1 19/1/1
 f 28/6/1 27/5/1 31/4/1
 f 35/3/1 36/2/1 37/1/1
@@ -1389,7 +1389,7 @@ f 172/172/6 174/171/6 173/169/6 169/170/6
 f 30/174/6 175/173/6 174/171/6 172/172/6
 f 107/167/6 176/168/6 175/173/6 30/174/6
 
-usemtl textures/bar/hellsideman.png
+usemtl textures/bar/hellsideman
 f 598/18/11 597/17/10 592/16/9 591/15/8
 f 604/18/14 607/20/13 605/19/12
 f 609/23/17 611/22/16 608/21/15
@@ -1432,7 +1432,7 @@ f 629/104/45 630/103/45 627/19/21 625/18/22
 f 625/18/22 628/102/103 631/105/45 629/104/45
 f 632/15/26 633/16/24 630/21/45 629/23/45
 
-usemtl textures/bar/floor_lighted.png
+usemtl textures/bar/floor_lighted
 f 682/31/3 143/30/3 133/29/3 132/28/3
 f 126/31/3 125/30/3 142/29/3 683/28/3
 f 150/31/3 684/30/3 685/29/3 145/28/3
@@ -1527,7 +1527,7 @@ vt 0.54296875 0.92578125 0
 # 10 texture coordinates
 
 o mesh_2.1
-usemtl textures/bar/hellsideman.png
+usemtl textures/bar/hellsideman
 f 639/177/104 640/176/104 641/175/1
 f 649/176/105 639/177/104 641/178/1
 f 654/177/105 649/176/105 641/175/1
@@ -2169,7 +2169,7 @@ vt 0.625 0.08203125 0
 # 42 texture coordinates
 
 o mesh_1
-usemtl textures/bar/club_tex.png
+usemtl textures/bar/club_tex
 f 995/14/6 1000/13/6 992/12/6
 f 993/12/144 994/13/144 999/14/144
 f 1012/14/7 1019/13/7 1008/12/7
@@ -2607,7 +2607,7 @@ v 1207.5 0.56931817531586 -472.5
 # 0 texture coordinate
 
 o mesh_1.4
-usemtl textures/bar/club_tex.png
+usemtl textures/bar/club_tex
 f 1174/83/3 1170/82/3 1171/85/3 1175/84/3
 f 1172/83/3 1174/82/3 1175/85/3 1173/84/3
 f 1178/83/3 1180/82/3 1181/85/3 1179/84/3
@@ -2873,7 +2873,7 @@ vt 0.98046875 0.1953125 0
 # 47 texture coordinates
 
 o mesh_0
-usemtl textures/bar/bar.png
+usemtl textures/bar/bar
 f 837/230/1 1287/229/1 1288/228/1 839/227/1
 f 840/230/1 1289/229/1 1294/228/1 842/227/1
 f 839/234/1 1288/233/1 1289/232/1 840/231/1
@@ -3075,7 +3075,7 @@ vt 0.78125 0.9921875 0
 # 6 texture coordinates
 
 o flowers;order=post
-usemtl textures/bar/club_tex.png;alpha_test=1
+usemtl textures/bar/club_tex;alpha_test=1
 f 1416/277/4 1417/276/4 1418/275/4 1419/274/4
 f 1418/275/4 1420/279/4 1421/278/4 1419/274/4
 f 1422/277/5 1423/276/5 1418/275/5 1419/274/5
@@ -3108,7 +3108,7 @@ f 1439/274/6 1445/278/6 1444/279/6 1438/275/6
 # 0 texture coordinate
 
 o flowers2;order=post
-usemtl textures/bar/club_tex.png;alpha_test=1
+usemtl textures/bar/club_tex;alpha_test=1
 f 1455/274/6 1453/278/6 1454/279/6 1446/275/6
 f 1460/277/4 1456/276/4 1462/275/4 1465/274/4
 f 1462/275/4 1457/279/4 1461/278/4 1465/274/4
@@ -3150,7 +3150,7 @@ vt 1 0 0
 # 4 texture coordinates
 
 o Объект_Плоскость;order=post
-usemtl textures/test/mix.png;blend=blend
+usemtl textures/test/mix;blend=blend
 f 1477/283/242 1479/282/242 1478/281/242 1476/280/242
 
 v 1128.8082275390625 100.19010162353516 -186.54342651367188
@@ -3165,7 +3165,7 @@ vn 0.86794537305832 -0.17101009190083 -0.46629002690315
 # 0 texture coordinate
 
 o Объект_Плоскость.3;order=post
-usemtl textures/test/scr.png;blend=scr
+usemtl textures/test/scr;blend=scr
 f 1481/283/243 1483/282/243 1482/281/243 1480/280/243
 
 v 1377.4320068359375 95 -335.93301391601562
@@ -3180,7 +3180,7 @@ vn 1 -0.00000001333995 0
 # 0 texture coordinate
 
 o Объект_Плоскость.2;order=post
-usemtl textures/test/sub.png;blend=sub
+usemtl textures/test/sub;blend=sub
 f 1485/283/244 1487/282/244 1486/281/244 1484/280/244
 
 v 1289.3358154296875 100 -91.89064788818359
@@ -3195,7 +3195,7 @@ vn 0.98480772972107 -0.00000001354574 0.17364817857742
 # 0 texture coordinate
 
 o Объект_Плоскость.1;order=post
-usemtl textures/test/add.png;blend=add
+usemtl textures/test/add;blend=add
 f 1489/283/245 1491/282/245 1490/281/245 1488/280/245
 
 v 1186.0364990234375 100.00000762939453 -413.0570068359375
@@ -3210,6 +3210,6 @@ vn 0.93969261646271 -0.00000001173095 -0.34202015399933
 # 0 texture coordinate
 
 o maxx;order=post
-usemtl textures/test/max.png;blend=max
+usemtl textures/test/max;blend=max
 f 1493/283/246 1495/282/246 1494/281/246 1492/280/246
 

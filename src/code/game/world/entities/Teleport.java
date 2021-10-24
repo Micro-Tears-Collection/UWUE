@@ -22,6 +22,11 @@ public class Teleport extends Entity {
         pointable = false;
     }
     
+    public void destroy() {
+        super.destroy();
+        newPos = null;
+    }
+    
     protected boolean activateImpl(Main main) {
         if(useOffset) {
             main.getGame().player.pos.add(newPos.x-pos.x, newPos.y-pos.y, newPos.z-pos.z);

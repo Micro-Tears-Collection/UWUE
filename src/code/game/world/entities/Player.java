@@ -2,7 +2,6 @@ package code.game.world.entities;
 
 import code.game.world.World;
 
-import code.utils.FPS;
 import code.utils.Keys;
 
 /**
@@ -24,14 +23,14 @@ public class Player extends PhysEntity {
     }
     
     public void update(World world) {
-        float speed = Keys.isPressed(RUN) ? 40 : 30;
-        //35
+        float speed = Keys.isPressed(RUN) ? 25.5f : 19;
+		//40 and 30 is release speed
+        //35 is pre release speed
         
         walk(
             ((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed,
-            ((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed,
-            speed
-        ); 
+            ((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed
+		); 
         
         if(Keys.isPressed(JUMP)) jump(50);
         

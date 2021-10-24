@@ -1,9 +1,9 @@
 package code.ui.itemList;
 
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.utils.Keys;
 import code.utils.font.BMFont;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ItemList {
     private int prevMX = Integer.MIN_VALUE, prevMY = Integer.MIN_VALUE;
@@ -14,14 +14,14 @@ public class ItemList {
     private int yScroll = 0;
     private int index = -1, topIndex;
     
-    private Vector<ListItem> items;
+    private ArrayList<ListItem> items;
     private boolean vCenter = true;
 
     public ItemList(int w, int h, BMFont font) {
         this.w = w;
         this.h = h;
         
-        items = new Vector();
+        items = new ArrayList<>();
     }
     
     public static ItemList createItemList(int w, int h, BMFont font, final code.audio.SoundSource selectSound) {
@@ -42,7 +42,7 @@ public class ItemList {
     }
     
     public void removeAll() {
-        items.removeAllElements();
+        items.clear();
         itemPressed = -1;
         fullHeight = 0;
         topIndex = 0;
@@ -55,7 +55,7 @@ public class ItemList {
     }
     
     public void add(ListItem item) {
-        items.addElement(item);
+        items.add(item);
         item.y = fullHeight;
         item.updateHeight(w);
         fullHeight += item.height;
@@ -68,7 +68,7 @@ public class ItemList {
         fullHeight = 0;
         
         for(int i=0; i<items.size(); i++) {
-            ListItem item = items.elementAt(i);
+            ListItem item = items.get(i);
             
             item.y = y;
             item.updateHeight(w);
@@ -80,12 +80,12 @@ public class ItemList {
         centralize();
     }
     
-    public void draw(E3D e3d, int x, int y, 
+    public void draw(HudRender hudRender, int x, int y, 
             int color, int selColor) {
-        e3d.pushClip();
-        e3d.clip(x, y, w, h);
+        hudRender.pushClip();
+        hudRender.clip(x, y, w, h);
         
-        ListItem topItem = items.elementAt(topIndex);
+        ListItem topItem = items.get(topIndex);
         
         int searchStep = 0;
         if(topItem.y+topItem.height+yScroll < 0) searchStep = 1;
@@ -93,7 +93,7 @@ public class ItemList {
         
         if(searchStep != 0) {
             while(topIndex >= 0 && topIndex < items.size()) {
-                ListItem item = items.elementAt(topIndex);
+                ListItem item = items.get(topIndex);
             
                 if(yScroll + item.y <= 0 && 
                         yScroll + item.y + item.height > 0) {
@@ -105,14 +105,14 @@ public class ItemList {
         topIndex = Math.max(0, Math.min(items.size()-1, topIndex));
         
         for(int i=topIndex; i < items.size(); i++) {
-            ListItem item = items.elementAt(i);
+            ListItem item = items.get(i);
             
             if(y+item.y+yScroll >= y+h) break;
             
-            item.draw(e3d, x, y, w, h, yScroll, index == i, color, selColor);
+            item.draw(hudRender, x, y, w, h, yScroll, index == i, color, selColor);
         }
 
-        e3d.popClip();
+        hudRender.popClip();
     }
     
     public boolean isInBox(int x, int y, int mx, int my) {
@@ -138,7 +138,7 @@ public class ItemList {
         int listY = y + yScroll;
         int newId = -1;
         for(int i=topIndex; i<items.size(); i++) {
-            ListItem item = items.elementAt(i);
+            ListItem item = items.get(i);
             if(item.skip) continue;
             
             if(mouseY >= listY+item.y && mouseY < listY+item.y+item.height) {
@@ -152,12 +152,12 @@ public class ItemList {
             if(index != -1) itemSelected();
         }
         
-        if(index != -1) items.elementAt(index).mouseUpdate(x, y+yScroll, mouseX, mouseY);
+        if(index != -1) items.get(index).mouseUpdate(x, y+yScroll, mouseX, mouseY);
     }
 
     public void mouseScroll(int addY) {
         if(index != -1) {
-            if(items.elementAt(index).onMouseScroll(addY)) return;
+            if(items.get(index).onMouseScroll(addY)) return;
         }
         
         yScroll += addY;
@@ -165,7 +165,7 @@ public class ItemList {
     }
     
     public void itemSelected() {
-        if(index != -1) items.elementAt(index).onSelected();
+        if(index != -1) items.get(index).onSelected();
     }
     
     public boolean mouseAction(int x, int y, int mx, int my, boolean pressed) {
@@ -177,14 +177,14 @@ public class ItemList {
         }
         
         if(!pressed && index == itemPressed && index != -1) {
-            items.elementAt(index).onClick(x, y+yScroll, mx, my);
+            items.get(index).onClick(x, y+yScroll, mx, my);
         }
         return true;
     }
     
     public boolean keyPressed(int key) {
         if(index != -1 && Keys.isThatBinding(key, Keys.OK)) {
-            items.elementAt(index).onEnter();
+            items.get(index).onEnter();
             return true;
         }
         
@@ -218,7 +218,7 @@ public class ItemList {
         if(index < 0) index = items.size() - 1;
         else index %= items.size();
         
-        if(items.elementAt(index).skip) {
+        if(items.get(index).skip) {
             scrollIndex(i);
             return;
         }
@@ -278,7 +278,7 @@ public class ItemList {
     }
     
     public final ListItem getCurrentItem() {
-        return index == -1 ? null : items.elementAt(index);
+        return index == -1 ? null : items.get(index);
     }
 
     public void setVCenter(boolean vCenter) {

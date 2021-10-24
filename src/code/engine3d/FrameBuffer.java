@@ -1,7 +1,6 @@
 package code.engine3d;
 
-import org.lwjgl.opengl.ARBFramebufferObject;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33C;
 
 /**
  *
@@ -14,61 +13,63 @@ public class FrameBuffer {
     public Texture tex;
     
     public FrameBuffer(int w, int h, boolean createDepth) {
-        frameBuffer = ARBFramebufferObject.glGenFramebuffers();
-        ARBFramebufferObject.glBindFramebuffer(ARBFramebufferObject.GL_FRAMEBUFFER, frameBuffer);
+        frameBuffer = GL33C.glGenFramebuffers();
+        GL33C.glBindFramebuffer(GL33C.GL_FRAMEBUFFER, frameBuffer);
         
         if(createDepth) {
-            depthBuffer = ARBFramebufferObject.glGenRenderbuffers();
-            ARBFramebufferObject.glBindRenderbuffer(ARBFramebufferObject.GL_RENDERBUFFER, depthBuffer);
-            //Set as depth buffer
-            ARBFramebufferObject.glRenderbufferStorage(ARBFramebufferObject.GL_RENDERBUFFER, GL11.GL_DEPTH_COMPONENT,
-                    w, h);
-            ARBFramebufferObject.glBindRenderbuffer(ARBFramebufferObject.GL_RENDERBUFFER, 0);
+            depthBuffer = GL33C.glGenRenderbuffers();
 
-            ARBFramebufferObject.glFramebufferRenderbuffer(ARBFramebufferObject.GL_FRAMEBUFFER,
-                    ARBFramebufferObject.GL_DEPTH_ATTACHMENT,
-                    ARBFramebufferObject.GL_RENDERBUFFER,
+            GL33C.glBindRenderbuffer(GL33C.GL_RENDERBUFFER, depthBuffer);
+            //Set as depth buffer
+            GL33C.glRenderbufferStorage(GL33C.GL_RENDERBUFFER, GL33C.GL_DEPTH_COMPONENT,
+                    w, h);
+            GL33C.glBindRenderbuffer(GL33C.GL_RENDERBUFFER, 0);
+
+            GL33C.glFramebufferRenderbuffer(GL33C.GL_FRAMEBUFFER,
+                    GL33C.GL_DEPTH_ATTACHMENT,
+                    GL33C.GL_RENDERBUFFER,
                     depthBuffer);
         }
         
         tex = Texture.createTexture(w, h);
 
         //Set as color color buffer
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.id);
-        GL11.glDrawBuffer(ARBFramebufferObject.GL_COLOR_ATTACHMENT0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, tex.id);
+        GL33C.glDrawBuffer(GL33C.GL_COLOR_ATTACHMENT0);
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
 
         // Set "renderedTexture" as our colour attachement #0
-        ARBFramebufferObject.glFramebufferTexture2D(ARBFramebufferObject.GL_FRAMEBUFFER,
-                ARBFramebufferObject.GL_COLOR_ATTACHMENT0,
-                GL11.GL_TEXTURE_2D,
+        GL33C.glFramebufferTexture2D(GL33C.GL_FRAMEBUFFER,
+                GL33C.GL_COLOR_ATTACHMENT0,
+                GL33C.GL_TEXTURE_2D,
                 tex.id,
                 0);
         
-        int status = ARBFramebufferObject.glCheckFramebufferStatus(ARBFramebufferObject.GL_FRAMEBUFFER);
-        ARBFramebufferObject.glBindFramebuffer(ARBFramebufferObject.GL_FRAMEBUFFER, 0);
+        int status = GL33C.glCheckFramebufferStatus(GL33C.GL_FRAMEBUFFER);
+        GL33C.glBindFramebuffer(GL33C.GL_FRAMEBUFFER, 0);
         
-        if(status != ARBFramebufferObject.GL_FRAMEBUFFER_COMPLETE) {
-            throw new Error("error in framebuffer init");
+        if(status != GL33C.GL_FRAMEBUFFER_COMPLETE) {
+            System.out.println("Framebuffer creation isn't completed");
         }
+        
+        int error = GL33C.glGetError();
+        if(error != 0) System.out.println("GL framebuffer creation error "+error);
     }
     
     public void destroy() {
-        if(frameBuffer != 0) {
-            ARBFramebufferObject.glDeleteFramebuffers(frameBuffer);
-        }
-        if(depthBuffer != 0) {
-            ARBFramebufferObject.glDeleteRenderbuffers(depthBuffer);
-        }
+        GL33C.glDeleteFramebuffers(frameBuffer);
+        GL33C.glDeleteRenderbuffers(depthBuffer);
+        
         tex.destroy();
+        tex = null;
     }
     
     public void bind() {
-        ARBFramebufferObject.glBindFramebuffer(ARBFramebufferObject.GL_FRAMEBUFFER, frameBuffer);
+        GL33C.glBindFramebuffer(GL33C.GL_FRAMEBUFFER, frameBuffer);
     }
     
     public void unbind() {
-        ARBFramebufferObject.glBindFramebuffer(ARBFramebufferObject.GL_FRAMEBUFFER, 0);
+        GL33C.glBindFramebuffer(GL33C.GL_FRAMEBUFFER, 0);
     }
 
 }

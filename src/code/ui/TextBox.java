@@ -1,7 +1,7 @@
 package code.ui;
 
 import code.engine.Screen;
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 import code.utils.font.BMFont;
 
 /**
@@ -52,9 +52,9 @@ public class TextBox {
         return font.getHeight() + 4;
     }
     
-    public void draw(E3D e3d, boolean focused, int focusedColor) {
+    public void draw(HudRender hudRender, boolean focused, int focusedColor) {
         int h = getHeight();
-        e3d.drawRect(null, x, y, w, h, 0, 0.5f);
+        hudRender.drawRect(x, y, w, h, 0, 0.5f);
         
         int color = (focused || selected) ? focusedColor : 0xffffff;
         
@@ -62,15 +62,15 @@ public class TextBox {
             int lineWidth = selected?2:1;
             float alpha = selected?1:0.5f;
             
-            e3d.drawRect(null, x, y, w, lineWidth, color, alpha);
-            e3d.drawRect(null, x, y+h-lineWidth, w, lineWidth, color, alpha);
+            hudRender.drawRect(x, y, w, lineWidth, color, alpha);
+            hudRender.drawRect(x, y+h-lineWidth, w, lineWidth, color, alpha);
             
-            e3d.drawRect(null, x, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
-            e3d.drawRect(null, x+w-lineWidth, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
+            hudRender.drawRect(x, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
+            hudRender.drawRect(x+w-lineWidth, y+lineWidth, lineWidth, h-lineWidth*2, color, alpha);
         }
         
-        e3d.pushClip();
-        e3d.clip(x, y, w, h);
+        hudRender.pushClip();
+        hudRender.clip(x, y, w, h);
         
         int textWidth = font.stringWidth(text);
         
@@ -78,12 +78,12 @@ public class TextBox {
         int textWithStuffWidth = textWidth + (selected?fontScale*3:0);
         int textX = 2+Math.min(0, w-4 - textWithStuffWidth);
         
-        font.drawString(text, x + textX, y+2, 1, color);
+        font.drawString(hudRender, text, x + textX, y+2, 1, color);
         
         if(selected) {
             int time = (int)(((System.currentTimeMillis() - openTime)/500)&1);
             if(time == 0) {
-                e3d.drawRect(null, 
+                hudRender.drawRect(
                         x + textX+textWidth+fontScale, y+2+fontScale*3, 
                         fontScale, h-4-fontScale*3, 
                         focusedColor, 1);
@@ -91,7 +91,7 @@ public class TextBox {
             
         }
         
-        e3d.popClip();
+        hudRender.popClip();
     }
     
     public boolean isInBox(int mx, int my) {

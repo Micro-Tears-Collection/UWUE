@@ -1,11 +1,11 @@
 package code.game.world.entities;
 
 import code.engine3d.E3D;
-import code.engine3d.Sprite;
+import code.engine3d.instancing.Sprite;
 
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
+import code.math.collision.Ray;
 import code.math.Vector3D;
 
 import code.utils.FPS;
@@ -16,8 +16,26 @@ import code.utils.FPS;
  */
 public class SpriteObject extends Entity {
     
-    public Sprite spr;
+    private Sprite spr;
     public boolean visible = true;
+    
+    public SpriteObject(Sprite spr) {
+        this.spr = spr;
+    }
+    
+    public void destroy() {
+        spr.destroy();
+        spr = null;
+        super.destroy();
+    }
+	
+	public Vector3D getMin() {
+		return new Vector3D(pos.x - spr.w / 2, pos.y + spr.h*spr.align/2, pos.z - spr.w / 2);
+	}
+	
+	public Vector3D getMax() {
+		return new Vector3D(pos.x + spr.w / 2, pos.y + spr.h*(2 - spr.align)/2, pos.z + spr.w / 2);
+	}
     
     public boolean rayCast(Ray ray, boolean onlyMeshes) {
         if(onlyMeshes) return false;
@@ -25,7 +43,7 @@ public class SpriteObject extends Entity {
         Vector3D tmp = new Vector3D(pos);
         tmp.add(0, spr.h*(spr.align+1)/2, 0);
         
-        return Entity.rayCastSphere(ray, tmp, spr.w/2);
+        return Entity.rayCastSphere(ray, tmp, spr.w/2, spr.h);
     }
     
     public void update(World world) {

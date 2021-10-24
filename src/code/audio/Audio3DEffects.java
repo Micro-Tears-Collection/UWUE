@@ -43,20 +43,20 @@ public class Audio3DEffects {
         EXTEfx.alDeleteEffects(reverbEffect);
     }
     
-    static void enableHRTF(long device) {
+    static void disableHRTF(long device) {
         int num_hrtf = ALC10.alcGetInteger(device, SOFTHRTF.ALC_NUM_HRTF_SPECIFIERS_SOFT);
         if(num_hrtf == 0) {
-            System.out.println("No HRTFs found");
+            //System.out.println("No HRTFs found");
         } else {
-            if(!SOFTHRTF.alcResetDeviceSOFT(device, new int[]{SOFTHRTF.ALC_HRTF_SOFT, ALC10.ALC_TRUE, 0})) {
-                System.out.format("Failed to reset device: %s\n", 
+            if(!SOFTHRTF.alcResetDeviceSOFT(device, new int[]{SOFTHRTF.ALC_HRTF_SOFT, ALC10.ALC_FALSE, 0})) {
+                System.out.format("Failed to reset openal device: %s\n", 
                         ALC10.alcGetString(device, ALC10.alcGetError(device)));
             }
 
-            int hrtf_state = ALC10.alcGetInteger(device, SOFTHRTF.ALC_HRTF_SOFT);
+            /*int hrtf_state = ALC10.alcGetInteger(device, SOFTHRTF.ALC_HRTF_SOFT);
             if(hrtf_state == 0) {
                 System.out.format("HRTF not enabled!\n");
-            }
+            }*/
         }
     }
 

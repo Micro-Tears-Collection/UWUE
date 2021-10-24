@@ -1,9 +1,7 @@
 package code.game;
 
-import code.engine.Engine;
 import code.engine.Screen;
 
-import code.engine3d.E3D;
 import code.game.scripting.Scripting;
 
 import code.ui.itemList.ItemList;
@@ -18,7 +16,7 @@ import code.utils.font.BMFont;
 public class DialogScreen extends Screen {
 
     public Game game;
-    private int w,h;
+    private int w, h;
     
     private BMFont font;
     private String dialogPath;
@@ -61,7 +59,7 @@ public class DialogScreen extends Screen {
     }
     
     public void set(String[] text, Game game, BMFont font) {
-        w = getWidth(); h = getHeight();
+        w = game.main.getWidth(); h = game.main.getHeight();
         this.font = font;
         dialogPath = null;
         reset = true;
@@ -97,7 +95,7 @@ public class DialogScreen extends Screen {
     public void open() {
         game.main.setScreen(this);
         initView();
-        Engine.showCursor(true);
+        game.main.window.showCursor(true);
     }
     
     public void show() {
@@ -249,33 +247,33 @@ public class DialogScreen extends Screen {
 
         int x = getDialogX();
         int y = getDialogY();
-        game.e3d.drawWindow(game.getViewportX(), y, game.getViewportW(), textView.getHeight());
+        game.main.hudRender.drawWindow(game.getViewportX(), y, game.getViewportW(), textView.getHeight());
         
         //Draw dialog
         int textBegin, textEnd;
         if(itemList == null) {
             textBegin = y+textView.getYScroll();
             textEnd = textBegin + textView.getTextHeight();
-            textView.draw(game.e3d, x, y, game.main.fontColor);
+            textView.draw(game.main.hudRender, x, y, game.main.fontColor);
         } else { //Draw question
             textBegin = y+itemList.getYScroll();
             textEnd = textBegin + itemList.getFullHeight();
             
-            itemList.mouseUpdate(x, y, getMouseX(), getMouseY());
+            itemList.mouseUpdate(x, y, game.main.getMouseX(), game.main.getMouseY());
             
-            itemList.draw(game.e3d, x, y, game.main.fontColor, game.main.fontSelColor);
+            itemList.draw(game.main.hudRender, x, y, game.main.fontColor, game.main.fontSelColor);
         }
         
         if((textView.getTextHeight() > textView.getHeight() && itemList == null)
                 || (itemList != null && itemList.getFullHeight() > textView.getHeight())) {
 
             //Down arrow
-            if(textEnd > y + textView.getHeight()) game.e3d.drawArrow(
+            if(textEnd > y + textView.getHeight()) game.main.hudRender.drawArrow(
                         game.getViewportX() + game.getViewportW() - 10 - 3, y + textView.getHeight() - 10 - 3,
                         20, 20, 90, game.main.fontColor, 1);
 
             //Up arrow
-            if(textBegin < y) game.e3d.drawArrow(
+            if(textBegin < y) game.main.hudRender.drawArrow(
                         game.getViewportX() + game.getViewportW() - 10 - 3, y + 10 + 3,
                         20, 20, -90, game.main.fontColor, 1);
             /*game.e3d.drawRect(null,
@@ -306,7 +304,7 @@ public class DialogScreen extends Screen {
             itemList = null;
             dialog = null;
 
-            Engine.showCursor(false);
+            game.main.window.showCursor(false);
             game.main.setScreen(game);
             return;
         }
@@ -329,7 +327,7 @@ public class DialogScreen extends Screen {
         } else {
             itemList.mouseAction(
                     getDialogX(), getDialogY(), 
-                    getMouseX(), getMouseY(), 
+                    game.main.getMouseX(), game.main.getMouseY(), 
                     pressed);
         }
     }
@@ -346,6 +344,6 @@ public class DialogScreen extends Screen {
     }
     
     private final int getDialogY() {
-        return game.getViewportY() + game.getViewportH() - textView.getHeight() - E3D.getWindowYBorder();
+        return game.getViewportY() + game.getViewportH() - textView.getHeight() - game.main.hudRender.getWindowYBorder();
     }
 }

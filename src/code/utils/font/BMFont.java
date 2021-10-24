@@ -1,16 +1,12 @@
 package code.utils.font;
 
-import code.engine3d.Material;
+import code.engine3d.HudRender;
 import code.engine3d.Texture;
 
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Enumeration;
 import java.util.Hashtable;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 
 /**
  *
@@ -19,7 +15,6 @@ import org.lwjgl.opengl.GL15;
 public class BMFont {
     
     private Texture[] pages;
-    private Material mat;
     
     public String name;
     private int fontSize, stretchH;
@@ -29,16 +24,6 @@ public class BMFont {
     
     public BMFont() {
         chars = new Hashtable();
-        
-        mat = new Material(null);
-        mat.alphaTest = false;
-        mat.linearInterpolation = true;
-        mat.mipMapping = false;
-        mat.blendMode = Material.BLEND;
-    }
-    
-    public void setInterpolation(boolean interp) {
-        mat.linearInterpolation = interp;
     }
     
     /**
@@ -225,71 +210,45 @@ public class BMFont {
         return 0;
     }
     
+    public int getOriginalHeight() {
+        return fontSize;
+    }
+    
     public int getHeight() {
-        return (int) (fontSize * baseScale);
+        return Math.round(fontSize * baseScale);
     }
     
-    public void drawString(String text, int x, int y, float scale, int color) {
-        drawString(text, x, y, scale, color, 1);
+    public void drawString(HudRender hudRender, String text, float x, float y, float scale, int color) {
+        drawString(hudRender, text, x, y, scale, color, 1);
     }
     
-    public void drawString(String text, int x, int y, float scale, int color, float a) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        
+    public void drawString(HudRender hudRender, String text, float x, float y, float scale, int color, float a) {
         float scale2 = baseScale * scale;
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(scale2, scale2, scale2);
-        
-        GL15.glEnableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glEnableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        
-        GL11.glColor4f(((color>>16)&255) / 255f, 
-                ((color>>8)&255) / 255f, 
-                (color&255) / 255f, a);
-        
 
         int prevCP = 0;
-        int prevPage = -1;
-        float px = x;
+        //int prevPage = -1;
+        int dx = 0;
         for(int i=0; i<text.length(); i++) {
             BMChar c = chars.get(Character.codePointAt(text, i));
             if(c == null) continue;
             
             if(prevCP != 0) {
                 Integer kerning = c.kerning.get(prevCP);
-                if(kerning != null) x += kerning;
+                if(kerning != null) dx += kerning;
             }
             
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, c.coordVBO);
-            GL15.glVertexPointer(3, GL15.GL_FLOAT, 0, 0);
-
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, c.uvVBO);
-            GL15.glTexCoordPointer(2, GL15.GL_FLOAT, 0, 0);
-            
-            if(prevPage != c.texPage) {
-                mat.tex = pages[c.texPage];
-                mat.bind();
+            /*if(prevPage != c.texPage) {
                 prevPage = c.texPage;
-            }
+            }*/
             
-            GL11.glTranslatef(x-px, 0, 0);
-            px = x;
-            GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
+            hudRender.drawRect(pages[c.texPage], 
+                    x+(dx+c.x)*scale2, y+(c.y)*scale2, 
+                    c.w*scale2, c.h*scale2,
+                    c.u1, c.v1, c.u2, c.v2, color, a);
             
-            x += c.xAdvance;
+            dx += c.xAdvance;
             prevCP = c.cp;
         }
-        
-        mat.unbind();
-        
-        GL15.glDisableClientState(GL15.GL_VERTEX_ARRAY);
-        GL15.glDisableClientState(GL15.GL_TEXTURE_COORD_ARRAY);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        GL11.glColor4f(1, 1, 1, 1);
-        
-        GL11.glPopMatrix();
     }
     
     public void destroy() {
@@ -298,10 +257,10 @@ public class BMFont {
         }
         pages = null;
         
-        Enumeration<BMChar> els = chars.elements();
+        /*Enumeration<BMChar> els = chars.elements();
         while(els.hasMoreElements()) {
             els.nextElement().destroy();
-        }
+        }*/
         chars = null;
     }
 

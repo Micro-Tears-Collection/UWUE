@@ -16,6 +16,12 @@ public class SoundSourceEntity extends Entity {
         this.source = source;
     }
     
+    public void destroy() {
+        super.destroy();
+        source.destroy();
+        source = null;
+    }
+    
     /*public void play() {
         source.play();
     }

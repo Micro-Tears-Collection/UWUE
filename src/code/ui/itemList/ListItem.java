@@ -1,6 +1,6 @@
 package code.ui.itemList;
 
-import code.engine3d.E3D;
+import code.engine3d.HudRender;
 
 /**
  *
@@ -20,7 +20,7 @@ public class ListItem {
     
     public void updateHeight(int w) {}
     
-    public void draw(E3D e3d, int windowX, int windowY, int windowW, int windowH, 
+    public void draw(HudRender hudRender, int windowX, int windowY, int windowW, int windowH, 
             int yScroll, boolean selected, int color, int selColor) {}
     
     public void onSelected() {}

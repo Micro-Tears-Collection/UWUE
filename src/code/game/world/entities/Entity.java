@@ -4,10 +4,11 @@ import code.engine3d.E3D;
 
 import code.game.Main;
 import code.game.scripting.Scripting;
+import code.game.world.Node;
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.Sphere;
+import code.math.collision.Ray;
+import code.math.collision.Sphere;
 import code.math.MathUtils;
 import code.math.Vector3D;
 
@@ -21,16 +22,25 @@ public class Entity {
     
     //World-entity stuff
     public Vector3D pos = new Vector3D();
+	public Node node;
     
     public String name, unicalID;
     
+    public void destroy() {
+        pos = null;
+        name = unicalID = null;
+        activateWhen = onActivate = onFail = null;
+    }
+    
     public void update(World world) {}
+	public Vector3D getMin() {return new Vector3D(pos);}
+	public Vector3D getMax() {return new Vector3D(pos);}
     public void physicsUpdate(World world) {}
     public void collisionTest(Entity entity) {}
     public boolean rayCast(Ray ray, boolean onlyMeshes) {return false;}
     public boolean meshSphereCast(Sphere sphere) {return false;}
     //spherecast is only for mesh objects
-    //this physics system sucks i should rewrite it
+    //todo this physics system sucks i should rewrite it
     
     public void animate(long step, boolean paused, Entity teteAtete) {}
     public void render(E3D e3d, World world) {}
@@ -92,11 +102,23 @@ public class Entity {
         return start.distanceSqr(pos) <= activateRadius*activateRadius;
     }
     
-    protected static boolean rayCastSphere(Ray ray, Vector3D pos, float radius) {
-        float dist = MathUtils.distanceToRay(pos, ray.start, ray.dir);
-        if(dist > radius*radius) return false;
+	//todo make this right way
+    protected static boolean rayCastSphere(Ray ray, Vector3D pos, float radius, float height) {
+		Vector3D rayStart = new Vector3D(ray.start);
+		rayStart.sub(pos);
+		rayStart.mul(1, 2 * radius / height, 1);
+		rayStart.add(pos);
+		
+		Vector3D rayDir = new Vector3D(ray.dir);
+		rayDir.mul(1, 2 * radius / height, 1);
+		
+        float distSphere = MathUtils.distanceToRay(pos, rayStart, rayDir);
+        if(distSphere > radius*radius) return false;
         
-        dist = Math.max(0, ray.start.distanceSqr(pos) - radius*radius);
+		rayDir.setLength((float) Math.max(0, rayStart.distance(pos) - radius));
+		rayDir.div(1, 2 * radius / height, 1);
+		
+        float dist = rayDir.lengthSquared();
         
         if(dist < ray.dir.lengthSquared() && dist < ray.distance*ray.distance) {
             ray.distance = (float) Math.sqrt(dist);

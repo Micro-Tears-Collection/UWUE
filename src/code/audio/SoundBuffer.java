@@ -3,9 +3,6 @@ package code.audio;
 import code.utils.assetManager.AssetManager;
 import code.utils.assetManager.ReusableContent;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -38,14 +35,11 @@ public class SoundBuffer extends ReusableContent {
     public static SoundBuffer get(String file) {
         SoundBuffer sound = (SoundBuffer)AssetManager.get("SOUNDBUFF_" + file);
         
-        if(sound != null) {
-            sound.use();
-            
-        } else {
+        if(sound == null) {
             sound = loadBuffer(file);
             
             if(sound != null) {
-                AssetManager.addReusable("SOUNDBUFF_" + file, sound);
+                AssetManager.add("SOUNDBUFF_" + file, sound);
             }
         }
         
@@ -67,22 +61,15 @@ public class SoundBuffer extends ReusableContent {
             return null;
         }
 
-        ByteBuffer bruh = null;
-        try {
-            FileInputStream is = new FileInputStream(new File("data", file));
-            DataInputStream dis = new DataInputStream(is);
-            byte[] data = new byte[dis.available()];
-            dis.readFully(data);
-            dis.close();
-            bruh = MemoryUtil.memAlloc(data.length);
-            bruh.put(data);
-            bruh.rewind();
-        } catch (Exception e) {
-            e.printStackTrace();
-            AL10.alDeleteBuffers(soundBuffer);
-            if(bruh != null) MemoryUtil.memFree(bruh);
-            return null;
-        }
+		byte[] data = AssetManager.load(file);
+		if(data == null) {
+			AL10.alDeleteBuffers(soundBuffer);
+			return null;
+		}
+		
+        ByteBuffer bruh = MemoryUtil.memAlloc(data.length);
+        bruh.put(data);
+        bruh.rewind();
         
         IntBuffer sampleRate = MemoryUtil.memAllocInt(1);
         IntBuffer channels = MemoryUtil.memAllocInt(1);
@@ -93,6 +80,7 @@ public class SoundBuffer extends ReusableContent {
         AL10.alBufferData(soundBuffer, 
                 channels.get(0)==1?AL10.AL_FORMAT_MONO16:AL10.AL_FORMAT_STEREO16, 
                 decoded, sampleRate.get(0));
+		
         MemoryUtil.memFree(sampleRate);
         MemoryUtil.memFree(channels);
         MemoryUtil.memFree(decoded);

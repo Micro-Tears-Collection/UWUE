@@ -4,8 +4,8 @@ import code.engine.Screen;
 
 import code.audio.AudioEngine;
 
-import code.engine3d.Lighting.Light;
-import code.engine3d.Lighting.LightGroup;
+import code.engine3d.game.lighting.Light;
+import code.engine3d.game.lighting.LightGroup;
 import code.game.DialogScreen;
 import code.game.Fade;
 import code.game.Game;
@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaBoolean;
@@ -118,8 +118,8 @@ public class Scripting {
         Game game = main.getGame();
 
         Vector3D newPlayerPos = null;
-        float rotX = Float.MAX_VALUE;
-        float rotY = Float.MAX_VALUE;
+        float rotX = Game.DONT_ROTATE;
+        float rotY = Game.DONT_ROTATE;
         
         if(!data.isnil() && data.istable()) {
             LuaValue pos = data.get("pos");
@@ -406,6 +406,30 @@ public class Scripting {
                 return LuaValue.NIL;
             }
         });
+		
+		lua.set("ambientLight", new TwoArgFunction() {
+			public LuaValue call(LuaValue obj, LuaValue val) {
+				LightGroup lightgroup = LightGroup.findLightGroup(obj.toString());
+				if(lightgroup == null) return LuaValue.NIL;
+
+				if(!val.isnil()) {
+					if(val.istable())
+						lightgroup.setAmbient(new float[]{
+							val.get(1).tofloat(),
+							val.get(2).tofloat(),
+							val.get(3).tofloat()
+						});
+					else if(val.isnumber())
+						lightgroup.setAmbient(new float[]{val.tofloat()});
+				}
+
+				return LuaTable.listOf(new LuaValue[]{
+					LuaValue.valueOf(lightgroup.ambient[0] * 255),
+					LuaValue.valueOf(lightgroup.ambient[1] * 255),
+					LuaValue.valueOf(lightgroup.ambient[2] * 255)
+				});
+			}
+		});
         
         lua.set("objVar", new ThreeArgFunction() {
             public LuaValue call(LuaValue obj, LuaValue var, LuaValue val)  {
@@ -427,8 +451,6 @@ public class Scripting {
                 if(entity == null) {
                     Light light = LightGroup.findLight(obj.toString());
                     
-                    if(light == null) return LuaValue.NIL;
-                    
                     if(varName.equals("color")) {
                         if(!val.isnil()) {
                             if(val.istable()) 
@@ -442,9 +464,9 @@ public class Scripting {
                         }
 
                         return LuaTable.listOf(new LuaValue[]{
-                            LuaValue.valueOf(light.color.get(0)*255),
-                            LuaValue.valueOf(light.color.get(1)*255),
-                            LuaValue.valueOf(light.color.get(2)*255)
+                            LuaValue.valueOf(light.color[0]*255),
+                            LuaValue.valueOf(light.color[1]*255),
+                            LuaValue.valueOf(light.color[2]*255)
                         });
                     }
                     
@@ -597,7 +619,7 @@ public class Scripting {
     }
     
     public static int[] buildSourcesArray(Game game, LuaValue list) {
-        Vector<Integer> sourcesV = new Vector();
+        ArrayList<Integer> sourcesV = new ArrayList<Integer>();
         
         for(int i=0; i<list.length(); i++) {
             Entity found = game!=null?game.world.findObject(list.get(i+1).toString()):null;
@@ -610,7 +632,7 @@ public class Scripting {
         int[] sources = new int[sourcesV.size()];
 
         for(int i=0; i<sources.length; i++) {
-            sources[i] = sourcesV.elementAt(i);
+            sources[i] = sourcesV.get(i);
         }
         
         return sources;
@@ -644,7 +666,7 @@ public class Scripting {
         if(val.istable()) {
             dos.writeInt(TAB);
             
-            Vector<Varargs> vals = new Vector();
+            ArrayList<Varargs> vals = new ArrayList<Varargs>();
             
             LuaValue k = LuaValue.NIL;
             while(true) {
@@ -656,7 +678,7 @@ public class Scripting {
             
             dos.writeInt(vals.size());
             for(int i=0; i<vals.size(); i++) {
-                Varargs el = vals.elementAt(i);
+                Varargs el = vals.get(i);
                 save(el.arg1(), dos);
                 save(el.arg(2), dos);
             }

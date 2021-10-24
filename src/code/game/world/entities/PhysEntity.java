@@ -2,8 +2,8 @@ package code.game.world.entities;
 
 import code.game.world.World;
 
-import code.engine3d.collision.Ray;
-import code.engine3d.collision.Sphere;
+import code.math.collision.Ray;
+import code.math.collision.Sphere;
 import code.math.Vector3D;
 
 import code.utils.FPS;
@@ -14,6 +14,7 @@ import code.utils.FPS;
  */
 public class PhysEntity extends Entity {
     
+	//todo add mass center?
     public float hp = 100;
     public Vector3D speed = new Vector3D();
     public float rotY;
@@ -24,19 +25,23 @@ public class PhysEntity extends Entity {
     
     public boolean physics = true, pushable = true, canPush = true;
     
+    public void destroy() {
+        super.destroy();
+        speed = null;
+    }
+    
     public void setSize(float radius, float height) {
         this.radius = radius;
         this.height = height;
     }
-    
-    public boolean rayCast(Ray ray, boolean onlyMeshes) {
-        if(onlyMeshes) return false;
-        
-        Vector3D tmp = new Vector3D(pos);
-        tmp.add(0, height-radius, 0);
-        
-        return Entity.rayCastSphere(ray, tmp, radius);
-    }
+	
+	public Vector3D getMin() {
+		return new Vector3D(pos.x - radius, pos.y, pos.z - radius);
+	}
+	
+	public Vector3D getMax() {
+		return new Vector3D(pos.x + radius, pos.y + height, pos.z + radius);
+	}
     
     public boolean damage(int damage, Entity attacker) {
         hp -= damage;
@@ -52,6 +57,15 @@ public class PhysEntity extends Entity {
         return hp > 0;
     }
     
+    public boolean rayCast(Ray ray, boolean onlyMeshes) {
+        if(onlyMeshes) return false;
+        
+        Vector3D tmp = new Vector3D(pos);
+        tmp.add(0, height / 2, 0);
+        
+        return Entity.rayCastSphere(ray, tmp, radius, height);
+    }
+    
     public void physicsUpdate(World world) {
         if(physics) {
             move(world);
@@ -61,7 +75,7 @@ public class PhysEntity extends Entity {
             if(world.fallDeath && fallingTime >= 3000) hp = 0;
         }
         
-        double horizFriction = onGround ? 0.546 : 0.61;
+        double horizFriction = 0.546;//onGround ? 0.546 : 0.61;
         double verticalFriction = 0.98;
         horizFriction = Math.pow(horizFriction, FPS.frameTime / 50d);
         verticalFriction = Math.pow(verticalFriction, FPS.frameTime / 50d);
@@ -72,6 +86,8 @@ public class PhysEntity extends Entity {
         
         //gravity
         speed.y -= 8F * FPS.frameTime / 50;
+		
+		super.physicsUpdate(world);
     }
     
     private static final Vector3D tmp = new Vector3D(), tmp2 = new Vector3D();
@@ -152,21 +168,23 @@ public class PhysEntity extends Entity {
         if(onGround) speed.y = height;
     }
     
-    public void walk(float front, float right, float maxSpeed) {
+    public void walk(float front, float right) {
         float sin = (float) Math.sin(Math.toRadians(rotY));
         float cos = (float) Math.cos(Math.toRadians(rotY));
         
-        if(!onGround) {
+        /*if(!onGround) {
             front *= 0.2;
             right *= 0.2;
-        }
+        }*/
+		
+		if(front != 0 && right != 0) {
+			//1 / (2^0.5) ~= 0.70710678
+			front *= 0.70710678;
+			right *= 0.70710678;
+		}
         
-        speed.x += (-sin * front + cos * right) * FPS.currentTime / 50f;
-        speed.z += (-cos * front - sin * right) * FPS.currentTime / 50f;
-        
-        float oy = speed.y; speed.y = 0;
-        if(speed.lengthSquared() > maxSpeed * maxSpeed) speed.setLength(maxSpeed);
-        speed.y = oy;
+        speed.x += (-sin * front + cos * right) * FPS.frameTime / 50f;
+        speed.z += (-cos * front - sin * right) * FPS.frameTime / 50f;
     }
 
 }

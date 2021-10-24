@@ -34,7 +34,7 @@ vt 0.34439313411713 0.12447464466095 0
 # 14 texture coordinates
 
 o Ноль_объект.53
-usemtl /textures/grassy/woody.png
+usemtl /textures/grassy/woody
 f 3/4/1 4/3/1 2/2/1 1/1/1
 f 1/1/1 2/2/1 6/3/1 5/4/1
 f 11/8/2 8/7/2 3/6/2 1/5/2
