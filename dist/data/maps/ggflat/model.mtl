@@ -3,10 +3,11 @@
 newmtl default
 Kd 1 1 1
 
-newmtl /textures/stone/concrete
+newmtl /textures/grassy/junk;alpha_test=1
 Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\stone\concrete.png
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 illum 7
 
 newmtl /textures/grassy/woody
@@ -14,6 +15,51 @@ Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\woody.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\woody.png
+illum 7
+
+newmtl /textures/flatpack/wallsmall
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\wallsmall.png
+illum 7
+
+newmtl /textures/flatpack/planks4
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks4.png
+illum 7
+
+newmtl /textures/flatpack/chair
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\chair.png
+illum 7
+
+newmtl /textures/flatpack/wallold2
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\wallold2.png
+illum 7
+
+newmtl /textures/flatpack/tile2
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tile2.png
+illum 7
+
+newmtl /textures/flatpack/windowdusty
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\windowdusty.png
+Kd 1 1 1
+illum 7
+
+newmtl /textures/flatpack/planks5
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks5.png
 illum 7
 
 newmtl /textures/flatpack/planks2
@@ -37,20 +83,6 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\lace.png
 illum 7
 
-newmtl /textures/flatpack/wallsmall
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\wallsmall.png
-illum 7
-
-newmtl /textures/flatpack/planks4
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks4.png
-illum 7
-
 newmtl /textures/flatpack/fridge;wrap=clamp
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
@@ -65,41 +97,17 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\rakovina.png
 illum 7
 
-newmtl /textures/flatpack/stove
+newmtl /textures/flatpack/stovebrown
 Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\stove.png
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\stovebrown.png
 illum 7
 
-newmtl /textures/flatpack/tile4
+newmtl /textures/flatpack/tile5
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tile4.png
-illum 7
-
-newmtl /textures/flatpack/tile3
-Ka 1 1 1
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tile3.png
-illum 7
-
-newmtl /textures/flatpack/planks5
-Ka 1 1 1
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks5.png
-illum 7
-
-newmtl /textures/flatpack/windowdusty
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\windowdusty.png
-Kd 1 1 1
-illum 7
-
-newmtl /textures/flatpack/tile2
-Ka 1 1 1
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tile2.png
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tile5.png
 illum 7
 
 newmtl /textures/flatpack/wallold3
@@ -121,11 +129,10 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\toiletsign.png
 illum 7
 
-newmtl /textures/grassy/junk;alpha_test=1
+newmtl /textures/stone/concrete
 Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\stone\concrete.png
 illum 7
 
 newmtl /textures/metal/graymtl
@@ -159,12 +166,6 @@ Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\cloth.png
-illum 7
-
-newmtl /textures/flatpack/wallold2
-Ka 1 1 1
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\wallold2.png
 illum 7
 
 newmtl /textures/flatpack/wallold
