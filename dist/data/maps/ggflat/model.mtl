@@ -3,17 +3,46 @@
 newmtl default
 Kd 1 1 1
 
+newmtl /textures/flatpack/lsdjewel
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\lsdjewel.png
+illum 7
+
+newmtl /textures/flatpack/console
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\console.png
+illum 7
+
+newmtl /textures/paintings/border
+Ka 1 1 1
+Kd 0.05600000172853 0.05600000172853 0.05600000172853
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\paintings\border.png
+illum 7
+
+newmtl /textures/flatpack/planks5
+Ka 1 1 1
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks5.png
+illum 7
+
+newmtl /textures/paintings/echo
+Ka 1 1 1
+Kd 0.05600000172853 0.05600000172853 0.05600000172853
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\paintings\echo.png
+illum 7
+
+newmtl /textures/paintings/nb
+Ka 1 1 1
+Kd 0.05600000172853 0.05600000172853 0.05600000172853
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\paintings\nb.png
+illum 7
+
 newmtl /textures/flatpack/tv2
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\tv2.png
-illum 7
-
-newmtl /textures/flatpack/planks4
-Ka 1 1 1
-map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks4.png
 illum 7
 
 newmtl /textures/flatpack/wallsmall
@@ -21,6 +50,13 @@ Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\wallsmall.png
+illum 7
+
+newmtl /textures/flatpack/planks4
+Ka 1 1 1
+map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
+Kd 0.80000001192093 0.80000001192093 0.80000001192093
+map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks4.png
 illum 7
 
 newmtl /textures/flatpack/chair
@@ -67,24 +103,6 @@ Ka 1 1 1
 map_Ka C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\grassy\junk.png
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\doorwood.png
-illum 7
-
-newmtl /textures/paintings/nb
-Ka 1 1 1
-Kd 0.05600000172853 0.05600000172853 0.05600000172853
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\paintings\nb.png
-illum 7
-
-newmtl /textures/flatpack/planks5
-Ka 1 1 1
-Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\flatpack\planks5.png
-illum 7
-
-newmtl /textures/paintings/border
-Ka 1 1 1
-Kd 0.05600000172853 0.05600000172853 0.05600000172853
-map_Kd C:\Users\USER\Documents\NetBeansProjects\UWUE\dist\data\textures\paintings\border.png
 illum 7
 
 newmtl /textures/flatpack/wallold2
