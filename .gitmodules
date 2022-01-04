@@ -1,0 +1,9 @@
+[submodule "UtilsText"]
+	path = UtilsText
+	url = https://github.com/Micro-Tears-Collection/UtilsText
+[submodule "UtilsNewKeyboard"]
+	path = UtilsNewKeyboard
+	url = https://github.com/Micro-Tears-Collection/UtilsNewKeyboard
+[submodule "UtilsFps"]
+	path = UtilsFps
+	url = https://github.com/Micro-Tears-Collection/UtilsFps
