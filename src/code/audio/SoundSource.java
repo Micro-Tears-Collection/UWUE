@@ -2,7 +2,6 @@ package code.audio;
 
 import code.math.Vector3D;
 
-import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.EXTEfx;
 import org.lwjgl.openal.SOFTDirectChannels;
@@ -32,13 +31,13 @@ public class SoundSource {
     private void init() {
         // Bind the buffer with the source.
         AudioEngine.sources.add(this);
-        soundSource = AL10.alGenSources();
+        soundSource = AL11.alGenSources();
         
         set3D(true);
         setVolume(volume);
         
-        //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.01f);
-        //AL10.alSourcef(soundSource, AL10.AL_ROLLOFF_FACTOR, 0.4f);
+        //AL11.alSourcef(soundSource, AL11.AL_ROLLOFF_FACTOR, 0.01f);
+		AL11.alSourcef(soundSource, EXTEfx.AL_AIR_ABSORPTION_FACTOR, 0.01f);
         
         setDistance(defRefDist, defMaxDist);
     }
@@ -47,7 +46,7 @@ public class SoundSource {
         AudioEngine.sources.remove(this);
 		stop();
         free();
-        AL10.alDeleteSources(soundSource);
+        AL11.alDeleteSources(soundSource);
     }
     
     public SoundSource beMusicPlayer() {
@@ -64,9 +63,9 @@ public class SoundSource {
         buffer = SoundBuffer.get(file);
         if(buffer != null) {
             buffer.use();
-            AL10.alSourcei(soundSource, AL10.AL_BUFFER, buffer.id);
+            AL11.alSourcei(soundSource, AL11.AL_BUFFER, buffer.id);
             soundName = file;
-        } else AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
+        } else AL11.alSourcei(soundSource, AL11.AL_BUFFER, 0);
     }
     
     public void setSoundType(int type) {
@@ -79,16 +78,16 @@ public class SoundSource {
     }
 
     public void setLoop(boolean loop) {
-        AL10.alSourcei(soundSource, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
+        AL11.alSourcei(soundSource, AL11.AL_LOOPING, loop ? AL11.AL_TRUE : AL11.AL_FALSE);
     }
 
     public boolean getLoop() {
-        return AL10.alGetSourcei(soundSource, AL10.AL_LOOPING) == AL10.AL_TRUE;
+        return AL11.alGetSourcei(soundSource, AL11.AL_LOOPING) == AL11.AL_TRUE;
     }
 
     public void setVolume(float gain) {
         volume = gain;
-        AL10.alSourcef(soundSource, AL10.AL_GAIN, gain*AudioEngine.getSoundTypeVolume(soundType));
+        AL11.alSourcef(soundSource, AL11.AL_GAIN, gain*AudioEngine.getSoundTypeVolume(soundType));
     }
 
     public float getVolume() {
@@ -96,31 +95,31 @@ public class SoundSource {
     }
 
     public void setPitch(float pitch) {
-        AL10.alSourcef(soundSource, AL10.AL_PITCH, pitch);
+        AL11.alSourcef(soundSource, AL11.AL_PITCH, pitch);
     }
 
     public float getPitch() {
-        return AL10.alGetSourcef(soundSource, AL10.AL_PITCH);
+        return AL11.alGetSourcef(soundSource, AL11.AL_PITCH);
     }
     
     public void setPosition(Vector3D pos) {
         if(!use3D) return;
         
         sourcePos[0] = pos.x; sourcePos[1] = pos.y; sourcePos[2] = pos.z;
-        AL10.alSourcefv(soundSource, AL10.AL_POSITION, sourcePos);
+        AL11.alSourcefv(soundSource, AL11.AL_POSITION, sourcePos);
     }
     
     public void setSpeed(Vector3D speed) {
         if(!use3D) return;
         
         sourceSpeed[0] = speed.x; sourceSpeed[1] = speed.y; sourceSpeed[2] = speed.z;
-        AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
+        AL11.alSourcefv(soundSource, AL11.AL_VELOCITY, sourceSpeed);
     }
     
     public void setDistance(float reference, float max) {
-        AL10.alSourcef(soundSource, AL10.AL_REFERENCE_DISTANCE, reference);
-        AL10.alSourcef(soundSource, AL10.AL_MAX_DISTANCE, max);
-        //AL10.alSourcef(soundSource, AL10.AL_REFERENCE_DISTANCE, 100);
+        AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, reference);
+        AL11.alSourcef(soundSource, AL11.AL_MAX_DISTANCE, max);
+        //AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, 100);
     }
     
     public void set3D(boolean use3D) {
@@ -129,7 +128,7 @@ public class SoundSource {
         AL11.alSourcei(
 			soundSource, 
 			SOFTDirectChannels.AL_DIRECT_CHANNELS_SOFT, 
-			use3D ? SOFTDirectChannelsRemix.AL_REMIX_UNMATCHED_SOFT : AL11.AL_FALSE
+			use3D ? AL11.AL_FALSE : SOFTDirectChannelsRemix.AL_REMIX_UNMATCHED_SOFT
 		);
         
         if(Audio3DEffects.auxEffectSlot != 0) {
@@ -139,30 +138,30 @@ public class SoundSource {
     }
 
     public void play() {
-        AL10.alSourcePlay(soundSource);
+        AL11.alSourcePlay(soundSource);
     }
 
     public void pause() {
-        AL10.alSourcePause(soundSource);
+        AL11.alSourcePause(soundSource);
     }
 
     public void stop() {
-        AL10.alSourceStop(soundSource);
+        AL11.alSourceStop(soundSource);
     }
     
     public boolean isPlaying() {
         int[] out = new int[1];
-        AL10.alGetSourcei(soundSource, AL10.AL_SOURCE_STATE, out);
-        return out[0] == AL10.AL_PLAYING;
+        AL11.alGetSourcei(soundSource, AL11.AL_SOURCE_STATE, out);
+        return out[0] == AL11.AL_PLAYING;
     }
     
     public void rewind() {
-        AL10.alSourceRewind(soundSource);
-        AL10.alSourcePlay(soundSource);
+        AL11.alSourceRewind(soundSource);
+        AL11.alSourcePlay(soundSource);
         }
     
     public void free() {
-        AL10.alSourcei(soundSource, AL10.AL_BUFFER, 0);
+        AL11.alSourcei(soundSource, AL11.AL_BUFFER, 0);
         if(buffer != null) buffer.free();
         buffer = null;
     }
