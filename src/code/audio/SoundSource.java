@@ -5,6 +5,8 @@ import code.math.Vector3D;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.EXTEfx;
+import org.lwjgl.openal.SOFTDirectChannels;
+import org.lwjgl.openal.SOFTDirectChannelsRemix;
 
 public class SoundSource {
     public static final float defRefDist = 1, defMaxDist = 1000;
@@ -123,14 +125,12 @@ public class SoundSource {
     
     public void set3D(boolean use3D) {
         this.use3D = use3D;
-        AL10.alSourcei(soundSource, AL10.AL_SOURCE_RELATIVE, use3D?AL10.AL_FALSE:AL10.AL_TRUE);
         
-        if(!use3D) {
-            sourcePos[0] = sourcePos[1] = sourcePos[2] = 0;
-            AL10.alSourcefv(soundSource, AL10.AL_POSITION, sourcePos);
-            sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
-            AL10.alSourcefv(soundSource, AL10.AL_VELOCITY, sourceSpeed);
-        }
+        AL11.alSourcei(
+			soundSource, 
+			SOFTDirectChannels.AL_DIRECT_CHANNELS_SOFT, 
+			use3D ? SOFTDirectChannelsRemix.AL_REMIX_UNMATCHED_SOFT : AL11.AL_FALSE
+		);
         
         if(Audio3DEffects.auxEffectSlot != 0) {
             AL11.alSource3i(soundSource, EXTEfx.AL_AUXILIARY_SEND_FILTER, 
