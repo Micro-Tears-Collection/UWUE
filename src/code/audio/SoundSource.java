@@ -8,7 +8,8 @@ import org.lwjgl.openal.SOFTDirectChannels;
 import org.lwjgl.openal.SOFTDirectChannelsRemix;
 
 public class SoundSource {
-    public static final float defRefDist = 1, defMaxDist = 1000;
+    public static final float MIN_LINEAR_DIST = 1, MIN_DIST = 100, MAX_DIST = 1000;
+	public static final boolean LINEAR_DIST = false;
 
     public String soundName;
     public SoundBuffer buffer;
@@ -36,10 +37,10 @@ public class SoundSource {
         set3D(true);
         setVolume(volume);
         
-        //AL11.alSourcef(soundSource, AL11.AL_ROLLOFF_FACTOR, 0.01f);
+        AL11.alSourcef(soundSource, AL11.AL_ROLLOFF_FACTOR, 1f);
 		AL11.alSourcef(soundSource, EXTEfx.AL_AIR_ABSORPTION_FACTOR, 0.01f);
         
-        setDistance(defRefDist, defMaxDist);
+        setDistance(MIN_DIST, MAX_DIST, false);
     }
     
     public void destroy() {
@@ -116,10 +117,12 @@ public class SoundSource {
         AL11.alSourcefv(soundSource, AL11.AL_VELOCITY, sourceSpeed);
     }
     
-    public void setDistance(float reference, float max) {
-        AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, reference);
+    public void setDistance(float min, float max, boolean linear) {
+        AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, min);
         AL11.alSourcef(soundSource, AL11.AL_MAX_DISTANCE, max);
-        //AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, 100);
+		
+		AL11.alSourcei(soundSource, AL11.AL_DISTANCE_MODEL, 
+			linear ? AL11.AL_LINEAR_DISTANCE_CLAMPED : AL11.AL_INVERSE_DISTANCE);
     }
     
     public void set3D(boolean use3D) {

@@ -4,12 +4,12 @@ import code.math.Vector3D;
 import java.util.ArrayList;
 
 import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.EXTSourceDistanceModel;
 
 /**
  *
@@ -33,10 +33,9 @@ public class AudioEngine {
 
         alcCapabilities = ALC.createCapabilities(device);
         alCapabilities = AL.createCapabilities(alcCapabilities);
-        AL10.alGetError();
+        AL11.alGetError();
         
-        AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
-        //AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE_CLAMPED);
+        AL11.alEnable(EXTSourceDistanceModel.AL_SOURCE_DISTANCE_MODEL);
         AL11.alSpeedOfSound(34300f);
         
         if(alcCapabilities.ALC_SOFT_HRTF) Audio3DEffects.enableHRTF(device);
@@ -63,9 +62,9 @@ public class AudioEngine {
         listenerOri[0] = orientationX;
         listenerOri[2] = orientationZ;
         
-        AL10.alListenerfv(AL10.AL_POSITION, listenerPos);
-        AL10.alListenerfv(AL10.AL_VELOCITY, listenerSpeed);
-        AL10.alListenerfv(AL10.AL_ORIENTATION, listenerOri);
+        AL11.alListenerfv(AL11.AL_POSITION, listenerPos);
+        AL11.alListenerfv(AL11.AL_VELOCITY, listenerSpeed);
+        AL11.alListenerfv(AL11.AL_ORIENTATION, listenerOri);
     }
     
     public static void suspend() {
@@ -84,16 +83,16 @@ public class AudioEngine {
     }
     
     public static void playMultiple(int[] sources) {
-        AL10.alSourcePlayv(sources);
+        AL11.alSourcePlayv(sources);
     }
     
     public static void stopMultiple(int[] sources) {
-        AL10.alSourceStopv(sources);
+        AL11.alSourceStopv(sources);
     }
     
     public static void rewindMultiple(int[] sources) {
-        AL10.alSourceRewindv(sources);
-        AL10.alSourcePlayv(sources);
+        AL11.alSourceRewindv(sources);
+        AL11.alSourcePlayv(sources);
     }
 
     public static float getSoundTypeVolume(int type) {

@@ -332,8 +332,14 @@ public class WorldLoader {
         source.setLoop(ini.getInt("loop", 1) == 1);
         
         source.set3D(ini.getInt("3d_effects", 1) == 1);
-        source.setDistance(ini.getFloat("reference_distance", SoundSource.defRefDist), 
-                ini.getFloat("max_distance", SoundSource.defMaxDist));
+		
+		boolean linear = ini.getInt("linear_attenuation", SoundSource.LINEAR_DIST?1:0) == 1;
+		
+        source.setDistance(
+			ini.getFloat("min_distance", linear ? SoundSource.MIN_LINEAR_DIST : SoundSource.MIN_DIST),
+			ini.getFloat("max_distance", SoundSource.MAX_DIST),
+			linear
+		);
         
         SoundSourceEntity sound = new SoundSourceEntity(source);
         

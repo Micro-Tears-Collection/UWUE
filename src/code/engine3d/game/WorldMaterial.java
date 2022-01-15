@@ -6,6 +6,7 @@ import code.engine3d.Sampler;
 import code.engine3d.Shader;
 import code.engine3d.Texture;
 import code.utils.IniFile;
+import code.utils.StringTools;
 import code.utils.assetManager.AssetManager;
 import code.utils.assetManager.ReusableContent;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 public class WorldMaterial extends Material {
     
     public static final int UNDEFINED = -2, DEFAULT = -1;
-	public static final int UNI_UV_OFFSET = 0, UNI_ALPHA_THRESHOLD = 1;
+	public static final int UNI_UV_OFFSET = 0, UNI_ALPHA_THRESHOLD = 1;//, SPECULAR = 2, ROUGHNESS = 3;
 	public static boolean disableMipmapping;
     
     public Texture tex;
@@ -60,7 +61,7 @@ public class WorldMaterial extends Material {
 		
 		String[] defsarr = defs.toArray(new String[defs.size()]);
 		if(defsarr.length == 0) defsarr = null;
-		Shader shader = e3d.getShader(/*mat.fastShader ? */"world"/* : "fragworld"*/, defsarr);
+		Shader shader = e3d.getShader("world"/*mat.fastShader ? "fastworld" : "fragworld"*/, defsarr);
 		
 		if(e3d.isShaderWasCreated()) {
 			shader.bind();
@@ -72,8 +73,8 @@ public class WorldMaterial extends Material {
 				/*if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
 			
 				if(defs.contains("SPECULAR")) {
-					if(specular == -1) specular = shader.getUniformIndex("specular");
-					if(roughness == -1) roughness = shader.getUniformIndex("roughness");
+					shader.storeUniform(SPECULAR, "specular");
+					shader.storeUniform(ROUGHNESS, "roughness");
 					
 					if(defs.contains("SPECULARMAP")) shader.addTextureUnit("specularMap", 2);
 					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);
@@ -205,8 +206,8 @@ public class WorldMaterial extends Material {
 			}
 			
 			if(specular != null) {
-				shader.setUniform3f(e3d.worldShaderPack.specular, specular[0], specular[1], specular[2]);
-				shader.setUniformf(e3d.worldShaderPack.roughness, roughness);
+				shader.setUniform3f(shader.uniforms[SPECULAR], specular[0], specular[1], specular[2]);
+				shader.setUniformf(shader.uniforms[ROUGHNESS], roughness);
 				
 				if(specularMap != null) {
 					sampler.bind(2);
