@@ -73,6 +73,10 @@ vec3 calcLight(vec3 pos, vec3 norm, vec3 normalizedPos, int i) {
 	return lightCol * NdotV;
 }
 
+/*vec3 pow3(vec3 x, float y) {
+	return vec3(pow(x.x, y), pow(x.y, y), pow(x.z, y));
+}*/
+
 #endif
 
 void main()

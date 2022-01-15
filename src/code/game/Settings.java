@@ -461,7 +461,7 @@ public class Settings extends Screen {
         }
 
         int listX = currentList == list ? w/4 : 0;
-        currentList.mouseUpdate(listX, 0, main.getMouseX(), main.getMouseY());
+        currentList.mouseUpdate(listX, 0, (int)main.getMouseX(), (int)main.getMouseY());
         currentList.draw(main.hudRender, listX, 0, main.fontColor, main.fontSelColor);
     }
     
@@ -469,7 +469,7 @@ public class Settings extends Screen {
         if(key == Screen.MOUSE_LEFT) {
             currentList.mouseAction( 
                     currentList == list ? w/4 : 0, 0, 
-                    main.getMouseX(), main.getMouseY(),
+                    (int)main.getMouseX(), (int)main.getMouseY(),
                     pressed);
         }
     }

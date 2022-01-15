@@ -252,11 +252,11 @@ public class Main extends Screen {
         return window.getHeight();
     }
     
-    public int getMouseX() {
+    public float getMouseX() {
         return window.getMouseX();
     }
     
-    public int getMouseY() {
+    public float getMouseY() {
         return window.getMouseY();
     }
 
@@ -344,7 +344,7 @@ public class Main extends Screen {
 
     public void mouseAction(int button, boolean pressed) {
         if(!pressed && textBox != null && textBox != console) {
-            if(!textBox.isInBox(getMouseX(), getMouseY())) textBox.onMouseUnfocus();
+            if(!textBox.isInBox((int)getMouseX(), (int)getMouseY())) textBox.onMouseUnfocus();
             //Don't return okay?
         } 
         

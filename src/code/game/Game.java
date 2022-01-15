@@ -263,10 +263,10 @@ public class Game extends Screen {
         if(!main.window.isCursorVisible() && main.window.isFocused()) {
             float lookSpeed = 60f / h * main.conf.mouseLookSpeed / 100f;
             
-            player.rotY -= (main.getMouseX() - (w >> 1)) * lookSpeed;
-            player.rotX -= (main.getMouseY() - (h >> 1)) * lookSpeed;
+            player.rotY -= (main.getMouseX() - (w / 2)) * lookSpeed;
+            player.rotX -= (main.getMouseY() - (h / 2)) * lookSpeed;
             
-            main.window.setCursorPos(w >> 1, h >> 1);
+            main.window.setCursorPos(w / 2, h / 2);
         }
         float lookSpeed = FPS.frameTime * 0.1f * main.conf.keyboardLookSpeed / 100f;
         
@@ -374,7 +374,7 @@ public class Game extends Screen {
         if(inPauseScreen && main.getScreen() == this) {
             main.hudRender.drawRect(0, 0, w, h, 0, 0.5f);
             
-            pauseScreen.mouseUpdate(0, 0, main.getMouseX(), main.getMouseY());
+            pauseScreen.mouseUpdate(0, 0, (int)main.getMouseX(), (int)main.getMouseY());
             pauseScreen.draw(main.hudRender, 0, 0, main.fontColor, main.fontSelColor);
         }
         
@@ -434,7 +434,7 @@ public class Game extends Screen {
         
         if(button == MOUSE_LEFT) {
             if(inPauseScreen) {
-                pauseScreen.mouseAction(0, 0, main.getMouseX(), main.getMouseY(), pressed);
+                pauseScreen.mouseAction(0, 0, (int)main.getMouseX(), (int)main.getMouseY(), pressed);
             }
         } else if(!pressed && button == MOUSE_RIGHT) {
             if(!isPaused() && main.conf.debug) world.debugPos(player);

@@ -94,6 +94,8 @@ public class Window {
         long prevContext = GLFW.glfwGetCurrentContext();
         win.bind();
         GLFW.glfwSwapInterval(vsync?1:0); //vsync on
+		if(GLFW.glfwRawMouseMotionSupported()) 
+			GLFW.glfwSetInputMode(window, GLFW.GLFW_RAW_MOUSE_MOTION, GLFW.GLFW_TRUE);
         GLFW.glfwShowWindow(window);
         GL.createCapabilities();
         GLFW.glfwMakeContextCurrent(prevContext);
@@ -161,7 +163,7 @@ public class Window {
         if(show) {
             GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
         } else {
-            GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+            GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
             GLFW.glfwSetCursorPos(window, w >> 1, h >> 1);
         }
 
@@ -176,16 +178,16 @@ public class Window {
         return GLFW.glfwGetWindowMonitor(window) != MemoryUtil.NULL;
     }
     
-    public final int getMouseX() {
+    public final float getMouseX() {
         double[] xx = new double[1];
         GLFW.glfwGetCursorPos(window, xx, null);
-        return (int)xx[0];
+        return (float)xx[0];
     }
     
-    public final int getMouseY() {
+    public final float getMouseY() {
         double[] yy = new double[1];
         GLFW.glfwGetCursorPos(window, null, yy);
-        return (int)yy[0];
+        return (float)yy[0];
     }
     
     public final void setCursorPos(int x, int y) {

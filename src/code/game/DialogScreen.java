@@ -259,7 +259,7 @@ public class DialogScreen extends Screen {
             textBegin = y+itemList.getYScroll();
             textEnd = textBegin + itemList.getFullHeight();
             
-            itemList.mouseUpdate(x, y, game.main.getMouseX(), game.main.getMouseY());
+            itemList.mouseUpdate(x, y, (int)game.main.getMouseX(), (int)game.main.getMouseY());
             
             itemList.draw(game.main.hudRender, x, y, game.main.fontColor, game.main.fontSelColor);
         }
@@ -327,7 +327,7 @@ public class DialogScreen extends Screen {
         } else {
             itemList.mouseAction(
                     getDialogX(), getDialogY(), 
-                    game.main.getMouseX(), game.main.getMouseY(), 
+                    (int)game.main.getMouseX(), (int)game.main.getMouseY(), 
                     pressed);
         }
     }

@@ -147,7 +147,7 @@ public class Menu extends Screen {
         
         main.hudRender.drawRect(logo, lx, ly, logow, logow, 0xffffff, 1);
 
-        menu.mouseUpdate(w / 2, 0, main.getMouseX(), main.getMouseY());
+        menu.mouseUpdate(w / 2, 0, (int)main.getMouseX(), (int)main.getMouseY());
         
         menu.draw(main.hudRender, w / 2, 0, main.fontColor, main.fontSelColor);
     }
@@ -167,7 +167,7 @@ public class Menu extends Screen {
     
     public void mouseAction(int button, boolean pressed) {
         if(button == Screen.MOUSE_LEFT) 
-            menu.mouseAction(w/2, 0, main.getMouseX(), main.getMouseY(), pressed);
+            menu.mouseAction(w/2, 0, (int)main.getMouseX(), (int)main.getMouseY(), pressed);
     }
 
 }
