@@ -91,6 +91,7 @@ public class ModelLoader {
                         meshMatsSet.toArray(meshMatsNames);
                         
                         float[][] poses = new float[meshMatsNames.length][];
+                        //float[][] colors = new float[meshMatsNames.length][];
                         float[][] uvm = new float[meshMatsNames.length][];
                         float[][] normals = new float[meshMatsNames.length][];
                         
@@ -98,6 +99,7 @@ public class ModelLoader {
                             ArrayList<Face> meshFaces = materials.get(meshMatsNames[i]);
                             
                             poses[i] = new float[meshFaces.size() * 3 * 3];
+                            //colors[i] = new float[meshFaces.size() * 3 * 3];
                             uvm[i] = new float[meshFaces.size() * 3 * 2];
                             normals[i] = new float[meshFaces.size() * 3 * 3];
                             int pp = 0, uvp = 0, np = 0;
@@ -108,6 +110,12 @@ public class ModelLoader {
                                 for(int y=0; y<3; y++) {
                                     float[] vert = verts.get(face.pos[y] - 1);
                                     System.arraycopy(vert, 0, poses[i], pp, 3);
+                                    /*if(vert.length >= 6) System.arraycopy(vert, 3, colors[i], pp, 3);
+									else {
+										colors[i][pp] = 1;
+										colors[i][pp + 1] = 1;
+										colors[i][pp + 2] = 1;
+									}*/
                                     pp += 3;
                                     
                                     if(vert[0] > max.x) max.x = vert[0];
@@ -136,7 +144,7 @@ public class ModelLoader {
                         }
 						
                         String[] meshNameSplit = StringTools.cutOnStrings(currentMesh, ';');
-                        Mesh mesh = new Mesh(meshNameSplit[0], poses, uvm, normals, meshMatsNames, min, max);
+                        Mesh mesh = new Mesh(meshNameSplit[0], poses/*, colors*/, uvm, normals, meshMatsNames, min, max);
 						mesh.ini = new IniFile(meshNameSplit, false);
                         
                         meshes.add(mesh);

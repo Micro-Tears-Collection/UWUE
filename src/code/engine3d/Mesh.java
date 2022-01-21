@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL33C;
 public class Mesh extends ReusableContent {
 	
 	private static final int VBOS_PER_VAO = 3,
-			INTS_PER_VBO = 3 + 2 + 1;// + 1;
+			INTS_PER_VBO = 3 + 2 + 1/* + 3*//* + 1*/;
     
     public String name;
     public IniFile ini;
@@ -25,13 +25,14 @@ public class Mesh extends ReusableContent {
     private int[] vaos, vbos, vertsCount;
 	public String[] mats;
     
-    public float[][] poses, uvs, normals;//, tangents;
+    public float[][] poses/*, colors*/, uvs, normals;//, tangents;
     public float[][] normalsPerFace;
     
-    public Mesh(String name, float[][] poses, float[][] uvs, float[][] normals,
+    public Mesh(String name, float[][] poses/*, float[][] colors*/, float[][] uvs, float[][] normals,
 			String[] mats, Vector3D min, Vector3D max) {
 		//Init
 		this.poses = poses;
+		//this.colors = colors;
 		this.uvs = uvs;
 		this.normals = normals;
 		
@@ -77,6 +78,10 @@ public class Mesh extends ReusableContent {
 							0);
 				}
 				
+				/*data[x + 6] = Float.floatToRawIntBits(colors[i][vert * 3]);
+				data[x + 7] = Float.floatToRawIntBits(colors[i][vert * 3 + 1]);
+				data[x + 8] = Float.floatToRawIntBits(colors[i][vert * 3 + 2]);*/
+				
 				/*if(tangents != null) {
 					data[x + 6] = pack2101010(
 							tangents[i][vert * 4], 
@@ -104,6 +109,9 @@ public class Mesh extends ReusableContent {
 				GL33C.glEnableVertexAttribArray(2); //norms
 				GL33C.glVertexAttribPointer(2, 4, GL33C.GL_INT_2_10_10_10_REV, true, INTS_PER_VBO * 4, 5 * 4);
 			}
+			
+			/*GL33C.glEnableVertexAttribArray(3); //colors
+			GL33C.glVertexAttribPointer(3, 3, GL33C.GL_FLOAT, false, INTS_PER_VBO * 4, 6 * 4);*/
 			
 			/*if(tangents != null) {
 				GL33C.glEnableVertexAttribArray(3); //tangents
