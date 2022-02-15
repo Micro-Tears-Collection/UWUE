@@ -36,6 +36,9 @@ public class World {
     Node node;
     MeshInstance[] allMeshes, skybox;
     int skyColor;
+	
+	private Vector3D camPos = new Vector3D(), camRot = new Vector3D();
+	private float camFov;
     
     public static final int LINEAR = 1, EXP = 2;
     int fogMode = 0;
@@ -125,16 +128,23 @@ public class World {
 			entity.physicsUpdate(this);
 			entity.node = entity.node.addEntity(entity);
 		}
-        
-        updateListener(player);
     }
+	
+	public void setCamera(Vector3D pos, Vector3D speed, float rotX, float rotY) {
+		if(pos != null) camPos.set(pos);
+		
+		if(!Float.isNaN(rotX)) camRot.x = rotX;
+		if(!Float.isNaN(rotY)) camRot.y = rotY;
+		
+		updateListener(camPos, speed, camRot.y);
+	}
+	
+	public void setCameraFov(float fov) {
+		camFov = fov;
+	}
     
-    public static void updateListener(Player player) {
-        player.pos.add(0, player.eyeHeight, 0);
-        player.speed.add(0, 8F * FPS.frameTime / 50, 0);
-        AudioEngine.setListener(player.pos, player.speed, player.rotY);
-        player.pos.sub(0, player.eyeHeight, 0);
-        player.speed.sub(0, 8F * FPS.frameTime / 50, 0);
+    public static void updateListener(Vector3D pos, Vector3D speed, float rotY) {
+        AudioEngine.setListener(pos, speed==null?(new Vector3D(0,0,0)):speed, rotY);
     }
 
     public void sphereCast(Sphere sphere) {
@@ -155,6 +165,9 @@ public class World {
     
     public void render(E3D e3d, int w, int h) {
         e3d.prepare3D(0, 0, w, h);
+		
+		e3d.setProjectionPers(camFov, w, h, drawDistance);
+		e3d.setCam(camPos, camRot.x, camRot.y);
         
         e3d.clearZbuffer();
         e3d.clearColor(skyColor);

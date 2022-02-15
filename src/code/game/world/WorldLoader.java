@@ -9,6 +9,7 @@ import code.engine3d.game.WorldMaterial;
 import code.engine3d.instancing.Sprite;
 import code.engine3d.instancing.MeshInstance;
 import code.engine3d.Material;
+import code.game.Configuration;
 
 import code.utils.assetManager.AssetManager;
 
@@ -57,6 +58,7 @@ public class WorldLoader {
                 game.player.pos.set(pPos[0], pPos[1], pPos[2]);
             }
             
+            game.player.rotX = lvl.getFloat("player", "rot_x", 0);
             game.player.rotY = lvl.getFloat("player", "rot_y", 0);
         }
         
@@ -66,7 +68,10 @@ public class WorldLoader {
             game.player.rotY = nextRotY;
         }
         if(nextRotX != Game.DONT_ROTATE) game.player.rotX = nextRotX;
-        World.updateListener(game.player);
+		
+		Vector3D camPos = new Vector3D(game.player.pos);
+		camPos.y += game.player.eyeHeight;
+        World.updateListener(camPos, null, game.player.rotY);
         
         MeshInstance[] skybox = null;
         int skyColor = 0;
@@ -209,9 +214,9 @@ public class WorldLoader {
                     String thisName = name;
                     if(poses != null) {
                         pos = StringTools.cutOnFloats(poses[x], ',');
-                        if(poses.length > 1 && thisName != null) thisName += + '_' + (x+1);
+                        if(poses.length > 1 && thisName != null) thisName += "_" + (x+1);
                     }
-                    
+					
                     defaultWas |= type.equals("lightgroup") && "default".equals(name);
                     loadObject(game, world, data[1], thisName, objIni, 
 							pos, lightgroupdata, sourcesToPlay);
@@ -340,8 +345,15 @@ public class WorldLoader {
 			ini.getFloat("max_distance", SoundSource.MAX_DIST),
 			linear
 		);
+		
+		String tmp = ini.get("sound_type");
+		if(tmp != null) {
+			if(tmp.equals("sound")) source.setSoundType(Configuration.SOUND);
+			else if(tmp.equals("music")) source.setSoundType(Configuration.MUSIC);
+			else if(tmp.equals("footstep")) source.setSoundType(Configuration.FOOTSTEP);
+		}
         
-        SoundSourceEntity sound = new SoundSourceEntity(source);
+        SoundSourceEntity sound = new SoundSourceEntity(source, ini.getInt("random_offset", 0) == 1);
         
         loadDefEntity(sound, pos, name, game, world, ini);
         
