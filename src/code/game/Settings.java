@@ -456,7 +456,9 @@ public class Settings extends Screen {
             setList(VIDEO);
         }
         
-        if(previous instanceof Game) {
+        if(previous instanceof Menu) {
+            ((Menu)previous).drawBackground();
+        } else if(previous instanceof Game) {
             Game game = (Game)previous;
             
             game.world.pausedAnimate(null);
