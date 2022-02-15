@@ -90,7 +90,7 @@ public class Menu extends Screen {
         menu.add(new TextItem("EXIT", main.font) {
             public void onEnter() {
                 main.clickedS.play();
-                main.stop();
+                main.closeGame();
             }
         }.setHCenter(true));
     }

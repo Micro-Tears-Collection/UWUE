@@ -346,6 +346,51 @@ public class Scripting {
             }
         });
         
+        lua.set("setCamera", new ThreeArgFunction() {
+            public LuaValue call(LuaValue p1, LuaValue p2, LuaValue p3)  {
+                
+				Vector3D pos = null;
+				
+                if(p1.istable()) {
+					pos = new Vector3D();
+					pos.x = p1.get(1).tofloat();
+					pos.y = p1.get(2).tofloat();
+					pos.z = p1.get(3).tofloat();
+				}
+				
+				float rotX = Float.NaN, rotY = Float.NaN;
+				
+				if(!p2.isnil()) rotX = p2.tofloat();
+				if(!p3.isnil()) rotY = p3.tofloat();
+				
+				Game game = main.getGame();
+				if(game != null) {
+					game.world.setCamera(pos, null, rotX, rotY);
+				}
+                
+                return LuaValue.NIL;
+            }
+        });
+        
+        lua.set("setCameraFov", new OneArgFunction() {
+            public LuaValue call(LuaValue p1)  {
+				Game game = main.getGame();
+				
+				if(game != null) {
+					game.world.setCameraFov(p1.tofloat());
+				}
+                
+                return LuaValue.NIL;
+            }
+        });
+		
+		lua.set("closeGame", new ZeroArgFunction() {
+            public LuaValue call()  {
+				main.closeGame();
+                return LuaValue.NIL;
+            }
+        });
+        
         addEntitiesScripts(main, lua);
         
     }

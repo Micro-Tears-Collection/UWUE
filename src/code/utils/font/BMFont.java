@@ -17,7 +17,7 @@ public class BMFont {
     private Texture[] pages;
     
     public String name;
-    private int fontSize, stretchH;
+    private int lineHeight, baseHeight, stretchH;
     public float baseScale = 1;
     
     private Hashtable<Integer, BMChar> chars;
@@ -58,7 +58,8 @@ public class BMFont {
                 
                 if(blockType == 1) {
                     //Info
-                    font.fontSize = dis.read() | (dis.read() << 8);
+                    //font.fontSize = dis.read() | (dis.read() << 8);
+					dis.skip(2); //font size
                     dis.skip(1); //bitField
                     dis.skip(1); //charset
                     font.stretchH = dis.read() | (dis.read() << 8);
@@ -77,8 +78,8 @@ public class BMFont {
                     
                 } else if(blockType == 2) {
                     //Common
-                    dis.skip(2); //lineHeight
-                    dis.skip(2); //distance from top to base
+                    font.lineHeight = dis.read() | (dis.read() << 8);
+                    font.baseHeight = dis.read() | (dis.read() << 8);
                     tw = dis.read() | (dis.read() << 8);
                     th = dis.read() | (dis.read() << 8);
                     font.pages = new Texture[dis.read() | (dis.read() << 8)];
@@ -211,11 +212,19 @@ public class BMFont {
     }
     
     public int getOriginalHeight() {
-        return fontSize;
+        return lineHeight;
     }
     
     public int getHeight() {
-        return Math.round(fontSize * baseScale);
+        return Math.round(lineHeight * baseScale);
+    }
+    
+    public int getOriginalBaseHeight() {
+        return baseHeight;
+    }
+    
+    public int getBaseHeight() {
+        return Math.round(baseHeight * baseScale);
     }
     
     public void drawString(HudRender hudRender, String text, float x, float y, float scale, int color) {

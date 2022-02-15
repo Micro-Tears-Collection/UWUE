@@ -86,12 +86,19 @@ public class Main extends Screen {
         int w = main.conf.startInFullscr? main.conf.fw:main.conf.ww;
         int h = main.conf.startInFullscr? main.conf.fh:main.conf.wh;
         
-        main.window = Window.createGLWindow(main.conf.startInFullscr, w, h, main.conf.vsync, main.conf.aa);
+        main.window = Window.createGLWindow(
+			main.conf.startInFullscr,
+			w, h,
+			main.conf.vsync, 
+			main.conf.aa, 
+			main.conf.debug
+		);
+		
         main.window.setTitle(main.gamecfg.get("game", "name"));
         main.window.setListener(main);
         main.window.bind();
         
-        AudioEngine.init();
+        AudioEngine.init(main.conf.hrtf);
         AudioEngine.soundTypesVolume = new int[]{100, 100, 100};
         main.conf.apply(main.window, main.e3d, false);
         
@@ -179,9 +186,9 @@ public class Main extends Screen {
         Scripting.initFunctions(this);
     }
 
-    void stop() {
+    private void stop() {
+		nextScreen = null;
         run = false;
-        nextScreen = null;
     }
 
     private void run() {
@@ -243,6 +250,10 @@ public class Main extends Screen {
     public Screen getScreen() {
         return screen;
     }
+	
+	public void closeGame() {
+		stop();
+	}
     
     public int getWidth() {
         return window.getWidth();
@@ -370,7 +381,7 @@ public class Main extends Screen {
 		//Todo add boolean to control minimal scale and rounding
 		font.baseScale = Math.max(
 				1f/* / font.getOriginalHeight()*/, 
-				Math.round(Math.min(w, h) * 38 / 768f / font.getOriginalHeight()));
+				Math.round(Math.min(w, h) * 30 / 768f / font.getOriginalBaseHeight()));
     }
 
 }
