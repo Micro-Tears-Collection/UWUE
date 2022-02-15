@@ -238,6 +238,18 @@ public class Settings extends Screen {
                             return true;
                         }
                     });*/
+			
+			list.addVoid(font);
+			
+            list.add(new TextItem("Headphones: " + checkBox(mconf.hrtf), 
+                    font) {
+                        public void onEnter() {
+                            main.clickedS.play();
+                            mconf.hrtf ^= true;
+                            mconf.applyHRTF();
+                            setText("Headphones: " + checkBox(mconf.hrtf), list);
+                        }
+                    });
             
         } else if(type == VIDEO) {
             list.add(new TextItem("Launch game in fullscreen: " + checkBox(mconf.startInFullscr),
@@ -444,9 +456,7 @@ public class Settings extends Screen {
             setList(VIDEO);
         }
         
-        if(previous instanceof Menu) {
-            ((Menu)previous).drawBackground();
-        } else if(previous instanceof Game) {
+        if(previous instanceof Game) {
             Game game = (Game)previous;
             
             game.world.pausedAnimate(null);

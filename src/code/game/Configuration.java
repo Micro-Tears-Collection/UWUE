@@ -28,6 +28,7 @@ public class Configuration {
     public boolean debug = false;
     
     public int musicVolume = 100, soundsVolume = 100, footstepsVolume = 100;
+	public boolean hrtf = true;
     
     public int mouseLookSpeed = 100, keyboardLookSpeed = 100, 
             gamepadLookSpeed = 100;
@@ -56,6 +57,8 @@ public class Configuration {
         musicVolume = conf.musicVolume;
         soundsVolume = conf.soundsVolume;
         footstepsVolume = conf.footstepsVolume;
+		
+		hrtf = conf.hrtf;
         
         //Controls
         mouseLookSpeed = conf.mouseLookSpeed;
@@ -87,6 +90,8 @@ public class Configuration {
         musicVolume = conf.getInt("audio", "music_volume", musicVolume);
         soundsVolume = conf.getInt("audio", "sounds_volume", soundsVolume);
         footstepsVolume = conf.getInt("audio", "footsteps_volume", footstepsVolume);
+		
+        hrtf = conf.getInt("audio", "hrtf", hrtf?1:0) == 1;
         
         //Controls
         mouseLookSpeed = conf.getInt("controls", "mouse_look_speed", mouseLookSpeed);
@@ -124,6 +129,8 @@ public class Configuration {
         conf.put("audio", "music_volume", String.valueOf(musicVolume));
         conf.put("audio", "sounds_volume", String.valueOf(soundsVolume));
         conf.put("audio", "footsteps_volume", String.valueOf(footstepsVolume));
+		
+        conf.put("audio", "hrtf", String.valueOf(hrtf?1:0));
         
         //Controls
         conf.put("controls", "mouse_look_speed", String.valueOf(mouseLookSpeed));
@@ -190,6 +197,7 @@ public class Configuration {
             }
         }
         applyAudio();
+		applyHRTF();
         WorldMaterial.disableMipmapping = psxRender;
 		applyPsxrender(e3d);
     }
@@ -203,7 +211,11 @@ public class Configuration {
         for(SoundSource source : list) {
             source.setVolume(source.getVolume());
         }
-            
+        
+    }
+    
+    void applyHRTF() {
+        AudioEngine.enableHRTF(hrtf);
     }
     
     void applyPsxrender(E3D e3d) {
