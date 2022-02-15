@@ -36,6 +36,7 @@ public class Game extends Screen {
     public long time;
     public boolean paused;
     private int w, h;
+	private boolean sizeChanged;
     
     public E3D e3d;
     public DialogScreen dialog;
@@ -261,13 +262,17 @@ public class Game extends Screen {
         }
         
         if(!main.window.isCursorVisible() && main.window.isFocused()) {
-            float lookSpeed = 60f / h * main.conf.mouseLookSpeed / 100f;
+            if(!sizeChanged) {
+				float lookSpeed = 60f / h * main.conf.mouseLookSpeed / 100f;
             
-            player.rotY -= (main.getMouseX() - (w / 2)) * lookSpeed;
-            player.rotX -= (main.getMouseY() - (h / 2)) * lookSpeed;
+				player.rotY -= (main.getMouseX() - (w / 2)) * lookSpeed;
+				player.rotX -= (main.getMouseY() - (h / 2)) * lookSpeed;
+			}
             
             main.window.setCursorPos(w / 2, h / 2);
         }
+		sizeChanged = false;
+		
         float lookSpeed = FPS.frameTime * 0.1f * main.conf.keyboardLookSpeed / 100f;
         
         player.rotY += ((Keys.isPressed(Keys.LEFT)?1:0) - (Keys.isPressed(Keys.RIGHT)?1:0)) * 2 * lookSpeed;
@@ -275,6 +280,15 @@ public class Game extends Screen {
         player.rotX = Math.max(Math.min(player.rotX, 89), -89);
         
         world.update(player);
+		
+		Vector3D camPos = new Vector3D(player.pos);
+		camPos.y += player.eyeHeight;
+		Vector3D camSpeed = new Vector3D(player.speed);
+		camSpeed.y += 8F * FPS.frameTime / 50;
+		
+		world.setCamera(camPos, camSpeed, player.rotX, player.rotY);
+		world.setCameraFov(main.conf.fov);
+		
         if(player.isAlive()) {
             world.activateObject(main, player, false);
             toActivate = world.findObjectToActivate(player, true);
@@ -310,12 +324,6 @@ public class Game extends Screen {
             drawW = main.conf.vrw;
             drawH = main.conf.vrh;
         }
-        
-        float py = player.pos.y;
-        player.pos.y += player.eyeHeight;
-        e3d.setCam(player.pos, player.rotX, player.rotY);
-        player.pos.y = py;
-        e3d.setProjectionPers(main.conf.fov, drawW, drawH, world.drawDistance);
         
         world.render(e3d, drawW, drawH);
         
@@ -354,7 +362,7 @@ public class Game extends Screen {
             }
         }
         
-        if(toActivate != null) {
+        if(toActivate != null && !isPaused()) {
             float sizeh = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.h)) * handIcon.h;
             float sizew = sizeh * handIcon.w / handIcon.h;
             
@@ -394,6 +402,8 @@ public class Game extends Screen {
             main.window.setCursorPos(w >> 1, h >> 1);
             main.window.showCursor(false);
         } else {
+			if(!pauses.isEmpty()) return;
+			
             main.window.showCursor(true);
             main.window.setCursorPos(w >> 1, (h - main.font.getHeight()) >> 1);
         }
@@ -452,6 +462,8 @@ public class Game extends Screen {
 
     public void sizeChanged(int w, int h, Screen from) {
         this.w = w; this.h = h;
+		sizeChanged = true;
+		
         pauseScreen.setSize(w, h);
         setPauseScreenItems();
         if(from != dialog && dialog != null) dialog.sizeChanged(w, h, this);
