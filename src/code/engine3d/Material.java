@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL33C;
  */
 public class Material extends ReusableContent {
     
-    public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5;
+    public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5, MUL = 6;
     
     protected int blendMode = OFF;
     
@@ -26,6 +26,7 @@ public class Material extends ReusableContent {
         else if(tmp.equals("sub")) blendMode = SUB;
         else if(tmp.equals("scr")) blendMode = SCR;
         else if(tmp.equals("max")) blendMode = MAX;
+        else if(tmp.equals("mul")) blendMode = MUL;
         else blendMode = OFF;
     }
     
@@ -49,9 +50,10 @@ public class Material extends ReusableContent {
                         GL33C.GL_ONE, GL33C.GL_ZERO);
 
             } else if(blendMode == SUB) {
+				GL33C.glBlendEquation(GL33C.GL_FUNC_REVERSE_SUBTRACT);
                 GL33C.glBlendFuncSeparate(
-                        GL33C.GL_ZERO, GL33C.GL_ONE_MINUS_SRC_COLOR,
-                        GL33C.GL_ONE, GL33C.GL_ZERO);
+                        GL33C.GL_ONE, GL33C.GL_ONE,
+                        GL33C.GL_ZERO, GL33C.GL_ONE);
 
             } else if(blendMode == SCR) {
                 GL33C.glBlendFuncSeparate(
@@ -64,7 +66,12 @@ public class Material extends ReusableContent {
                 GL33C.glBlendFuncSeparate(GL33C.GL_ONE, GL33C.GL_ONE,
                         GL33C.GL_ONE, GL33C.GL_ZERO);
 
-            }
+            } else if(blendMode == MUL) {
+                GL33C.glBlendFuncSeparate(
+                        GL33C.GL_DST_COLOR, GL33C.GL_ZERO,
+                        GL33C.GL_ONE, GL33C.GL_ZERO);
+
+            } 
         }
     }
     
