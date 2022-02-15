@@ -1,9 +1,16 @@
 package code.engine;
 
+import java.nio.IntBuffer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
+import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryUtil;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -14,6 +21,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class Window {
     
+	private Callback debugProc;
     long window;
     boolean cursorVisible;
     
@@ -68,16 +76,17 @@ public class Window {
         });
     }
     
-    public static Window createGLWindow(boolean fullscr, int w, int h, boolean vsync, int aa) {
+    public static Window createGLWindow(boolean fullscr, int w, int h, boolean vsync, int aa, boolean debug) {
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         int rate = vidmode.refreshRate();
         
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		if(debug) GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         GLFW.glfwWindowHint(GLFW.GLFW_REFRESH_RATE, rate);
         GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, aa);
         
@@ -93,11 +102,32 @@ public class Window {
         
         long prevContext = GLFW.glfwGetCurrentContext();
         win.bind();
+		
         GLFW.glfwSwapInterval(vsync?1:0); //vsync on
 		if(GLFW.glfwRawMouseMotionSupported()) 
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_RAW_MOUSE_MOTION, GLFW.GLFW_TRUE);
         GLFW.glfwShowWindow(window);
         GL.createCapabilities();
+		
+		if(debug) {
+			Configuration.DEBUG.set(true);
+			Configuration.DEBUG_FUNCTIONS.set(true);
+			Configuration.DEBUG_LOADER.set(true);
+			Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+			Configuration.DEBUG_STACK.set(true);
+
+			GL33C.glEnable(ARBDebugOutput.GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			win.debugProc = GLUtil.setupDebugMessageCallback(System.out);
+
+			ARBDebugOutput.glDebugMessageControlARB(
+				GL33C.GL_DONT_CARE, 
+				GL33C.GL_DONT_CARE, 
+				GL43C.GL_DEBUG_SEVERITY_NOTIFICATION, 
+				(IntBuffer) null, 
+				false
+			);
+		}
+		
         GLFW.glfwMakeContextCurrent(prevContext);
         
         return win;
@@ -112,6 +142,11 @@ public class Window {
     }
     
     public void destroy() {
+		if(debugProc != null) {
+			debugProc.free();
+			debugProc = null;
+		}
+		
         Callbacks.glfwFreeCallbacks(window);
         GLFW.glfwDestroyWindow(window);
 
