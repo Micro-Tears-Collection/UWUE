@@ -38,7 +38,7 @@ public class E3D {
 	4 COLOR + padding
 	4 SPOT_DIR + SPOT_CUTOFF
 	*/
-	public static final int LIGHT_SIZE = 12, MAX_LIGHTS = 8;
+	public static final int LIGHT_SIZE = 12, MAX_LIGHTS = 16;
 	
     private Window win;
 	
@@ -69,6 +69,7 @@ public class E3D {
         postDraw = new ArrayList<RenderInstance>();
 		
         maxAA = GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
+		GL33C.glGetError();
 		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 		anisotropicSupported = GL33C.glGetError() == GL33C.GL_NO_ERROR;
         
@@ -132,11 +133,11 @@ public class E3D {
         GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectNormals); //Loads the current VBO to store the data
         GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
                 new short[]{
-                    0, 0, 1, 0, 0, 1,
-                    0, 0, 1, 0, 0, 1
+                    0, 0, 1, 0, 0, 0, 1, 0,
+                    0, 0, 1, 0, 0, 0, 1, 0
                 }, GL33C.GL_STATIC_DRAW);
 
-        GL33C.glVertexAttribPointer(2, 3, GL33C.GL_SHORT, false, 0, 0);
+        GL33C.glVertexAttribPointer(2, 4, GL33C.GL_SHORT, false, 0, 0);
         
         GL33C.glEnableVertexAttribArray(0);
         GL33C.glEnableVertexAttribArray(1);
@@ -459,6 +460,8 @@ public class E3D {
     }
 
     public void takeScreenshot() {
+		GL33C.glGetError();
+		
         GL33C.glReadBuffer(GL33C.GL_FRONT);
         ByteBuffer buffer = MemoryUtil.memAlloc(win.getWidth() * win.getHeight() * 4);
         GL33C.glReadPixels(0, 0, win.getWidth(), win.getHeight(), GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, buffer);
