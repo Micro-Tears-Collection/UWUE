@@ -21,11 +21,13 @@ public class AudioEngine {
     static long context;
     static ALCCapabilities alcCapabilities;
     static ALCapabilities alCapabilities;
+	
+	private static boolean hrtfEnabled;
     
     public static int[] soundTypesVolume;
     public static ArrayList<SoundSource> sources;
             
-    public static void init() {
+    public static void init(boolean hrtf) {
         // Initialize OpenAL and clear the error bit.
         device = ALC10.alcOpenDevice((java.lang.CharSequence) null);
         context = ALC10.alcCreateContext(device, (int[]) null);
@@ -38,12 +40,20 @@ public class AudioEngine {
         AL11.alEnable(EXTSourceDistanceModel.AL_SOURCE_DISTANCE_MODEL);
         AL11.alSpeedOfSound(34300f);
         
-        if(alcCapabilities.ALC_SOFT_HRTF) Audio3DEffects.enableHRTF(device);
-        else System.out.println("HRTF support doesnt found");
+        enableHRTF(hrtf);
         
         //Audio3DEffects.init();
         sources = new ArrayList<>();
     }
+	
+	public static void enableHRTF(boolean enable) {
+		if(enable == hrtfEnabled) return;
+		
+		if(alcCapabilities.ALC_SOFT_HRTF) Audio3DEffects.enableHRTF(device, enable);
+        else System.out.println("HRTF support doesnt found");
+		
+		hrtfEnabled = enable;
+	}
 
     static float[] listenerPos = new float[]{0.0f, 0.0f, 0.0f};
     static float[] listenerSpeed = new float[]{0.0f, 0.0f, 0.0f};

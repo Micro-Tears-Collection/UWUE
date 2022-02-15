@@ -125,8 +125,18 @@ public class SoundSource {
 			linear ? AL11.AL_LINEAR_DISTANCE_CLAMPED : AL11.AL_INVERSE_DISTANCE);
     }
     
+	//todo fix mono sources
     public void set3D(boolean use3D) {
         this.use3D = use3D;
+		
+		AL11.alSourcei(soundSource, AL11.AL_SOURCE_RELATIVE, use3D?AL11.AL_FALSE:AL11.AL_TRUE);
+        
+        if(!use3D) {
+            sourcePos[0] = sourcePos[1] = sourcePos[2] = 0;
+            AL11.alSourcefv(soundSource, AL11.AL_POSITION, sourcePos);
+            sourceSpeed[0] = sourceSpeed[1] = sourceSpeed[2] = 0;
+            AL11.alSourcefv(soundSource, AL11.AL_VELOCITY, sourceSpeed);
+        }
         
         AL11.alSourcei(
 			soundSource, 
@@ -161,7 +171,7 @@ public class SoundSource {
     public void rewind() {
         AL11.alSourceRewind(soundSource);
         AL11.alSourcePlay(soundSource);
-        }
+    }
     
     public void free() {
         AL11.alSourcei(soundSource, AL11.AL_BUFFER, 0);
@@ -172,4 +182,8 @@ public class SoundSource {
     public int getID() {
         return soundSource;
     }
+
+	public void rewindTo(float seconds) {
+		AL11.alSourcef(soundSource, AL11.AL_SEC_OFFSET, seconds);
+	}
 }

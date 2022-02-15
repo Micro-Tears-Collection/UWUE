@@ -17,10 +17,12 @@ import org.lwjgl.system.MemoryUtil;
  */
 public class SoundBuffer extends ReusableContent {
     
+	private float length;
     int id;
     
-    private SoundBuffer(int id) {
+    private SoundBuffer(int id, float length) {
         this.id = id;
+		this.length = length;
     }
 
     public void destroy() {
@@ -31,6 +33,10 @@ public class SoundBuffer extends ReusableContent {
             System.out.println("alDeleteBuffers error " + err);
         }
     }
+	
+	public float getLength() {
+		return length;
+	}
     
     public static SoundBuffer get(String file) {
         SoundBuffer sound = (SoundBuffer)AssetManager.get("SOUNDBUFF_" + file);
@@ -81,10 +87,12 @@ public class SoundBuffer extends ReusableContent {
                 channels.get(0)==1?AL10.AL_FORMAT_MONO16:AL10.AL_FORMAT_STEREO16, 
                 decoded, sampleRate.get(0));
 		
+		float length = decoded.capacity() / (float)sampleRate.get(0) / (float)channels.get(0);
+		
         MemoryUtil.memFree(sampleRate);
         MemoryUtil.memFree(channels);
         MemoryUtil.memFree(decoded);
         
-        return new SoundBuffer(soundBuffer);
+        return new SoundBuffer(soundBuffer, length);
     }
 }
