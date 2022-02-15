@@ -13,6 +13,8 @@ public class FrameBuffer {
     public Texture tex;
     
     public FrameBuffer(int w, int h, boolean createDepth) {
+		GL33C.glGetError();
+		
         frameBuffer = GL33C.glGenFramebuffers();
         GL33C.glBindFramebuffer(GL33C.GL_FRAMEBUFFER, frameBuffer);
         

@@ -17,6 +17,8 @@ public class UniformBlock {
         this.size = size;
         this.bindingPoint = bindingPoint;
         
+		GL33C.glGetError();
+		
         buffer = GL33C.glGenBuffers();
 
         if(buffer != 0) {
@@ -48,11 +50,6 @@ public class UniformBlock {
     public final void bind() {
         if(buffer != 0) {
             GL33C.glBindBuffer(GL33C.GL_UNIFORM_BUFFER, buffer);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.out.println("Can't bind Uniform block, error: "+error);
-            }
         }
     }
     
@@ -63,22 +60,12 @@ public class UniformBlock {
     public final void sendData(IntBuffer data, int offset) {
         if(buffer != 0) {
             GL33C.glBufferSubData(GL33C.GL_UNIFORM_BUFFER, offset, data);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.out.println("Can't sendData to Uniform block, error: "+error);
-            }
         }
     }
     
     public final void sendData(FloatBuffer data, int offset) {
         if(buffer != 0) {
             GL33C.glBufferSubData(GL33C.GL_UNIFORM_BUFFER, offset, data);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.out.println("Can't sendData to Uniform block, error: "+error);
-            }
         }
     }
 

@@ -47,7 +47,7 @@ public class Sampler {
 				GL33C.glSamplerParameterf(
 						id, 
 						EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 
-						mipMapping ? e3d.maxAnisotropy : 0
+						mipMapping ? e3d.maxAnisotropy : 1
 				);
 			}
 		}

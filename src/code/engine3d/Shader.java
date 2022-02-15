@@ -28,6 +28,7 @@ public class Shader extends ReusableContent {
     protected void init(String path, String[] defs) {
         lock(); //We don't want to unload shaders
         
+		GL33C.glGetError();
         GL33C.glGetInteger(GL33C.GL_FRAGMENT_SHADER_DERIVATIVE_HINT);
         if(GL33C.glGetError() != 0) {
             System.out.println("Can't create shader! Cancelling");
@@ -145,12 +146,6 @@ public class Shader extends ReusableContent {
     public void bind() {
         if(program != 0) {
             GL33C.glUseProgram(program);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't bind shader :(");
-            }
         }
     }
     
@@ -178,6 +173,8 @@ public class Shader extends ReusableContent {
     
     public int getUniformIndex(String name) {
         if(program != 0) {
+			GL33C.glGetError();
+			
             int location = GL33C.glGetUniformLocation(program, name);
             
             int error = GL33C.glGetError();
@@ -195,6 +192,8 @@ public class Shader extends ReusableContent {
     
     public void addUniformBlock(UniformBlock block, String name) {
         if(program != 0) {
+			GL33C.glGetError();
+			
             int index = getUniformBlockIndex(name);
             
             if(index >= 0) {
@@ -212,6 +211,8 @@ public class Shader extends ReusableContent {
     
     private int getUniformBlockIndex(String name) {
         if(program != 0) {
+			GL33C.glGetError();
+			
             int location = GL33C.glGetUniformBlockIndex(program, name);
             
             int error = GL33C.glGetError();
@@ -230,85 +231,43 @@ public class Shader extends ReusableContent {
     
     public void setUniformf(int uniform, float value) {
         if(program != 0 && uniform != -1) {
-            GL33C.glUniform1f(uniform, value);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform f");
-            }
+			GL33C.glUniform1f(uniform, value);
         }
     }
     
     public void setUniform2f(int uniform, float x, float y) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniform2f(uniform, x, y);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform 2f");
-            }
         }
     }
     
     public void setUniform3f(int uniform, float x, float y, float z) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniform3f(uniform, x, y, z);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform 3f");
-            }
         }
     }
     
     public void setUniform4f(int uniform, float x, float y, float z, float w) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniform4f(uniform, x, y, z, w);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform 4f");
-            }
         }
     }
     
     public void setUniformi(int uniform, int value) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniform1i(uniform, value);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform i");
-            }
         }
     }
     
     public void setUniformMatrix4fv(int uniform, FloatBuffer mat) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniformMatrix4fv(uniform, false, mat);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform matrix 4fv");
-            }
         }
     }
     
     public void setUniformMatrix3fv(int uniform, FloatBuffer mat) {
         if(program != 0 && uniform != -1) {
             GL33C.glUniformMatrix3fv(uniform, false, mat);
-            
-            int error = GL33C.glGetError();
-            if(error != 0) {
-                System.err.println("Error: "+error);
-                System.err.println("Can't set uniform matrix 3fv");
-            }
         }
     }
     

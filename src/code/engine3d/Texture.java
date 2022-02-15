@@ -33,7 +33,6 @@ public class Texture extends ReusableContent {
 	
 	public void setParameters(E3D e3d, boolean linear, boolean mipMapping, boolean wrapClamp) {
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
-        GL33C.glGetError();
         
         int mag = linear ? GL33C.GL_LINEAR : GL33C.GL_NEAREST;
         int min = mipMapping ?
@@ -53,7 +52,6 @@ public class Texture extends ReusableContent {
 					e3d.maxAnisotropy);
 		
 		GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, 0);
-        GL33C.glGetError();
 	}
     
     public void bind(int level) {
@@ -63,7 +61,6 @@ public class Texture extends ReusableContent {
         }
 		
         GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, id);
-        GL33C.glGetError();
     }
     
     public void unbind(int level) {
