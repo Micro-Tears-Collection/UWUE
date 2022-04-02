@@ -103,7 +103,7 @@ void main()
 		lightsSumm += calcLight(pos.xyz, norm, normalizedPos, i);
 	}
 	
-	fragLight = max(lightsSumm, 0.);
+	fragLight = clamp(lightsSumm, 0., 1.);
 	#endif
 }
 #endif
@@ -124,7 +124,7 @@ uniform float alphaThreshold;
 
 void main()
 {
-	vec4 tex = texture2D(albedoMap, fragUV);
+	vec4 tex = texture(albedoMap, fragUV);
 	
 	if(tex.a <= alphaThreshold) discard;
 	

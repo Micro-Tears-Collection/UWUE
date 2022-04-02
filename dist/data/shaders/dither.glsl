@@ -34,6 +34,6 @@ uniform sampler2D texUnit1;
 
 void main() 
 {
-    fragColor = floor(texture2D(texUnit0, uv) * 32. + texture2D(texUnit1, uv2)) / 32.;
+    fragColor = floor(texture(texUnit0, uv) * 32. + texture(texUnit1, uv2)) / 32.;
 }
 #endif

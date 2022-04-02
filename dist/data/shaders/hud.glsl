@@ -57,7 +57,7 @@ void main()
 	vec4 col = color;
 	
 	#ifdef TEXTURED
-	col *= texture2D(texUnit0, uv);
+	col *= texture(texUnit0, uv);
 	#endif
 	
 	#ifdef VERTEX_COLOR
