@@ -1,4 +1,4 @@
-Whose dream is it? v0.2
+Whose dream is it? v0.3
 Special for LSDJAM-2020
 
 Made by:
@@ -25,5 +25,5 @@ Java OpenGL Math Library
 Luaj
 You can find additional information and licenses in "licenses" folder.
 
-2021
+2022
 UWUEngine
