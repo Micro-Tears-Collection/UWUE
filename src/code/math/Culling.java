@@ -48,7 +48,8 @@ public class Culling {
 
 		/* Normalize the result */
 		float t = (float) Math.sqrt(
-				frustum[0][0] * frustum[0][0] + frustum[0][1] * frustum[0][1] + frustum[0][2] * frustum[0][2]);
+			frustum[0][0] * frustum[0][0] + frustum[0][1] * frustum[0][1] + frustum[0][2] * frustum[0][2]
+		);
 		frustum[0][0] /= t;
 		frustum[0][1] /= t;
 		frustum[0][2] /= t;
@@ -62,7 +63,8 @@ public class Culling {
 
 		/* Normalize the result */
 		t = (float) Math.sqrt(
-				frustum[1][0] * frustum[1][0] + frustum[1][1] * frustum[1][1] + frustum[1][2] * frustum[1][2]);
+			frustum[1][0] * frustum[1][0] + frustum[1][1] * frustum[1][1] + frustum[1][2] * frustum[1][2]
+		);
 		frustum[1][0] /= t;
 		frustum[1][1] /= t;
 		frustum[1][2] /= t;
@@ -76,7 +78,8 @@ public class Culling {
 
 		/* Normalize the result */
 		t = (float) Math.sqrt(
-				frustum[2][0] * frustum[2][0] + frustum[2][1] * frustum[2][1] + frustum[2][2] * frustum[2][2]);
+			frustum[2][0] * frustum[2][0] + frustum[2][1] * frustum[2][1] + frustum[2][2] * frustum[2][2]
+		);
 		frustum[2][0] /= t;
 		frustum[2][1] /= t;
 		frustum[2][2] /= t;
@@ -90,7 +93,8 @@ public class Culling {
 
 		/* Normalize the result */
 		t = (float) Math.sqrt(
-				frustum[3][0] * frustum[3][0] + frustum[3][1] * frustum[3][1] + frustum[3][2] * frustum[3][2]);
+			frustum[3][0] * frustum[3][0] + frustum[3][1] * frustum[3][1] + frustum[3][2] * frustum[3][2]
+		);
 		frustum[3][0] /= t;
 		frustum[3][1] /= t;
 		frustum[3][2] /= t;
@@ -104,7 +108,8 @@ public class Culling {
 
 		/* Normalize the result */
 		t = (float) Math.sqrt(
-				frustum[4][0] * frustum[4][0] + frustum[4][1] * frustum[4][1] + frustum[4][2] * frustum[4][2]);
+			frustum[4][0] * frustum[4][0] + frustum[4][1] * frustum[4][1] + frustum[4][2] * frustum[4][2]
+		);
 		frustum[4][0] /= t;
 		frustum[4][1] /= t;
 		frustum[4][2] /= t;
@@ -118,7 +123,8 @@ public class Culling {
 
 		/* Normalize the result */
 		t = (float) Math.sqrt(
-				frustum[5][0] * frustum[5][0] + frustum[5][1] * frustum[5][1] + frustum[5][2] * frustum[5][2]);
+			frustum[5][0] * frustum[5][0] + frustum[5][1] * frustum[5][1] + frustum[5][2] * frustum[5][2]
+		);
 		frustum[5][0] /= t;
 		frustum[5][1] /= t;
 		frustum[5][2] /= t;
@@ -132,7 +138,7 @@ public class Culling {
 		
 		for(int i = 0; i < 6; i++) {
 			//находим ближайшую к плоскости вершину
-			//проверяем, если она находится за плоскостью, то объект вне врустума
+			//проверяем, если она находится за плоскостью, то объект вне фрустума
 			
 			float[] frustum = Culling.frustum[i];
 			float frustum0 = frustum[0],
