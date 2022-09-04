@@ -223,7 +223,7 @@ public class World {
         ray.reset();
     }
 
-    //todo copy pasting sucks but i just dont know
+    //todo copy pasting s**** but i just dont know
     public Entity findObjectToActivate(Player player, boolean click) {
         Entity toActivate = null;
         

@@ -40,7 +40,7 @@ public class Entity {
     public boolean rayCast(Ray ray, boolean onlyMeshes) {return false;}
     public boolean meshSphereCast(Sphere sphere) {return false;}
     //spherecast is only for mesh objects
-    //todo this physics system sucks i should rewrite it
+    //todo this physics system s**** i should rewrite it
     
     public void animate(long step, boolean paused, Entity teteAtete) {}
     public void render(E3D e3d, World world) {}

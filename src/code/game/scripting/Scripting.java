@@ -46,7 +46,7 @@ import org.luaj.vm2.lib.TwoArgFunction;
  */
 public class Scripting {
 	
-	//todo use hashmap with enum for entities variables
+	//todo use reflection api for entities variables
     
     public static LuaValue loadScript(Main main, String script) {
         try {

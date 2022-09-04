@@ -93,7 +93,7 @@ public class Vector3D {
     public void transform(float[] matrix, boolean offset) {
         float xx = x, yy = y, zz = z;
         
-        //column-major order sucks
+        //column-major order s****
         x = xx * matrix[0] + yy * matrix[4] + zz * matrix[8] + (offset?matrix[12]:0);
         y = xx * matrix[1] + yy * matrix[5] + zz * matrix[9] + (offset?matrix[13]:0);
         z = xx * matrix[2] + yy * matrix[6] + zz * matrix[10] + (offset?matrix[14]:0);
@@ -106,7 +106,7 @@ public class Vector3D {
     public void transform(FloatBuffer matrix, boolean offset) {
         float xx = x, yy = y, zz = z;
         
-        //column-major order sucks
+        //column-major order s****
         x = xx * matrix.get(0) + yy * matrix.get(4) + zz * matrix.get(8) + (offset?matrix.get(12):0);
         y = xx * matrix.get(1) + yy * matrix.get(5) + zz * matrix.get(9) + (offset?matrix.get(13):0);
         z = xx * matrix.get(2) + yy * matrix.get(6) + zz * matrix.get(10) + (offset?matrix.get(14):0);
