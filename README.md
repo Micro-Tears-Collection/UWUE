@@ -1,5 +1,5 @@
 # ![Hand icon](images/hand_old.png) UWUE (unbeatable windsurfer uh eh)
-Java 3d game engine created for small games with retro graphics. (altho Physically Based Rendering is also possible)  
+UWUE is a java 3d game engine created for small games with retro graphics. (altho Physically Based Rendering is also possible)  
 Uses LWJGL, GLFW, OpenGL 3, OpenAL, Luaj, STB, JOML.  
 Suports materials with shaders, 3D audio, lua scripting, non-linear dialogues.  
 
