@@ -30,6 +30,7 @@ public class Mesh extends ReusableContent {
     
     public Mesh(String name, float[][] poses/*, float[][] colors*/, float[][] uvs, float[][] normals,
 			String[] mats, Vector3D min, Vector3D max) {
+		this.name = name;
 		//Init
 		this.poses = poses;
 		//this.colors = colors;
