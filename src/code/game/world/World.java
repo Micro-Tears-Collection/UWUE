@@ -166,7 +166,7 @@ public class World {
     public void render(E3D e3d, int w, int h) {
         e3d.prepare3D(0, 0, w, h);
 		
-		e3d.setProjectionPers(camFov, w, h, drawDistance);
+		e3d.setProjectionPers(camFov, w, h, 1, drawDistance);
 		e3d.setCam(camPos, camRot.x, camRot.y);
         
         e3d.clearZbuffer();

@@ -69,6 +69,7 @@ public class E3D {
         postDraw = new ArrayList<RenderInstance>();
 		
         maxAA = GL33C.glGetInteger(GL33C.GL_MAX_SAMPLES);
+		
 		GL33C.glGetError();
 		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 		anisotropicSupported = GL33C.glGetError() == GL33C.GL_NO_ERROR;
@@ -201,10 +202,10 @@ public class E3D {
         invCam.get(invCamf);
     }
     
-    public void setProjectionPers(float fov, int w, int h, float zfar) {
-        proj.identity().perspective((float) Math.toRadians(fov), (float) w / h, 1f, zfar);
+    public void setProjectionPers(float fov, int w, int h, float znear, float zfar) {
+        proj.identity().perspective((float) Math.toRadians(fov), (float) w / h, znear, zfar);
         proj.get(projf);
-        
+		
         matrices.bind();
         matrices.sendData(projf, 4*4*4);
         matrices.unbind();
@@ -237,6 +238,7 @@ public class E3D {
         GL33C.glEnable(GL33C.GL_DEPTH_TEST);
         GL33C.glEnable(GL33C.GL_CULL_FACE);
         GL33C.glCullFace(GL33C.GL_BACK);
+		//GL33C.glEnable(GL33C.GL_FRAMEBUFFER_SRGB);
     }
     
     public void prepare2D(int xx, int yy, int ww, int hh) {
@@ -248,6 +250,7 @@ public class E3D {
         
         GL33C.glDisable(GL33C.GL_DEPTH_TEST);
         GL33C.glDisable(GL33C.GL_CULL_FACE);
+		//GL33C.glDisable(GL33C.GL_FRAMEBUFFER_SRGB);
     }
     
     public void clearZbuffer() {
@@ -400,7 +403,7 @@ public class E3D {
 		lights.sendData(lightsf, 0);
 		lights.unbind();
 	}
-    
+	
     public void add(RenderInstance obj) {
         postDraw.add(obj);
     }
