@@ -139,5 +139,9 @@ public class AssetManager {
 		
 		return file.substring(0, i);
 	}
+	
+	public static String toGamePath(String file) {
+		return (new File("data", file)).getAbsolutePath();
+	}
 
 }

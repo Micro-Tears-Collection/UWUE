@@ -38,6 +38,7 @@ public class Shader extends ReusableContent {
         path = "/shaders/"+path+".glsl";
         String shader = CachedText.get(path).lock().toString();
         
+		//add defines
         if(defs != null) {
             StringBuilder sb = new StringBuilder();
             
@@ -50,6 +51,25 @@ public class Shader extends ReusableContent {
             sb.append(shader);
             shader = sb.toString();
         }
+		
+		//Parse includes
+		while(true) {
+			int start = shader.indexOf("#include <");
+			if(start == -1) break;
+			
+			int lineEnd = shader.indexOf("\n", start + 10);
+			if(lineEnd == -1) break;
+			
+			int end = shader.indexOf(">", start + 10);
+			if(end == -1) break;
+			
+			if(lineEnd < end) break;
+			
+			String includePath = shader.substring(start + 10, end);
+			String includeCode = CachedText.get("/shaders/"+includePath+".glsl").lock().toString();
+			
+			shader = shader.substring(0, start) + includeCode + shader.substring(end + 1);
+		}
         
         vertShader = GL33C.glCreateShader(GL33C.GL_VERTEX_SHADER);
         
