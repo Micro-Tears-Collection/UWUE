@@ -21,6 +21,11 @@ public class Sampler {
 		setProperties(e3d, linear, mipMapping, clamp);
 	}
 	
+	public Sampler(E3D e3d, boolean linear, boolean mipMapping, boolean clamp, boolean anisotropic) {
+		init();
+		setProperties(e3d, linear, mipMapping, clamp, anisotropic);
+	}
+	
 	private void init() {
 		id = GL33C.glGenSamplers();
 	}
@@ -30,6 +35,10 @@ public class Sampler {
 	}
 	
 	public void setProperties(E3D e3d, boolean linear, boolean mipMapping, boolean clamp) {
+		setProperties(e3d, linear, mipMapping, clamp, true);
+	}
+	
+	public void setProperties(E3D e3d, boolean linear, boolean mipMapping, boolean clamp, boolean anisotropic) {
 		if(id != 0) {
 			int mag = linear ? GL33C.GL_LINEAR : GL33C.GL_NEAREST;
 			int min = mipMapping ?
@@ -43,7 +52,7 @@ public class Sampler {
 			GL33C.glSamplerParameteri(id, GL33C.GL_TEXTURE_WRAP_T, wrap);
 			GL33C.glSamplerParameteri(id, GL33C.GL_TEXTURE_WRAP_S, wrap);
 			
-			if(e3d.anisotropicSupported) {
+			if(e3d.anisotropicSupported && anisotropic) {
 				GL33C.glSamplerParameterf(
 						id, 
 						EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, 
