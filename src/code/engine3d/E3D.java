@@ -593,7 +593,7 @@ public class E3D {
         if(tex != null) return tex;
         
         if(path.equals("null")) {
-            tex = new Texture(0, 1, 1);
+            tex = new Texture(0, 1, 1, 0);
             tex.lock();
         } else {
             tex = Texture.loadTexture(path);
