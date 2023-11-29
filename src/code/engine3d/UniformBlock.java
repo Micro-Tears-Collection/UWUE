@@ -1,5 +1,6 @@
 package code.engine3d;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL33C;
@@ -58,6 +59,12 @@ public class UniformBlock {
     }
     
     public final void sendData(IntBuffer data, int offset) {
+        if(buffer != 0) {
+            GL33C.glBufferSubData(GL33C.GL_UNIFORM_BUFFER, offset, data);
+        }
+    }
+    
+    public final void sendData(ByteBuffer data, int offset) {
         if(buffer != 0) {
             GL33C.glBufferSubData(GL33C.GL_UNIFORM_BUFFER, offset, data);
         }

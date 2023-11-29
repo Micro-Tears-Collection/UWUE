@@ -1,8 +1,6 @@
 package code.engine3d.game.lighting;
 
 import code.math.Vector3D;
-import java.nio.FloatBuffer;
-import org.lwjgl.system.MemoryUtil;
 
 /**
  *
