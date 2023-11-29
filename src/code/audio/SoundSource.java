@@ -8,7 +8,7 @@ import org.lwjgl.openal.SOFTDirectChannels;
 import org.lwjgl.openal.SOFTDirectChannelsRemix;
 
 public class SoundSource {
-    public static final float MIN_LINEAR_DIST = 1, MAX_LINEAR_DIST = 1000;
+    public static final float MIN_LINEAR_DIST = 0, MAX_LINEAR_DIST = 1000;
 	public static final float MIN_DIST = 100, MAX_DIST = Float.MAX_VALUE;
 	public static final boolean LINEAR_DIST = false, CLAMP = false;
 
