@@ -25,7 +25,7 @@ public class Engine {
         System.out.println("ultra wacky\n"
                 + "UHHHHHHHHHHHHHHHHHHHHHHH.....\n"
                 + "engine\n\n"
-                + "(UWUE 0.1)");
+                + "(UWUE 0.2)");
     }
     
     public static int[] getMonitorSize() {
