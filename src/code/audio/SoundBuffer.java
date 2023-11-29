@@ -66,22 +66,17 @@ public class SoundBuffer extends ReusableContent {
             System.out.println("alGenBuffers error " + err);
             return null;
         }
-
-		byte[] data = AssetManager.load(file);
-		if(data == null) {
-			AL10.alDeleteBuffers(soundBuffer);
-			return null;
-		}
-		
-        ByteBuffer bruh = MemoryUtil.memAlloc(data.length);
-        bruh.put(data);
-        bruh.rewind();
         
         IntBuffer sampleRate = MemoryUtil.memAllocInt(1);
         IntBuffer channels = MemoryUtil.memAllocInt(1);
         
-        ShortBuffer decoded = STBVorbis.stb_vorbis_decode_memory(bruh, channels, sampleRate);
-        MemoryUtil.memFree(bruh);
+        ShortBuffer decoded = STBVorbis.stb_vorbis_decode_filename(AssetManager.toGamePath(file), channels, sampleRate);
+
+		if(decoded == null) {
+			MemoryUtil.memFree(sampleRate);
+			MemoryUtil.memFree(channels);
+			return null;
+		}
 
         AL10.alBufferData(soundBuffer, 
                 channels.get(0)==1?AL10.AL_FORMAT_MONO16:AL10.AL_FORMAT_STEREO16, 
