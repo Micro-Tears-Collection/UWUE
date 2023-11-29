@@ -8,7 +8,6 @@ import code.math.Vector3D;
 import code.utils.IniFile;
 import code.utils.StringTools;
 import code.utils.assetManager.AssetManager;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -16,11 +15,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL33C;
+import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -465,9 +464,11 @@ public class E3D {
     public void takeScreenshot() {
 		GL33C.glGetError();
 		
+		int imgW = win.getWidth(), imgH = win.getHeight();
+        ByteBuffer buffer = MemoryUtil.memAlloc(imgW * imgH * 3);
+		
         GL33C.glReadBuffer(GL33C.GL_FRONT);
-        ByteBuffer buffer = MemoryUtil.memAlloc(win.getWidth() * win.getHeight() * 4);
-        GL33C.glReadPixels(0, 0, win.getWidth(), win.getHeight(), GL33C.GL_RGBA, GL33C.GL_UNSIGNED_BYTE, buffer);
+        GL33C.glReadPixels(0, 0, imgW, imgH, GL33C.GL_RGB, GL33C.GL_UNSIGNED_BYTE, buffer);
         
         int error = GL33C.glGetError();
         if(error != 0) System.out.println("takeScreenshot GL error: " + error);
@@ -482,21 +483,25 @@ public class E3D {
                     + cal.get(Calendar.DAY_OF_MONTH) + " "
                     + cal.get(Calendar.HOUR_OF_DAY) + "." + cal.get(Calendar.MINUTE) + "." + cal.get(Calendar.SECOND);
             
-            file = new File("screenshots/" + date + ".png");
-            BufferedImage image = new BufferedImage(win.getWidth(), win.getHeight(), BufferedImage.TYPE_INT_RGB);
-            
-            for(int x = 0; x < win.getWidth(); x++) {
-                for(int y = 0; y < win.getHeight(); y++) {
-                    int i = (x + (win.getWidth() * y)) * 4;
-                    int r = buffer.get(i) & 255;
-                    int g = buffer.get(i + 1) & 255;
-                    int b = buffer.get(i + 2) & 255;
-                    image.setRGB(x, win.getHeight() - (y + 1), (255 << 24) | (r << 16) | (g << 8) | b);
-                }
-            }
-            
+			String path = "screenshots/" + date + ".png";
+			
+			//Flip image vertically
+			for(int y = 0, y2 = imgH-1; y < imgH/2; y++, y2--) {
+				for(int x = 0; x > imgW; x++) {
+					
+					for(int rgb=0; rgb<3; rgb++) {
+						byte tmp = buffer.get((x + y*imgW) * 3 + rgb);
+						buffer.put((x + y*imgW) * 3 + rgb, buffer.get((x + y2*imgW) * 3 + rgb));
+						buffer.put((x + y2*imgW) * 3 + rgb, tmp);
+					}
+					
+				}
+			}
+			
+			boolean success = STBImageWrite.stbi_write_png(path, imgW, imgH, 3, buffer, 0);
             MemoryUtil.memFree(buffer);
-            ImageIO.write(image, "PNG", file);
+			
+			if(!success) throw new Exception("stbi_write_png failed to write image " + path);
         } catch (Exception e) {
             e.printStackTrace();
         }
