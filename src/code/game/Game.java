@@ -89,8 +89,8 @@ public class Game extends Screen {
     public void show() {
         if(main.conf.psxRender) {
             if(psxBuffer == null
-                    || psxBuffer.tex.w != main.conf.vrw
-                    || psxBuffer.tex.h != main.conf.vrh) {
+                    || psxBuffer.texs[0].w != main.conf.vrw
+                    || psxBuffer.texs[0].h != main.conf.vrh) {
                 createPSXBuffer();
             }
 
@@ -102,8 +102,8 @@ public class Game extends Screen {
 
     private void createPSXBuffer() {
         if(psxBuffer != null) psxBuffer.destroy();
-        psxBuffer = new FrameBuffer(main.conf.vrw, main.conf.vrh, true);
-		psxBuffer.tex.setParameters(e3d, false, false, true);
+        psxBuffer = new FrameBuffer(main.conf.vrw, main.conf.vrh);
+		psxBuffer.texs[0].setParameters(e3d, false, false, true);
     }
 
     private void createDitherStuff() {
@@ -343,19 +343,19 @@ public class Game extends Screen {
                 ditherShader.setUniformf(ditherUniW, drawW/ditherTexture.w);
                 ditherShader.setUniformf(ditherUniH, drawH/ditherTexture.h);
                 
-                psxBuffer.tex.bind(0);
+                psxBuffer.texs[0].bind(0);
                 ditherTexture.bind(1);
                 
                 e3d.drawRect(
                         vpx, vpy+vph, 
                         vpw, -vph, false);
                 
-                psxBuffer.tex.unbind(0);
+                psxBuffer.texs[0].unbind(0);
                 ditherTexture.unbind(1);
                 ditherShader.unbind();
             } else {
                 
-                main.hudRender.drawRect(psxBuffer.tex, 
+                main.hudRender.drawRect(psxBuffer.texs[0], 
                         vpx, vpy+vph, 
                         vpw, -vph, 
                         0xffffff, 1);

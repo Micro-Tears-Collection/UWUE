@@ -147,6 +147,14 @@ public class HudRender {
         clips = null;
         e3d = null;
     }
+	
+	public void setDefaultSampling() {
+		hudSampler.setProperties(e3d, false, false, false);
+	}
+	
+	public void setSampling(boolean linear, boolean mipMapping, boolean clamp) {
+		hudSampler.setProperties(e3d, linear, mipMapping, clamp);
+	}
     
     public final void drawRect(float x, float y, float w, float h, int color, float a) {
         noTexShader.bind();
