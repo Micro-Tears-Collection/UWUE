@@ -8,8 +8,9 @@ import org.lwjgl.openal.SOFTDirectChannels;
 import org.lwjgl.openal.SOFTDirectChannelsRemix;
 
 public class SoundSource {
-    public static final float MIN_LINEAR_DIST = 1, MIN_DIST = 100, MAX_DIST = 1000;
-	public static final boolean LINEAR_DIST = false;
+    public static final float MIN_LINEAR_DIST = 1, MAX_LINEAR_DIST = 1000;
+	public static final float MIN_DIST = 100, MAX_DIST = Float.MAX_VALUE;
+	public static final boolean LINEAR_DIST = false, CLAMP = false;
 
     public String soundName;
     public SoundBuffer buffer;
@@ -40,7 +41,7 @@ public class SoundSource {
         AL11.alSourcef(soundSource, AL11.AL_ROLLOFF_FACTOR, 1f);
 		AL11.alSourcef(soundSource, EXTEfx.AL_AIR_ABSORPTION_FACTOR, 0.01f);
         
-        setDistance(MIN_DIST, MAX_DIST, false);
+        setDistance(MIN_DIST, MAX_DIST, false, CLAMP);
     }
     
     public void destroy() {
@@ -117,12 +118,16 @@ public class SoundSource {
         AL11.alSourcefv(soundSource, AL11.AL_VELOCITY, sourceSpeed);
     }
     
-    public void setDistance(float min, float max, boolean linear) {
+    public void setDistance(float min, float max, boolean linear, boolean clamp) {
         AL11.alSourcef(soundSource, AL11.AL_REFERENCE_DISTANCE, min);
         AL11.alSourcef(soundSource, AL11.AL_MAX_DISTANCE, max);
 		
 		AL11.alSourcei(soundSource, AL11.AL_DISTANCE_MODEL, 
-			linear ? AL11.AL_LINEAR_DISTANCE_CLAMPED : AL11.AL_INVERSE_DISTANCE);
+			clamp ? 
+			(linear ? AL11.AL_LINEAR_DISTANCE_CLAMPED : AL11.AL_INVERSE_DISTANCE_CLAMPED)
+			:
+			(linear ? AL11.AL_LINEAR_DISTANCE : AL11.AL_INVERSE_DISTANCE)
+		);
     }
     
 	//todo fix mono sources

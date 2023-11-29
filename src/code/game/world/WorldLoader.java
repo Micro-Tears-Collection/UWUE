@@ -339,11 +339,13 @@ public class WorldLoader {
         source.set3D(ini.getInt("3d_effects", 1) == 1);
 		
 		boolean linear = ini.getInt("linear_attenuation", SoundSource.LINEAR_DIST?1:0) == 1;
+		boolean clamp = ini.getInt("clamp", SoundSource.CLAMP?1:0) == 1;
 		
         source.setDistance(
 			ini.getFloat("min_distance", linear ? SoundSource.MIN_LINEAR_DIST : SoundSource.MIN_DIST),
-			ini.getFloat("max_distance", SoundSource.MAX_DIST),
-			linear
+			ini.getFloat("max_distance", linear ? SoundSource.MAX_LINEAR_DIST : SoundSource.MAX_DIST),
+			linear,
+			clamp
 		);
 		
 		String tmp = ini.get("sound_type");
@@ -425,7 +427,7 @@ public class WorldLoader {
             System.out.println("wrong material???");
             return null;
         }
-        
+		
         WorldMaterial mat = (WorldMaterial) loadedMat;
         float w = 100, h = 100;
         
@@ -449,7 +451,7 @@ public class WorldLoader {
         
         Sprite spr = new Sprite(mat, billboard, w, h, align);
         spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
-        
+		
         SpriteObject sprObj = new SpriteObject(spr);
         
         sprObj.visible = ini.getInt("visible", sprObj.visible?1:0) == 1;
