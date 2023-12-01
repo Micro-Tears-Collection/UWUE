@@ -487,7 +487,7 @@ public class E3D {
 			
 			//Flip image vertically
 			for(int y = 0, y2 = imgH-1; y < imgH/2; y++, y2--) {
-				for(int x = 0; x > imgW; x++) {
+				for(int x = 0; x < imgW; x++) {
 					
 					for(int rgb=0; rgb<3; rgb++) {
 						byte tmp = buffer.get((x + y*imgW) * 3 + rgb);
