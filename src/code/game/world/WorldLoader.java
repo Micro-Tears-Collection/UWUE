@@ -428,7 +428,19 @@ public class WorldLoader {
             return null;
         }
 		
+		Material loadedMat2 = null;
+		
+		String tmp = ini.get("tex2");
+		if(tmp != null) {
+			loadedMat2 = game.e3d.getMaterial(tmp, null);
+			if(!(loadedMat2 instanceof WorldMaterial)) {
+			    System.out.println("wrong material???");
+			    return null;
+			}
+		}
+        
         WorldMaterial mat = (WorldMaterial) loadedMat;
+        WorldMaterial mat2 = (WorldMaterial) loadedMat2;
         float w = 100, h = 100;
         
         float ww = ini.getFloat("width", Float.MAX_VALUE);
@@ -444,7 +456,7 @@ public class WorldLoader {
             w = ww; h = hh;
         }
         
-        String tmp = ini.getDef("align", billboard?"bottom":"center");
+        tmp = ini.getDef("align", billboard?"bottom":"center");
         int align = Sprite.BOTTOM;
         if(tmp.equals("center")) align = Sprite.CENTER;
         else if(tmp.equals("top")) align = Sprite.TOP;
@@ -452,7 +464,13 @@ public class WorldLoader {
         Sprite spr = new Sprite(mat, billboard, w, h, align);
         spr.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
 		
-        SpriteObject sprObj = new SpriteObject(spr);
+        Sprite spr2 = null;
+		if(mat2 != null) {
+			spr2 = new Sprite(mat2, billboard, w, h, align);
+			spr2.load(new IniFile(StringTools.cutOnStrings(ini.getDef("options", ""), ';'), false));
+		}
+        
+        SpriteObject sprObj = new SpriteObject(spr, spr2);
         
         sprObj.visible = ini.getInt("visible", sprObj.visible?1:0) == 1;
         

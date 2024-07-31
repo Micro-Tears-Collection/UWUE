@@ -42,7 +42,7 @@ public class AudioEngine {
         
         enableHRTF(hrtf);
         
-        //Audio3DEffects.init();
+        Audio3DEffects.init();
         sources = new ArrayList<>();
     }
 	
