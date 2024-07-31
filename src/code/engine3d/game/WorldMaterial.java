@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class WorldMaterial extends Material {
     
     public static final int UNDEFINED = -2, DEFAULT = -1;
-	public static final int UNI_UV_OFFSET = 0, UNI_ALPHA_THRESHOLD = 1, SPECULAR = 2, ROUGHNESS = 3, LIGHT_THRU = 4;
+	public static final int UNI_UV_OFFSET = 0, UNI_ALPHA_THRESHOLD = 1, SPECULAR = 2, ROUGHNESS = 3;
 	public static boolean disableMipmapping;
     
     public Texture tex;
@@ -34,7 +34,6 @@ public class WorldMaterial extends Material {
 	
     boolean alphaTest, linear, mipMapping, wrapClamp;
     private float scrollXSpeed, scrollYSpeed;
-	private float lightThru;
     
     public WorldMaterial(E3D e3d) {
         super(e3d);
@@ -83,8 +82,6 @@ public class WorldMaterial extends Material {
 				
 				/*if(defs.contains("PARALLAXMAP")) shader.addTextureUnit("parallaxMap", 4);
 				if(defs.contains("EMISSIONMAP")) shader.addTextureUnit("emissionMap", 5);*/
-				
-				shader.storeUniform(LIGHT_THRU, "lightThru");
 			}
 			
 			shader.addUniformBlock(e3d.fog, "fog");
@@ -118,8 +115,6 @@ public class WorldMaterial extends Material {
         scrollYSpeed = ini.getFloat("scroll_y", 0);
         
         glow = ini.getInt("glow", 0) == 1;
-		
-		lightThru = ini.getFloat("light_thru", 0);
 		
 		String currentPath = AssetManager.getDirectory(name);
 		
@@ -205,7 +200,6 @@ public class WorldMaterial extends Material {
 		}
         
 		if(!glow) {
-			if(lightThru > 0) shader.setUniformf(shader.uniforms[LIGHT_THRU], lightThru);
 			/*if(normalMap != null) {
 				sampler.bind(1);
 				normalMap.bind(1);
@@ -255,8 +249,6 @@ public class WorldMaterial extends Material {
 		}
         
 		if(!glow) {
-			if(lightThru > 0) shader.setUniformf(shader.uniforms[LIGHT_THRU], 0);
-			
 			/*if(normalMap != null) {
 				sampler.unbind(1);
 				normalMap.unbind(1);

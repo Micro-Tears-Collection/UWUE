@@ -27,7 +27,7 @@ public class Configuration {
     
     public boolean debug = false;
     
-    public int musicVolume = 80, soundsVolume = 70, footstepsVolume = 90;
+    public int musicVolume = 100, soundsVolume = 100, footstepsVolume = 100;
 	public boolean hrtf = true;
     
     public int mouseLookSpeed = 100, keyboardLookSpeed = 100, 
@@ -35,9 +35,11 @@ public class Configuration {
     
     public int gamepadLayout = 0;
     
-    public boolean startInFullscr = true, vsync = false;
+    public boolean startInFullscr = true, vsync = false, 
+            psxRender = false, dithering = true;
     public int fw, fh;
-    public int ww = 800, wh = 600;
+    public int ww = 800, wh = 600, 
+            vrw = 320, vrh = 240;
     public int aa = 4;
     
     public float fov = 70;
@@ -72,6 +74,11 @@ public class Configuration {
         aa = conf.aa;
         vsync = conf.vsync;
         
+        //PSX render
+        psxRender = conf.psxRender;
+        vrw = conf.vrw; vrh = conf.vrh;
+        dithering = conf.dithering;
+        
         //Debug
         debug = conf.debug;
     }
@@ -105,6 +112,13 @@ public class Configuration {
         
         aa = conf.getInt("screen", "antialiasing", aa);
         
+        //PSX Render
+        psxRender = conf.getInt("screen", "psx_render", psxRender?1:0) == 1;
+        dithering = conf.getInt("screen", "dithering", dithering?1:0) == 1;
+        
+        vrw = conf.getInt("screen", "vres_width", vrw);
+        vrh = conf.getInt("screen", "vres_height", vrh);
+        
         debug = conf.getInt("game", "debug", debug?1:0) == 1;
     }
     
@@ -136,6 +150,16 @@ public class Configuration {
         conf.put("screen", "window_height", String.valueOf(wh));
 
         conf.put("screen", "antialiasing", String.valueOf(aa));
+        
+        //PSX render
+        conf.put("screen", "psx_render", String.valueOf(psxRender?1:0));
+        
+        if(psxRender) {
+            conf.put("screen", "dithering", String.valueOf(dithering?1:0));
+            
+            conf.put("screen", "vres_width", String.valueOf(vrw));
+            conf.put("screen", "vres_height", String.valueOf(vrh));
+        }
         
         //Debug
         conf.put("game", "debug", String.valueOf(debug?1:0));
@@ -174,6 +198,7 @@ public class Configuration {
         }
         applyAudio();
 		applyHRTF();
+        WorldMaterial.disableMipmapping = psxRender;
 		applyPsxrender(e3d);
     }
     

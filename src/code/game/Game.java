@@ -62,6 +62,12 @@ public class Game extends Screen {
     public String nextDialog;
     public boolean loadDialogFromFile;
     
+    //Dithering
+    private FrameBuffer psxBuffer;
+    private Texture ditherTexture;
+    private Shader ditherShader;
+    private int ditherUniW, ditherUniH;
+    
     public Game(Main main) {
         this.main = main;
         w = main.getWidth(); h = main.getHeight();
@@ -80,25 +86,64 @@ public class Game extends Screen {
         player = new Player();
     }
     
+    public void show() {
+        if(main.conf.psxRender) {
+            if(psxBuffer == null
+                    || psxBuffer.texs[0].w != main.conf.vrw
+                    || psxBuffer.texs[0].h != main.conf.vrh) {
+                createPSXBuffer();
+            }
+
+            if(ditherShader == null && main.conf.dithering) {
+                createDitherStuff();
+            }
+        }
+    }
+
+    private void createPSXBuffer() {
+        if(psxBuffer != null) psxBuffer.destroy();
+        psxBuffer = new FrameBuffer(main.conf.vrw, main.conf.vrh);
+		psxBuffer.texs[0].setParameters(e3d, false, false, true);
+    }
+
+    private void createDitherStuff() {
+        ditherShader = e3d.getShader("dither");
+        ditherShader.use();
+        
+        ditherShader.bind();
+        ditherShader.addTextureUnit(0);
+        ditherShader.addTextureUnit(1);
+        ditherShader.addUniformBlock(e3d.matrices, "mats");
+        
+        ditherUniW = ditherShader.getUniformIndex("ditherW");
+        ditherUniH = ditherShader.getUniformIndex("ditherH");
+	
+        ditherShader.unbind();
+        
+        ditherTexture = e3d.getTexture("/images/bayer_matrix.png", null);
+		ditherTexture.setParameters(e3d, false, false, false);
+        ditherTexture.use();
+    }
+    
     private void setPauseScreenItems() {
         pauseScreen.removeAll();
         final Game game = this;
         
-        pauseScreen.add(new TextItem("Continue", main.font) {
+        pauseScreen.add(new TextItem("CONTINUE", main.font) {
             public void onEnter() {
                 main.clickedS.play();
                 togglePauseScreen();
             }
         }.setHCenter(true));
         
-        pauseScreen.add(new TextItem("Settings", main.font) {
+        pauseScreen.add(new TextItem("OPTIONS", main.font) {
             public void onEnter() {
                 main.clickedS.play();
                 main.setScreen(new Settings(main, game));
             }
         }.setHCenter(true));
         
-        pauseScreen.add(new TextItem("Close game", main.font) {
+        pauseScreen.add(new TextItem("WAKE UP", main.font) {
             public void onEnter() {
                 main.clickedS.play();
                 wakeUp();
@@ -179,6 +224,9 @@ public class Game extends Screen {
 		player.destroy();
         
         handIcon.free();
+        if(psxBuffer != null) psxBuffer.destroy();
+        if(ditherShader != null) ditherShader.free();
+        if(ditherTexture != null) ditherTexture.destroy();
         
         AssetManager.destroyThings(AssetManager.CONTENT);
         
@@ -261,7 +309,7 @@ public class Game extends Screen {
     }
     
     public final int getViewportW() {
-        return w;
+        return main.conf.psxRender?(main.conf.vrw * h / main.conf.vrh):w;
     }
     
     public final int getViewportH() {
@@ -271,14 +319,48 @@ public class Game extends Screen {
     public void render() {
         int drawW = w, drawH = h;
         
+        if(main.conf.psxRender) {
+            psxBuffer.bind();
+            drawW = main.conf.vrw;
+            drawH = main.conf.vrh;
+        }
+        
         world.render(e3d, drawW, drawH);
         
+        if(main.conf.psxRender) psxBuffer.unbind();
         e3d.prepare2D(0, 0, w, h);
             
         int vpx = getViewportX();
         int vpy = getViewportY();
         int vpw = getViewportW();
         int vph = getViewportH();
+        
+        if(main.conf.psxRender) {
+            e3d.clearColor(0);
+            
+            if(main.conf.dithering) {
+                ditherShader.bind();
+                ditherShader.setUniformf(ditherUniW, drawW/ditherTexture.w);
+                ditherShader.setUniformf(ditherUniH, drawH/ditherTexture.h);
+                
+                psxBuffer.texs[0].bind(0);
+                ditherTexture.bind(1);
+                
+                e3d.drawRect(
+                        vpx, vpy+vph, 
+                        vpw, -vph, false);
+                
+                psxBuffer.texs[0].unbind(0);
+                ditherTexture.unbind(1);
+                ditherShader.unbind();
+            } else {
+                
+                main.hudRender.drawRect(psxBuffer.texs[0], 
+                        vpx, vpy+vph, 
+                        vpw, -vph, 
+                        0xffffff, 1);
+            }
+        }
         
         if(toActivate != null && !isPaused()) {
             float sizeh = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.h)) * handIcon.h;
@@ -391,10 +473,9 @@ public class Game extends Screen {
         if(isWakingUp()) return;
         
         paused = true;
-        wakeUpFade = new Fade(false, 0x000000, 1000) {
+        wakeUpFade = new Fade(false, 0xffffff, 1000) {
             public void onDone() {
-                //main.setScreen(new Menu(main), true);
-                main.closeGame();
+                main.setScreen(new Menu(main), true);
             };
         };
         setFade(wakeUpFade);

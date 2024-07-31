@@ -52,7 +52,7 @@ public class Main extends Screen {
     
     BMFont font;
     int fontColor, fontSelColor;
-    SoundSource selectedS, clickedS;
+    SoundSource selectedS, clickedS, gameStartS;
 
     private boolean run = true;
     private Screen screen, nextScreen;
@@ -117,6 +117,10 @@ public class Main extends Screen {
         clickedS.set3D(false);
         clickedS.buffer.neverUnload = true;
         
+        gameStartS = new SoundSource("/sounds/game start.ogg");
+        gameStartS.set3D(false);
+        gameStartS.buffer.neverUnload = true;
+        
         e3d = new E3D(window);
         hudRender = new HudRender(e3d);
         
@@ -151,14 +155,7 @@ public class Main extends Screen {
             }
         }.setXYW(0, 0, getWidth());
 
-        //setScreen(new Menu(this));
-		if(conf.debug) {
-			Game game = new Game(main);
-			main.setScreen(game, true);
-			game.loadMap(main.gamecfg.get("game", "start_map"));
-		} else {
-			setScreen(new Intro(this));
-		}
+        setScreen(new Menu(this));
         run();
     }
 
@@ -175,6 +172,7 @@ public class Main extends Screen {
         musPlayer.destroy();
         selectedS.destroy();
         clickedS.destroy();
+        gameStartS.destroy();
         
         AssetManager.destroyThings(AssetManager.ALL);
         

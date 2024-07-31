@@ -17,21 +17,15 @@ import code.utils.FPS;
 public class SpriteObject extends Entity {
     
     private Sprite spr;
-	private Sprite spr2;
-	private long animTime = 0;
-	
     public boolean visible = true;
     
-    public SpriteObject(Sprite spr, Sprite spr2) {
+    public SpriteObject(Sprite spr) {
         this.spr = spr;
-        this.spr2 = spr2;
     }
     
     public void destroy() {
         spr.destroy();
         spr = null;
-        if(spr2 != null) spr2.destroy();
-        spr2 = null;
         super.destroy();
     }
 	
@@ -57,20 +51,14 @@ public class SpriteObject extends Entity {
     }
     
     public void animate(long step, boolean paused, Entity teteAtete) {
-        if(!paused || animateWhenPaused || teteAtete == this) {
-			//spr.animate(step, false);
-			if(spr2 != null) animTime = (animTime + step) % 500;
-		}
+        if(!paused || animateWhenPaused || teteAtete == this) spr.animate(step, false);
     }
     
     public void render(E3D e3d, World world) {
         if(visible) {
-			Sprite drawSpr = spr;
-			if(spr2 != null & animTime >= 250) drawSpr = spr2;
-			
-            drawSpr.setTransformation(pos, null);
-            drawSpr.setCamera(world.m, e3d.invCam);
-            drawSpr.render(e3d);
+            spr.setTransformation(pos, null);
+            spr.setCamera(world.m, e3d.invCam);
+            spr.render(e3d);
         }
     }
 
