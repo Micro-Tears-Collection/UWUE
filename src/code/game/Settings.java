@@ -220,7 +220,7 @@ public class Settings extends Screen {
                         }
                     });
             
-            /*list.add(new TextItem("Footsteps volume: " + valueEdit(mconf.footstepsVolume), 
+            list.add(new TextItem("Footsteps volume: " + valueEdit(mconf.footstepsVolume), 
                     font) {
                         public boolean onRight() {
                             main.clickedS.play();
@@ -237,7 +237,7 @@ public class Settings extends Screen {
                             setText("Footsteps volume: " + valueEdit(mconf.footstepsVolume), list);
                             return true;
                         }
-                    });*/
+                    });
 			
 			list.addVoid(font);
 			
@@ -309,33 +309,6 @@ public class Settings extends Screen {
                         }
                     });
             
-            list.add(new TextItem("PSX-Like render: " + checkBox(mconf.psxRender),
-                    font) {
-                        public void onEnter() {
-                            main.clickedS.play();
-                            mconf.psxRender ^= true;
-                            setList(listType);
-                        }
-                    });
-            
-            if(mconf.psxRender) {
-                list.add(new TextItem("Virtual resolution:", font).setHCenter(true).setSkip(true));
-            
-                vres = new TextBoxItem(main, font, 2);
-                vres.setOnlyDigit(true);
-                vres.setText(new String[]{String.valueOf(mconf.vrw), String.valueOf(mconf.vrh)});
-                list.add(vres);
-
-                list.add(new TextItem("Pseudo dithering: " + checkBox(mconf.dithering),
-                        font) {
-                            public void onEnter() {
-                                main.clickedS.play();
-                                mconf.dithering ^= true;
-                                setText("Pseudo dithering: " + checkBox(mconf.dithering), list);
-                            }
-                        });
-            }
-            
         } else if(type == GAMEPLAY) {
             
             list.add(new TextItem("Mouse look speed: " + valueEdit(mconf.mouseLookSpeed), 
@@ -406,9 +379,6 @@ public class Settings extends Screen {
                     
                     mconf.ww = windowres==null?mconf.ww:windowres.getBox(0).toInteger();
                     mconf.wh = windowres==null?mconf.wh:windowres.getBox(1).toInteger();
-                    
-                    mconf.vrw = vres==null?mconf.vrw:vres.getBox(0).toInteger();
-                    mconf.vrh = vres==null?mconf.vrh:vres.getBox(1).toInteger();
 
                     if(!mconf.isValid()) {
                         currentList = message;
@@ -456,9 +426,7 @@ public class Settings extends Screen {
             setList(VIDEO);
         }
         
-        if(previous instanceof Menu) {
-            ((Menu)previous).drawBackground();
-        } else if(previous instanceof Game) {
+        if(previous instanceof Game) {
             Game game = (Game)previous;
             
             game.world.pausedAnimate(null);
