@@ -10,6 +10,8 @@ import org.lwjgl.openal.SOFTHRTF;
  * @author Roman Lahin
  */
 public class Audio3DEffects {
+	
+	private static int AL_EFFECT_CONVOLUTION_REVERB_SOFT = 0xA000;
     
     static int auxEffectSlot, reverbEffect;
     
@@ -140,4 +142,14 @@ public class Audio3DEffects {
         int error = AL10.alGetError();
         if(error != AL10.AL_NO_ERROR) System.out.println("Reverb initialization error: "+error);
     }
+	
+	/*private static SoundBuffer impulse;
+	
+	private static void setupConvolution(int effect, String impulsePath, float gain) {
+		impulse = SoundBuffer.get(impulsePath);
+		impulse.use();
+		
+		EXTEfx.alAuxiliaryEffectSloti(effect, AL10.AL_BUFFER, impulse.id);
+		EXTEfx.alAuxiliaryEffectSlotf(effect, EXTEfx.AL_EFFECTSLOT_GAIN, gain);
+	}*/
 }
