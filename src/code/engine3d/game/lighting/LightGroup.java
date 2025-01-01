@@ -2,6 +2,7 @@ package code.engine3d.game.lighting;
 
 import code.engine3d.E3D;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  *
@@ -93,7 +94,9 @@ public class LightGroup {
             activeLightsCount++;
         }
         
-        if(renderLights.size() > E3D.MAX_LIGHTS) sort(renderLights);
+        if(renderLights.size() > E3D.MAX_LIGHTS) {
+			renderLights.sort((a, b) -> a.influence > b.influence ? -1 : (a.influence == b.influence ? 0 : 1));
+		}
         
         activeLightsCount = Math.min(activeLightsCount, E3D.MAX_LIGHTS);
         
@@ -121,36 +124,6 @@ public class LightGroup {
         }
 		
 		e3d.sendLights();
-    }
-    
-    private static void sort(ArrayList<Light> list) {
-        sort(list, 0, list.size()-1);
-    }
-    
-    private static void sort(ArrayList<Light> list, int low, int high) {
-        if(low >= high) return; //Завершить выполнение если уже нечего делить
-        
-        Light base = list.get((low+high)>>1); //Опорный элемент
-        float influence = base.influence;
-
-        //Разделить на подмассивы, который больше и меньше опорного элемента
-        int first = low, second = high;
-        while(first <= second) {
-            while(list.get(first).influence > influence) first++;
-
-            while(list.get(second).influence < influence) second--;
-
-            if(first <= second) { //Меняем местами
-                Light tmp = list.get(first);
-                list.set(first, list.get(second));
-                list.set(second, tmp);
-                first++; second--;
-            }
-        }
-        
-        //Сортировки левой и правой части
-        if(low < second) sort(list, low, second);
-        if(high > first) sort(list, first, high);
     }
     
     public static Light findLight(String find) {
