@@ -13,6 +13,7 @@ import code.game.world.entities.SpriteObject;
 import code.math.collision.Ray;
 import code.math.collision.Sphere;
 import code.engine3d.instancing.MeshInstance;
+import code.game.world.entities.PhysEntity;
 import code.math.Culling;
 import code.math.Vector3D;
 
@@ -121,7 +122,7 @@ public class World {
         for(int i=0; i<entities.size(); i++) {
             Entity obj1 = entities.get(i);
             
-			node.collisionTest(obj1);
+			if(obj1 instanceof PhysEntity) node.collisionTest((PhysEntity) obj1);
         }
         
         for(Entity entity : entities) {

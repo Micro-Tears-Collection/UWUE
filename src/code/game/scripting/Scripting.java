@@ -569,6 +569,11 @@ public class Scripting {
                     
                     return LuaValue.valueOf(entity.pointable);
                     
+                } else if(varName.equals("activateWhenInside")) {
+                    if(!val.isnil() && val.isboolean()) entity.activateWhenInside = val.toboolean();
+                    
+                    return LuaValue.valueOf(entity.activateWhenInside);
+                    
                 } else if(varName.equals("animateWhenPaused")) {
                     if(!val.isnil() && val.isboolean()) entity.animateWhenPaused = val.toboolean();
                     

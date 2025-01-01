@@ -8,6 +8,7 @@ import code.math.collision.Sphere;
 import code.math.collision.SphereCast;
 import code.engine3d.instancing.MeshInstance;
 import code.game.world.entities.Entity;
+import code.game.world.entities.PhysEntity;
 
 import code.math.Culling;
 import code.math.Vector3D;
@@ -255,7 +256,7 @@ public class Node {
 		return got;
     }
 	
-	void collisionTest(Entity obj1) {
+	void collisionTest(PhysEntity obj1) {
 		if(totalEntities == 0) return;
 		
 		if((totalEntities == 1 || !entities.isEmpty()) && !isIntersects(obj1.getMin(), obj1.getMax())) return;

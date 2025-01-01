@@ -283,16 +283,22 @@ public class Settings extends Screen {
                     font) {
                         public boolean onRight() {
                             main.clickedS.play();
+							
                             mconf.aa <<= 1;
-                            if(mconf.aa > maxAA) mconf.aa = 1;
+							if(mconf.aa == 0) mconf.aa = 2;
+							else if(mconf.aa > maxAA) mconf.aa = 0;
+							
                             setText("Antialiasing: "+mconf.aa+"x", list);
                             return true;
                         }
                         
                         public boolean onLeft() {
                             main.clickedS.play();
-                            if(mconf.aa == 1) mconf.aa = maxAA;
-                            else mconf.aa >>= 1;
+							
+                            if(mconf.aa == 0) mconf.aa = maxAA;
+                            else if(mconf.aa == 2) mconf.aa = 0;
+							else mconf.aa >>= 1;
+							
                             setText("Antialiasing: "+mconf.aa+"x", list);
                             return true;
                         }

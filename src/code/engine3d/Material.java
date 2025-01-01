@@ -34,7 +34,7 @@ public class Material extends ReusableContent {
 		
 		zWrite = ini.getInt("z_write", 1) == 1;
 		
-		tmp = ini.getDef("depth_func", "gequal");
+		tmp = ini.getDef("depth_func", "lequal");
 		
 		if(tmp.equals("always")) depthFunc = GL33C.GL_ALWAYS;
 		else if(tmp.equals("never")) depthFunc = GL33C.GL_NEVER;
@@ -93,7 +93,7 @@ public class Material extends ReusableContent {
 		if(!zWrite) GL33C.glDepthMask(false);
 		
 		//gequal is default depth func
-		if(depthFunc != GL33C.GL_GEQUAL) {
+		if(depthFunc != GL33C.GL_LEQUAL) {
 			GL33C.glDepthFunc(depthFunc);
 		}
     }
@@ -105,8 +105,8 @@ public class Material extends ReusableContent {
 		
 		if(!zWrite) GL33C.glDepthMask(true);
 		
-		if(depthFunc != GL33C.GL_GEQUAL) {
-			GL33C.glDepthFunc(GL33C.GL_GEQUAL);
+		if(depthFunc != GL33C.GL_LEQUAL) {
+			GL33C.glDepthFunc(GL33C.GL_LEQUAL);
 		}
     }
 
