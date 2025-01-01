@@ -444,7 +444,7 @@ public class WorldLoader {
             w = ww; h = hh;
         }
         
-        tmp = ini.getDef("align", billboard?"bottom":"center");
+        String tmp = ini.getDef("align", billboard?"bottom":"center");
         int align = Sprite.BOTTOM;
         if(tmp.equals("center")) align = Sprite.CENTER;
         else if(tmp.equals("top")) align = Sprite.TOP;
