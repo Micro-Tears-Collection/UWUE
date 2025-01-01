@@ -56,6 +56,7 @@ public class Entity {
     
     public boolean animateWhenPaused = false;
     
+	public boolean activateWhenInside = false;
     protected boolean inRadius = true;
     
     protected boolean activateImpl(Main main) {
@@ -77,14 +78,15 @@ public class Entity {
     }
 
     public boolean canBeActivated(Entity lookingAt, Ray ray, boolean click) {
-        if(!activable || clickable != click) return false;
+        if(!activable) return false;
+		if(clickable && !click) return false;
         
         boolean oldInRadius = inRadius;
         inRadius = inRadius(ray.start);
         
         //in radius and old in radius was false
         //or it doesnt need to check this radius thing because activation is called by click
-        if(inRadius && (clickable || !oldInRadius) && (!pointable || lookingAt == this)) {
+        if(inRadius && (activateWhenInside || clickable || !oldInRadius) && (!pointable || lookingAt == this)) {
             return true;
         }
         
