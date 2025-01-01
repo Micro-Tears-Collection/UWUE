@@ -24,6 +24,7 @@ public class PhysEntity extends Entity {
     protected int fallingTime;
     
     public boolean physics = true, pushable = true, canPush = true;
+	public boolean noclip;
     
     public void destroy() {
         super.destroy();
@@ -69,7 +70,7 @@ public class PhysEntity extends Entity {
     public void physicsUpdate(World world) {
         if(physics) {
             move(world);
-            if(!onGround) fallingTime += FPS.frameTime;
+            if(!noclip && !onGround) fallingTime += FPS.frameTime;
             else fallingTime = 0;
             
             if(world.fallDeath && fallingTime >= 3000) hp = 0;
@@ -81,11 +82,11 @@ public class PhysEntity extends Entity {
         verticalFriction = Math.pow(verticalFriction, FPS.frameTime / 50d);
         
         speed.x *= horizFriction;
-        speed.y *= verticalFriction;
+        speed.y *= noclip ? horizFriction : verticalFriction;
         speed.z *= horizFriction;
         
         //gravity
-        speed.y -= 8F * FPS.frameTime / 50;
+        if(physics && !noclip) speed.y -= 8F * FPS.frameTime / 50;
 		
 		super.physicsUpdate(world);
     }
@@ -98,6 +99,12 @@ public class PhysEntity extends Entity {
         tmp2.mul(FPS.frameTime, FPS.frameTime, FPS.frameTime);
         tmp2.div(50f, 50f, 50f);
         
+		if(noclip) {
+			pos.add(tmp2);
+			onGround = false;
+			return;
+		}
+		
         tmpSphere.radius = radius;
         tmpSphere.height = height;
         

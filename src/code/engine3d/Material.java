@@ -13,6 +13,7 @@ public class Material extends ReusableContent {
     public static final int OFF = 0, BLEND = 1, ADD = 2, SUB = 3, SCR = 4, MAX = 5, MUL = 6;
     
     protected int blendMode = OFF;
+	protected boolean atoc, sampleShading;
 	
 	protected boolean zWrite;
 	protected int depthFunc;
@@ -44,6 +45,9 @@ public class Material extends ReusableContent {
 		else if(tmp.equals("notequal")) depthFunc = GL33C.GL_NOTEQUAL;
 		else if(tmp.equals("lequal")) depthFunc = GL33C.GL_LEQUAL;
 		else if(tmp.equals("gequal")) depthFunc = GL33C.GL_GEQUAL;
+		
+		atoc = ini.getInt("alpha_to_coverage", 0) == 1;
+		sampleShading = ini.getInt("sample_shading", 0) == 1;
     }
     
     public void setBlendMode(int mode) {

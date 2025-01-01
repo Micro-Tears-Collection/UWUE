@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL33C;
 public class Mesh extends ReusableContent {
 	
 	private static final int VBOS_PER_VAO = 3,
-			INTS_PER_VBO = 3 + 2 + 1/* + 3*//* + 1*/;
+			INTS_PER_VBO = 3 + 2 + 1/* + 3*/ + 1;
     
     public String name;
     public IniFile ini;
@@ -25,7 +25,7 @@ public class Mesh extends ReusableContent {
     private int[] vaos, vbos, vertsCount;
 	public String[] mats;
     
-    public float[][] poses/*, colors*/, uvs, normals;//, tangents;
+    public float[][] poses/*, colors*/, uvs, normals, tangents;
     public float[][] normalsPerFace;
     
     public Mesh(String name, float[][] poses/*, float[][] colors*/, float[][] uvs, float[][] normals,
@@ -42,7 +42,7 @@ public class Mesh extends ReusableContent {
 		this.max = new Vector3D(max);
 		
 		calcFaceNormals();
-		//if(uvs != null) calcTangents();
+		if(uvs != null) calcTangents();
 		
 		//Load to GPU
 		int submeshes = mats.length;
@@ -83,13 +83,13 @@ public class Mesh extends ReusableContent {
 				data[x + 7] = Float.floatToRawIntBits(colors[i][vert * 3 + 1]);
 				data[x + 8] = Float.floatToRawIntBits(colors[i][vert * 3 + 2]);*/
 				
-				/*if(tangents != null) {
+				if(tangents != null) {
 					data[x + 6] = pack2101010(
 							tangents[i][vert * 4], 
 							tangents[i][vert * 4 + 1], 
 							tangents[i][vert * 4 + 2],
 							tangents[i][vert * 4 + 3]);
-				}*/
+				}
 			}
 			
 			int vbo = GL33C.glGenBuffers(); //Creates a VBO ID
@@ -114,10 +114,10 @@ public class Mesh extends ReusableContent {
 			/*GL33C.glEnableVertexAttribArray(3); //colors
 			GL33C.glVertexAttribPointer(3, 3, GL33C.GL_FLOAT, false, INTS_PER_VBO * 4, 6 * 4);*/
 			
-			/*if(tangents != null) {
+			if(tangents != null) {
 				GL33C.glEnableVertexAttribArray(3); //tangents
 				GL33C.glVertexAttribPointer(3, 4, GL33C.GL_INT_2_10_10_10_REV, true, INTS_PER_VBO * 4, 6 * 4);
-			}*/
+			}
 		}
 		
 		GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
@@ -169,7 +169,7 @@ public class Mesh extends ReusableContent {
         }
     }
 
-	/*private void calcTangents() {
+	private void calcTangents() {
 		tangents = new float[poses.length][];
 		
 		for(int submesh=0; submesh<poses.length; submesh++) {
@@ -247,7 +247,7 @@ public class Mesh extends ReusableContent {
 						= Vector3D.cross(normal, tangent).dot(bitangent) < 0 ? -1 : 1;
 			}
 		}
-	}*/
+	}
     
 	//render only with custom materials
     public void renderImmediate(E3D e3d, Material[] mats, long time, FloatBuffer modelView) {

@@ -3,9 +3,9 @@ package code.game;
 import code.engine.Screen;
 
 import code.engine3d.E3D;
-import code.engine3d.FrameBuffer;
-import code.engine3d.Shader;
 import code.engine3d.Texture;
+import code.engine3d.game.lighting.Light;
+import code.engine3d.game.lighting.LightGroup;
 
 import code.game.world.World;
 import code.game.world.WorldLoader;
@@ -13,6 +13,8 @@ import code.game.world.entities.Entity;
 import code.game.world.entities.Player;
 
 import code.math.Vector3D;
+import code.math.collision.Ray;
+import code.math.collision.RayCast;
 
 import code.ui.itemList.ItemList;
 import code.ui.itemList.TextItem;
@@ -52,6 +54,11 @@ public class Game extends Screen {
     private ArrayList<Pause> pauses;
     private Entity toActivate;
     private Texture handIcon;
+	
+	private Light selectedLight;
+	private Vector3D lightDragRelPoint = new Vector3D();
+	private Vector3D lightDragPlaneP = new Vector3D();
+	private Vector3D lightDragPlaneN = new Vector3D();
     
     //Load map
     public String nextMap;
@@ -120,6 +127,7 @@ public class Game extends Screen {
     
     public void loadMapImpl() {
         toActivate = null;
+		selectedLight = null;
         long loadtime = System.currentTimeMillis();
         
         WorldLoader.loadWorld(this, nextMap, newPlayerPos, nextRotX, nextRotY);
@@ -248,6 +256,23 @@ public class Game extends Screen {
             toActivate = null;
             wakeUp();
         }
+		
+		if(selectedLight != null) {
+			Vector3D dir = new Vector3D();
+			dir.setDirection(player.rotX, player.rotY);
+
+			float distToPlane = -lightDragPlaneP.dot(lightDragPlaneN);
+			float dot = -dir.dot(lightDragPlaneN);
+			dot = Math.max(0.00001f, dot);
+
+			dir.mul(distToPlane, distToPlane, distToPlane);
+			dir.div(dot, dot, dot);
+
+			selectedLight.posOrDir.set(player.pos);
+			selectedLight.posOrDir.y += player.eyeHeight;
+			selectedLight.posOrDir.add(lightDragRelPoint);
+			selectedLight.posOrDir.add(dir);
+		}
         
         time += FPS.frameTime;
     }
@@ -272,6 +297,39 @@ public class Game extends Screen {
         int drawW = w, drawH = h;
         
         world.render(e3d, drawW, drawH);
+		
+		for(Light light : LightGroup.allLights) {
+			if(!light.isPoint) continue;
+			
+			Vector3D min = new Vector3D(light.posOrDir);
+			Vector3D max = new Vector3D(min);
+			
+			min.sub(10, 10, 10);
+			max.add(10, 10, 10);
+			
+			float maxCol = Math.max(light.color[0], Math.max(light.color[1], light.color[2]));
+			
+			int col = Math.round(Math.min(255, Math.max(0, light.color[0] / maxCol * 255))) << 16;
+			col |= Math.round(Math.min(255, Math.max(0, light.color[1] / maxCol * 255))) << 8;
+			col |= Math.round(Math.min(255, Math.max(0, light.color[2] / maxCol * 255)));
+			
+			main.hudRender.drawCube(min, max, col, 1);
+			
+			if(light == selectedLight) {
+				min.set(light.posOrDir);
+				min.add(lightDragPlaneN.x * 10.0f, lightDragPlaneN.y * 10.01f, lightDragPlaneN.z * 10.01f);
+					
+				max.set(1, 1, 1);
+				max.sub(Math.abs(lightDragPlaneN.x), Math.abs(lightDragPlaneN.y), Math.abs(lightDragPlaneN.z));
+				max.mul(10, 10, 10);
+				
+				min.sub(max);
+				max.mul(2, 2, 2);
+				max.add(min);
+				
+				main.hudRender.drawCube(min, max, 0xffffff, 1);
+			}
+		}
         
         e3d.prepare2D(0, 0, w, h);
             
@@ -280,7 +338,7 @@ public class Game extends Screen {
         int vpw = getViewportW();
         int vph = getViewportH();
         
-        if(toActivate != null && !isPaused()) {
+        /*if(toActivate != null && !isPaused()) {
             float sizeh = Math.max(1, Math.round(Math.min(w, h) / 20f / handIcon.h)) * handIcon.h;
             float sizew = sizeh * handIcon.w / handIcon.h;
             
@@ -288,7 +346,11 @@ public class Game extends Screen {
                     Math.round((w-sizew)/2), Math.round((h-sizeh)/2), 
                     sizew, sizeh, 
                     0xffffff, 1);
-        }
+        }*/
+		
+		//Crosshair
+		main.hudRender.drawRect(w / 2f - 16, h / 2f - 1, 32, 2, 0xffffff, 0.5f);
+		main.hudRender.drawRect(w / 2f - 1, h / 2f - 16, 2, 32, 0xffffff, 0.5f);
         
         if(main.conf.debug) {
 			main.font.drawString(main.hudRender, "FPS: " + FPS.fps, 10, 10, 1, main.fontColor);
@@ -331,7 +393,7 @@ public class Game extends Screen {
     
     public void keyPressed(int key) {
         if(isWakingUp()) return;
-        
+		
         if(Keys.isThatBinding(key, Keys.ESC)) {
             main.clickedS.play();
             togglePauseScreen();
@@ -343,6 +405,10 @@ public class Game extends Screen {
                 Entity tmp = toActivate;
                 toActivate = null;
                 tmp.activate(main);
+            }
+			
+			if(Keys.isThatBinding(key, Player.NOCLIP_TOGGLE)) {
+                player.noclip ^= true;
             }
         } else if(inPauseScreen) {
             pauseScreen.keyPressed(key);
@@ -364,6 +430,46 @@ public class Game extends Screen {
             if(inPauseScreen) {
                 pauseScreen.mouseAction(0, 0, (int)main.getMouseX(), (int)main.getMouseY(), pressed);
             }
+			
+			if(!isPaused()) {
+				selectedLight = null;
+				
+				if(pressed) {
+					Ray ray = new Ray();
+					ray.start.set(player.pos);
+					ray.start.y += player.eyeHeight;
+
+					ray.dir.setDirection(player.rotX, player.rotY);
+
+					for(Light light : LightGroup.allLights) {
+						if(!light.isPoint) continue;
+
+						Vector3D lPos = light.posOrDir;
+
+						boolean hit = RayCast.cubeRayCast(ray, lPos.x - 10, lPos.y - 10, lPos.z - 10, lPos.x + 10, lPos.y + 10, lPos.z + 10);
+
+						if(hit) {
+							selectedLight = light;
+							lightDragPlaneP.set(ray.collisionPoint);
+							lightDragPlaneP.sub(ray.start);
+
+							Vector3D tmp = new Vector3D(ray.collisionPoint);
+							tmp.sub(lPos);
+							lightDragRelPoint.set(tmp);
+							lightDragRelPoint.mul(-1, -1, -1);
+							tmp.setLength(1);
+
+							if(Math.abs(tmp.x) > Math.abs(tmp.y) && Math.abs(tmp.x) > Math.abs(tmp.z)) {
+								lightDragPlaneN.set(Math.signum(tmp.x), 0, 0);
+							} else if(Math.abs(tmp.y) > Math.abs(tmp.z)) {
+								lightDragPlaneN.set(0, Math.signum(tmp.y), 0);
+							} else {
+								lightDragPlaneN.set(0, 0, Math.signum(tmp.z));
+							}
+						}
+					}
+				}
+			}
         } else if(!pressed && button == MOUSE_RIGHT) {
             if(!isPaused() && main.conf.debug) world.debugPos(player);
         }
@@ -376,6 +482,11 @@ public class Game extends Screen {
             int scroll = (int) (y * main.font.getHeight() / 2f);
             pauseScreen.mouseScroll(scroll);
         }
+		
+		if(!isPaused() && selectedLight != null) {
+			float factor = (float) Math.pow(1.1f, y);
+			lightDragPlaneP.mul(factor, factor, factor);
+		}
     }
 
     public void sizeChanged(int w, int h, Screen from) {

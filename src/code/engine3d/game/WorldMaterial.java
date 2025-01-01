@@ -27,14 +27,17 @@ public class WorldMaterial extends Material {
     
 	boolean glow; //dont change!!!
 	//per pixel stuff
-	/*public boolean fastShader;
-	public Texture normalMap, specularMap, roughnessMap, parallaxMap, emissionMap;*/
+	//public boolean fastShader;
+	public Texture normalMap, parallaxMap;//, specularMap, roughnessMap, parallaxMap, emissionMap;
 	public float[] specular;
 	public float roughness;
 	
     boolean alphaTest, linear, mipMapping, wrapClamp;
     private float scrollXSpeed, scrollYSpeed;
 	private float lightThru;
+	
+	private float twoLayer = -1;
+	private boolean toon;
     
     public WorldMaterial(E3D e3d) {
         super(e3d);
@@ -48,7 +51,7 @@ public class WorldMaterial extends Material {
 			defs.add("LIGHT");
 			defs.add("MAX_LIGHTS "+E3D.MAX_LIGHTS);
 			
-			//if(mat.normalMap != null) defs.add("NORMALMAP");
+			if(mat.normalMap != null) defs.add("NORMALMAP");
 			if(mat.specular != null) {
 				defs.add("SPECULAR");
 				
@@ -56,9 +59,14 @@ public class WorldMaterial extends Material {
 				if(mat.roughnessMap != null) defs.add("ROUGHNESSMAP");*/
 			}
 			
-			/*if(mat.parallaxMap != null) defs.add("PARALLAXMAP");
-			if(mat.emissionMap != null) defs.add("EMISSIONMAP");*/
+			if(mat.parallaxMap != null) defs.add("PARALLAXMAP");
+			//if(mat.emissionMap != null) defs.add("EMISSIONMAP");
 		}
+		
+		if(mat.twoLayer > 0) defs.add("LAYER_DEPTH " + mat.twoLayer);
+		if(mat.toon) defs.add("TOON");
+		if(mat.atoc) defs.add("ALPHA_TO_COVERAGE");
+		if(mat.sampleShading) defs.add("SAMPLE_SHADING");
 		
 		String[] defsarr = defs.toArray(new String[defs.size()]);
 		if(defsarr.length == 0) defsarr = null;
@@ -71,7 +79,7 @@ public class WorldMaterial extends Material {
 			
 			if(defs.contains("LIGHT")) {
 				shader.addUniformBlock(e3d.lights, "lights");
-				//if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
+				if(defs.contains("NORMALMAP")) shader.addTextureUnit("normalMap", 1);
 			
 				if(defs.contains("SPECULAR")) {
 					shader.storeUniform(SPECULAR, "specular");
@@ -81,8 +89,8 @@ public class WorldMaterial extends Material {
 					if(defs.contains("ROUGHNESSMAP")) shader.addTextureUnit("roughnessMap", 3);*/
 				}
 				
-				/*if(defs.contains("PARALLAXMAP")) shader.addTextureUnit("parallaxMap", 4);
-				if(defs.contains("EMISSIONMAP")) shader.addTextureUnit("emissionMap", 5);*/
+				if(defs.contains("PARALLAXMAP")) shader.addTextureUnit("parallaxMap", 4);
+				//if(defs.contains("EMISSIONMAP")) shader.addTextureUnit("emissionMap", 5);
 				
 				shader.storeUniform(LIGHT_THRU, "lightThru");
 			}
@@ -125,10 +133,10 @@ public class WorldMaterial extends Material {
 		
 		tex = e3d.getTexture(ini.get("albedo"), currentPath);
 		
-		/*tmp = ini.get("normalmap");
+		tmp = ini.get("normalmap");
 		if(tmp != null) normalMap = e3d.getTexture(tmp, currentPath);
 		
-		tmp = ini.get("roughnessmap");
+		/*tmp = ini.get("roughnessmap");
 		if(tmp != null) roughnessMap = e3d.getTexture(tmp, currentPath);*/
         
         roughness = ini.getFloat("roughness", /*roughnessMap != null ? 1 : */roughness);
@@ -145,13 +153,16 @@ public class WorldMaterial extends Material {
 			else System.arraycopy(fvs, 0, specular, 0, 3);
 		}
 		
-		/*tmp = ini.get("parallaxmap");
+		tmp = ini.get("parallaxmap");
 		if(tmp != null) parallaxMap = e3d.getTexture(tmp, currentPath);
 		
-		tmp = ini.get("emissionmap");
+		/*tmp = ini.get("emissionmap");
 		if(tmp != null) emissionMap = e3d.getTexture(tmp, currentPath);
 		
 		fastShader = ini.getInt("fast_shader", 0) == 1;*/
+		
+		twoLayer = ini.getFloat("second_layer", -1);
+		toon = ini.getInt("toon", 0) == 1;
 		
 		shader = getShader(e3d, this);
     }
@@ -163,11 +174,11 @@ public class WorldMaterial extends Material {
     public ReusableContent use() {
         if(using == 0) {
             if(tex != null) tex.use();
-            /*if(normalMap != null) normalMap.use();
-            if(specularMap != null) specularMap.use();
-            if(roughnessMap != null) roughnessMap.use();
+            if(normalMap != null) normalMap.use();
+            //if(specularMap != null) specularMap.use();
+            //if(roughnessMap != null) roughnessMap.use();
             if(parallaxMap != null) parallaxMap.use();
-            if(emissionMap != null) emissionMap.use();*/
+            //if(emissionMap != null) emissionMap.use();
 			shader.use();
         }
         
@@ -178,11 +189,11 @@ public class WorldMaterial extends Material {
     public ReusableContent free() {
         if(using == 1) {
             if(tex != null) tex.free();
-            /*if(normalMap != null) normalMap.free();
-            if(specularMap != null) specularMap.free();
-            if(roughnessMap != null) roughnessMap.free();
+            if(normalMap != null) normalMap.free();
+            //if(specularMap != null) specularMap.free();
+            //if(roughnessMap != null) roughnessMap.free();
             if(parallaxMap != null) parallaxMap.free();
-            if(emissionMap != null) emissionMap.free();*/
+            //if(emissionMap != null) emissionMap.free();
             shader.free();
         }
         
@@ -206,10 +217,10 @@ public class WorldMaterial extends Material {
         
 		if(!glow) {
 			if(lightThru > 0) shader.setUniformf(shader.uniforms[LIGHT_THRU], lightThru);
-			/*if(normalMap != null) {
+			if(normalMap != null) {
 				sampler.bind(1);
 				normalMap.bind(1);
-			}*/
+			}
 			
 			if(specular != null) {
 				shader.setUniform3f(shader.uniforms[SPECULAR], specular[0], specular[1], specular[2]);
@@ -232,10 +243,10 @@ public class WorldMaterial extends Material {
 			}*/
 		}
 		
-		/*if(parallaxMap != null) {
+		if(parallaxMap != null) {
 			sampler.bind(4);
 			parallaxMap.bind(4);
-		}*/
+		}
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
             shader.setUniform2f(shader.uniforms[UNI_UV_OFFSET], time * scrollXSpeed / 1000, -time * scrollYSpeed / 1000);
@@ -257,12 +268,12 @@ public class WorldMaterial extends Material {
 		if(!glow) {
 			if(lightThru > 0) shader.setUniformf(shader.uniforms[LIGHT_THRU], 0);
 			
-			/*if(normalMap != null) {
+			if(normalMap != null) {
 				sampler.unbind(1);
 				normalMap.unbind(1);
 			}
 			
-			if(specular != null) {
+			/*if(specular != null) {
 				if(specularMap != null) {
 					sampler.unbind(2);
 					specularMap.unbind(2);
@@ -280,10 +291,10 @@ public class WorldMaterial extends Material {
 			}*/
 		}
 		
-		/*if(parallaxMap != null) {
+		if(parallaxMap != null) {
 			sampler.unbind(4);
 			parallaxMap.unbind(4);
-		}*/
+		}
         
         if(scrollXSpeed != 0 || scrollYSpeed != 0) {
             shader.setUniform2f(shader.uniforms[UNI_UV_OFFSET], 0, 0);

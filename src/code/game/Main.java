@@ -77,7 +77,8 @@ public class Main extends Screen {
         Keys.ESC = Keys.addKeyToBinding(Keys.ESC, GLFW.GLFW_KEY_ESCAPE);
         
         Player.initKeys(GLFW.GLFW_KEY_W, GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_A, GLFW.GLFW_KEY_D, 
-                GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_LEFT_SHIFT,
+                GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_LEFT_CONTROL,
+				GLFW.GLFW_KEY_V,
                 GLFW.GLFW_KEY_E);
         
         Main.TILDE = Keys.addKeyToBinding(Main.TILDE, GLFW.GLFW_KEY_GRAVE_ACCENT);
@@ -152,13 +153,13 @@ public class Main extends Screen {
         }.setXYW(0, 0, getWidth());
 
         //setScreen(new Menu(this));
-		if(conf.debug) {
+		//if(conf.debug) {
 			Game game = new Game(main);
 			main.setScreen(game, true);
 			game.loadMap(main.gamecfg.get("game", "start_map"));
-		} else {
+		/*} else {
 			setScreen(new Intro(this));
-		}
+		}*/
         run();
     }
 

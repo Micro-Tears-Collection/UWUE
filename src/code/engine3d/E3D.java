@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.ARBSampleShading;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL33C;
 import org.lwjgl.stb.STBImageWrite;
@@ -52,7 +53,7 @@ public class E3D {
     public Matrix3f tmpM3;
     public FloatBuffer tmpMf, tmpM3f, invCamf, projf;
     
-    int rectCoordVBO, rectuvVBO, rectuvMVBO, rectNormals;
+    int rectCoordVBO, rectuvVBO, rectuvMVBO, rectNormals, rectTangents;
     public int rectVAO, spriteVAO;
     
     public UniformBlock matrices;
@@ -72,6 +73,8 @@ public class E3D {
 		GL33C.glGetError();
 		maxAnisotropy = GL33C.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 		anisotropicSupported = GL33C.glGetError() == GL33C.GL_NO_ERROR;
+		
+		ARBSampleShading.glMinSampleShadingARB(1.0f);
         
         tmpM = new Matrix4f();
         tmpMf = MemoryUtil.memAllocFloat(4*4);
@@ -139,9 +142,20 @@ public class E3D {
 
         GL33C.glVertexAttribPointer(2, 4, GL33C.GL_SHORT, false, 0, 0);
         
+        rectTangents = GL33C.glGenBuffers(); //Creates a VBO ID
+        GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, rectTangents); //Loads the current VBO to store the data
+        GL33C.glBufferData(GL33C.GL_ARRAY_BUFFER, 
+                new short[]{
+                    1, 0, 0, 1, 1, 0, 0, 1,
+                    1, 0, 0, 1, 1, 0, 0, 1
+                }, GL33C.GL_STATIC_DRAW);
+
+        GL33C.glVertexAttribPointer(3, 4, GL33C.GL_SHORT, false, 0, 0);
+        
         GL33C.glEnableVertexAttribArray(0);
         GL33C.glEnableVertexAttribArray(1);
         GL33C.glEnableVertexAttribArray(2);
+        GL33C.glEnableVertexAttribArray(3);
         
         GL33C.glBindBuffer(GL33C.GL_ARRAY_BUFFER, 0);
         GL33C.glBindVertexArray(0);
@@ -189,6 +203,7 @@ public class E3D {
         GL33C.glDeleteBuffers(rectuvVBO);
         GL33C.glDeleteBuffers(rectuvMVBO);
         GL33C.glDeleteBuffers(rectNormals);
+        GL33C.glDeleteBuffers(rectTangents);
     }
     
     public void setCam(Vector3D camera, float rotX, float rotY) {

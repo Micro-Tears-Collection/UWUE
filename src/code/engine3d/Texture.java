@@ -158,11 +158,11 @@ public class Texture extends ReusableContent {
 		//boolean useCompression = name != null && !name.startsWith("raw.");
 		//System.out.println(path + " " + textureType + " " + useCompression);
 		
-		/*if("norm".equals(textureType) || "rg".equals(textureType)) {
+		if("norm".equals(textureType) || "rg".equals(textureType)) {
 			texChannels = Math.min(texChannels, 2);
 		} else if("rough".equals(textureType) || "spec".equals(textureType) || "r".equals(textureType) || "height".equals(textureType)) {
 			texChannels = Math.min(texChannels, 1);
-		}*/
+		}
 		
 		/*if(useCompression && !bptcChecked) {
 			bptcChecked = true;

@@ -15,7 +15,7 @@ import java.util.Random;
  */
 public class Player extends PhysEntity {
     
-    public static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP, RUN,
+    public static int WALK_FORWARD, WALK_BACKWARD, STRAFE_LEFT, STRAFE_RIGHT, JUMP, RUN, CROUCH, NOCLIP_TOGGLE,
             INTERACT;
     
     public float eyeHeight;
@@ -65,16 +65,41 @@ public class Player extends PhysEntity {
 	}
     
     public void update(World world) {
-        float speed = 12.75f;//Keys.isPressed(RUN) ? 25.5f : 19;
+        float speed = 12.75f * (Keys.isPressed(RUN) ? 1.7f : 1);//Keys.isPressed(RUN) ? 25.5f : 19;
 		//40 and 30 is release speed
         //35 is pre release speed
 		
-        walk(
-            ((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed,
-            ((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed
-		);
+		if(!noclip) {
+			walk(
+				((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed,
+				((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed
+			);
+		} else {
+			speed = 19;
+			if(Keys.isPressed(RUN)) speed *= 5;
+			if(Keys.isPressed(CROUCH)) speed /= 5;
+			
+			float front = ((Keys.isPressed(WALK_FORWARD)?1:0) - (Keys.isPressed(WALK_BACKWARD)?1:0)) * speed;
+			float right = ((Keys.isPressed(STRAFE_RIGHT)?1:0) - (Keys.isPressed(STRAFE_LEFT)?1:0)) * speed;
+
+			float sin = (float) Math.sin(Math.toRadians(rotY));
+			float cos = (float) Math.cos(Math.toRadians(rotY));
+
+			float upSin = (float) Math.sin(Math.toRadians(rotX));
+			float upCos = (float) Math.cos(Math.toRadians(rotX));
+
+			if(front != 0 && right != 0) {
+				//1 / (2^0.5) ~= 0.70710678
+				front *= 0.70710678;
+				right *= 0.70710678;
+			}
+
+			this.speed.x += (-sin * front * upCos + cos * right) * FPS.frameTime / 50f;
+			this.speed.z += (-cos * front * upCos - sin * right) * FPS.frameTime / 50f;
+			this.speed.y += front * upSin * FPS.frameTime / 50f;
+		}
         
-        //if(Keys.isPressed(JUMP)) jump(50);
+        if(Keys.isPressed(JUMP)) jump(50);
         
         super.update(world);
     }
@@ -85,7 +110,7 @@ public class Player extends PhysEntity {
 		
 		super.physicsUpdate(world);
 		
-		if(onGround) distanceToStep -= pos.distance(oldPos);
+		if(onGround) distanceToStep -= Math.sqrt((oldPos.x - pos.x) * (oldPos.x - pos.x) + (oldPos.z - pos.z) * (oldPos.z - pos.z));
 		
 		if(!oldOnGround && onGround && fallHeight > 20) distanceToStep = 0;
 
@@ -101,7 +126,7 @@ public class Player extends PhysEntity {
 			step.play();
 		}
 		
-		if(!onGround) fallHeight += Math.max(0, oldPos.y - pos.y);
+		if(!noclip && !onGround) fallHeight += Math.max(0, oldPos.y - pos.y);
 		else fallHeight = 0;
 		
 		/*for(SoundSource step : steps) {
@@ -110,13 +135,16 @@ public class Player extends PhysEntity {
 		}*/
 	}
     
-    public static void initKeys(int w, int s, int a, int d, int space, int shift, int e) {
+    public static void initKeys(int w, int s, int a, int d, int space, int shift, int control, int v, int e) {
         WALK_FORWARD = Keys.addKeyToBinding(WALK_FORWARD, w);
         WALK_BACKWARD = Keys.addKeyToBinding(WALK_BACKWARD, s);
         STRAFE_LEFT = Keys.addKeyToBinding(STRAFE_LEFT, a);
         STRAFE_RIGHT = Keys.addKeyToBinding(STRAFE_RIGHT, d);
         JUMP = Keys.addKeyToBinding(JUMP, space);
         RUN = Keys.addKeyToBinding(RUN, shift);
+        CROUCH = Keys.addKeyToBinding(CROUCH, control);
+		
+		NOCLIP_TOGGLE = Keys.addKeyToBinding(NOCLIP_TOGGLE, v);
         
         INTERACT = Keys.addKeyToBinding(INTERACT, e);
     }

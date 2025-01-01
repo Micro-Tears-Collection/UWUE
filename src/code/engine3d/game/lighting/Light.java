@@ -14,7 +14,7 @@ public class Light {
     public Vector3D spotDir;
     public float[] color;
     
-    boolean isPoint, isSpot;
+    public boolean isPoint, isSpot;
     float absLit;
     
     public float cutoff = 45;
