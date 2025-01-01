@@ -502,10 +502,11 @@ public class WorldLoader {
         
         obj.activable = ini.getInt("activable", obj.activable?1:0) == 1;
         obj.activateRadius = ini.getFloat("activate_radius", obj.activateRadius);
-        obj.clickable = ini.getFloat("clickable", obj.clickable?1:0) == 1;
-        obj.pointable = ini.getFloat("pointable", obj.pointable?1:0) == 1;
+        obj.clickable = ini.getInt("clickable", obj.clickable?1:0) == 1;
+        obj.pointable = ini.getInt("pointable", obj.pointable?1:0) == 1;
+		obj.activateWhenInside = ini.getInt("activate_when_inside", obj.activateWhenInside?1:0) == 1;
         
-        obj.animateWhenPaused = ini.getFloat("animate_when_paused", obj.animateWhenPaused?1:0) == 1;
+        obj.animateWhenPaused = ini.getInt("animate_when_paused", obj.animateWhenPaused?1:0) == 1;
         
         String tmp = ini.get("activate_if");
         if(tmp != null) obj.activateWhen = Scripting.loadScript(game.main, "return "+tmp);
