@@ -235,7 +235,7 @@ public class E3D {
         GL33C.glViewport(xx, yy, ww, hh);
         
         GL33C.glEnable(GL33C.GL_DEPTH_TEST);
-        GL33C.glDepthFunc(GL33C.GL_GEQUAL);
+        GL33C.glDepthFunc(GL33C.GL_LEQUAL);
         GL33C.glEnable(GL33C.GL_CULL_FACE);
         GL33C.glCullFace(GL33C.GL_BACK);
 		//GL33C.glEnable(GL33C.GL_FRAMEBUFFER_SRGB);
