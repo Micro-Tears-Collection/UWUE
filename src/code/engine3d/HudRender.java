@@ -256,7 +256,7 @@ public class HudRender {
         e3d.tmpM.scale(max.x-min.x, max.y-min.y, max.z-min.z);
         e3d.invCam.mul(e3d.tmpM);
         
-        e3d.setModelView(e3d.tmpM.get(e3d.tmpMf));
+        e3d.setModelView(e3d.invCam.get(e3d.tmpMf));
         e3d.invCam.set(e3d.invCamf);
         
         float r = ((color>>16)&255) / 255f;
